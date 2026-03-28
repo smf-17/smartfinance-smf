@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S-M-F · Research Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#02040a;--surface:#060a0f;--surface2:#0b1018;
+    --border:#131820;--border2:#1c2430;
+    --accent:#00e5a0;--accent2:#0ff;--warn:#f7b731;--red:#ff4d6d;
+    --text:#d0dae8;--muted:#5a6578;--dimmed:#323d4d;
+    --mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,160,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+  /* HEADER */
+  header{position:sticky;top:0;z-index:100;background:rgba(8,12,16,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 2rem;}
+  .header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:68px;gap:2rem;}
+  .logo{display:flex;align-items:center;gap:.75rem;text-decoration:none;}
+  .logo-mark{width:32px;height:32px;background:var(--accent);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:#000;}
+  .logo-text{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);letter-spacing:.1em;}
+  .logo-sub{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;}
+
+  /* ── LOGO ORBITAL ── */
+  .logo-orbital{display:flex;align-items:center;gap:.85rem;text-decoration:none;}
+  .orbital-wrap{position:relative;width:64px;height:64px;flex-shrink:0;}
+  .orbital-svg{position:absolute;inset:0;width:100%;height:100%;animation:orbitSpin 8s linear infinite;}
+  @keyframes orbitSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .orbital-hex{
+    position:absolute;inset:50%;transform:translate(-50%,-50%);
+    width:36px;height:36px;
+    background:var(--accent);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 14px rgba(0,229,160,.5),0 0 30px rgba(0,229,160,.2);
+  }
+  .orbital-hex-glow{
+    position:absolute;inset:50%;transform:translate(-50%,-50%);
+    width:42px;height:42px;
+    background:rgba(0,229,160,.08);
+    clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+    animation:hexPulse 3s ease-in-out infinite;
+  }
+  @keyframes hexPulse{
+    0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1);}
+    50%    {opacity:1;transform:translate(-50%,-50%) scale(1.12);}
+  }
+  .orbital-smf{
+    display:flex;flex-direction:column;align-items:center;gap:0;
+  }
+  .orbital-smf .o-smart{font-family:var(--mono);font-size:8px;font-weight:700;color:var(--accent);letter-spacing:.28em;text-transform:uppercase;}
+  .orbital-smf .o-main {font-family:var(--mono);font-size:15px;font-weight:700;color:var(--text);letter-spacing:.12em;line-height:1.1;}
+  .orbital-smf .o-fin  {font-family:var(--mono);font-size:8px;font-weight:700;color:var(--accent);letter-spacing:.22em;text-transform:uppercase;}
+  .ticker-bar{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;height:52px;min-height:52px;max-height:52px;}
+  .ticker-quote-wrap{position:relative;width:100%;height:52px;overflow:hidden;display:flex;align-items:center;}
+  .ticker-quote{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-start;
+    color:var(--accent);font-style:italic;font-size:13px;line-height:1.4;
+    opacity:0;pointer-events:none;
+    white-space:normal;word-break:break-word;
+    padding:4px 0;
+    /* Empêche tout débordement de l'élément hors du wrap */
+    overflow:hidden;
+    /* Isolation : les transforms ne propagent pas au layout parent */
+    will-change:opacity,filter,transform;
+    transform-origin:center center;
+    transform-box:fill-box;
+  }
+  .ticker-quote .qa{color:rgba(0,229,160,.6);font-size:10px;font-style:normal;font-family:var(--mono);margin-left:.6rem;flex-shrink:0;white-space:nowrap;}
+
+  /* ════════════════════════════════════════
+     7 ANIMATIONS D'ENTRÉE — une par citation
+     Seuls opacity + filter sont utilisés pour
+     ne jamais faire vibrer le layout.
+     ════════════════════════════════════════ */
+
+  /* 1 · GLITCH HOLOGRAM */
+  @keyframes aEnter1{
+    0%  {opacity:0;filter:blur(20px) brightness(4) hue-rotate(100deg) saturate(3);}
+    12% {opacity:.7;filter:blur(6px) brightness(2.5) hue-rotate(50deg) saturate(2);}
+    25% {opacity:.5;filter:blur(10px) brightness(1.8) hue-rotate(20deg);}
+    40% {opacity:.9;filter:blur(1px) brightness(1.3) hue-rotate(5deg);}
+    55% {opacity:.8;filter:blur(3px) brightness(1.5) hue-rotate(0deg);}
+    70% {opacity:1;filter:blur(0) brightness(1.1);}
+    100%{opacity:1;filter:none;}
+  }
+  @keyframes aExit1{
+    0%  {opacity:1;filter:none;}
+    20% {opacity:.8;filter:blur(4px) brightness(1.8) hue-rotate(40deg);}
+    50% {opacity:.4;filter:blur(12px) brightness(3) hue-rotate(100deg);}
+    80% {opacity:.1;filter:blur(22px) brightness(5) hue-rotate(160deg);}
+    100%{opacity:0;filter:blur(30px) brightness(6) hue-rotate(200deg);}
+  }
+  @keyframes aPulse1{
+    0%,100%{text-shadow:0 0 8px rgba(0,229,160,.5),0 0 25px rgba(0,229,160,.2);}
+    50%    {text-shadow:0 0 16px rgba(0,229,160,.9),0 0 50px rgba(0,229,160,.4),0 0 100px rgba(0,229,160,.15);}
+  }
+
+  /* 2 · STATIC TV */
+  @keyframes aEnter2{
+    0%  {opacity:0;filter:contrast(20) brightness(.1) saturate(0);}
+    15% {opacity:.8;filter:contrast(6) brightness(2) saturate(1) blur(2px);}
+    28% {opacity:.4;filter:contrast(10) brightness(.7) saturate(0) blur(1px);}
+    42% {opacity:1;filter:contrast(2.5) brightness(1.3) saturate(1);}
+    58% {opacity:.9;filter:contrast(1.5) brightness(1.1);}
+    75% {opacity:1;filter:none;}
+    100%{opacity:1;filter:none;}
+  }
+  @keyframes aExit2{
+    0%  {opacity:1;filter:none;}
+    20% {opacity:.9;filter:contrast(3) brightness(1.8);}
+    45% {opacity:.5;filter:contrast(10) brightness(.5) saturate(0);}
+    70% {opacity:.2;filter:contrast(20) brightness(.1) blur(2px);}
+    100%{opacity:0;filter:contrast(25) brightness(0);}
+  }
+  @keyframes aPulse2{
+    0%,100%{text-shadow:0 0 4px rgba(0,229,160,.3);filter:none;}
+    40%    {text-shadow:0 0 2px #fff,0 0 10px rgba(0,229,160,.7);filter:contrast(1.3);}
+    70%    {text-shadow:0 0 8px rgba(0,229,160,.5);filter:none;}
+  }
+
+  /* 3 · MATRIX RAIN */
+  @keyframes aEnter3{
+    0%  {opacity:0;filter:brightness(.05) saturate(0) blur(8px);}
+    18% {opacity:.5;filter:brightness(2.5) saturate(5) hue-rotate(120deg) blur(3px);}
+    35% {opacity:.8;filter:brightness(1.6) saturate(3) hue-rotate(60deg) blur(1px);}
+    55% {opacity:.95;filter:brightness(1.2) saturate(1.8) hue-rotate(20deg);}
+    75% {opacity:1;filter:brightness(1.05) saturate(1.2);}
+    100%{opacity:1;filter:none;}
+  }
+  @keyframes aExit3{
+    0%  {opacity:1;filter:none;}
+    25% {opacity:.8;filter:brightness(1.8) hue-rotate(40deg) saturate(2);}
+    55% {opacity:.3;filter:brightness(3.5) hue-rotate(120deg) saturate(3) blur(4px);}
+    100%{opacity:0;filter:brightness(6) hue-rotate(180deg) blur(12px);}
+  }
+  @keyframes aPulse3{
+    0%,100%{text-shadow:0 0 6px rgba(0,255,100,.5),0 0 20px rgba(0,255,100,.2);filter:brightness(1);}
+    50%    {text-shadow:0 0 4px rgba(0,255,80,.3),0 0 14px rgba(0,255,80,.1);filter:brightness(1.1) saturate(1.2);}
+  }
+
+  /* 4 · NEON FLICKER */
+  @keyframes aEnter4{
+    0%  {opacity:0;}
+    6%  {opacity:.95;filter:brightness(4);}
+    11% {opacity:.05;}
+    17% {opacity:.9;filter:brightness(3);}
+    22% {opacity:.1;}
+    30% {opacity:1;filter:brightness(2.5) blur(1px);}
+    35% {opacity:.25;}
+    42% {opacity:1;filter:brightness(2);}
+    50% {opacity:.7;filter:brightness(1.5);}
+    62% {opacity:1;filter:brightness(1.2);}
+    78% {opacity:.9;filter:brightness(1.05);}
+    100%{opacity:1;filter:brightness(1);}
+  }
+  @keyframes aExit4{
+    0%  {opacity:1;}
+    12% {opacity:.5;filter:brightness(2.5);}
+    18% {opacity:1;}
+    30% {opacity:0;filter:brightness(5);}
+    36% {opacity:.7;}
+    50% {opacity:0;filter:brightness(3);}
+    62% {opacity:.3;}
+    78% {opacity:0;}
+    100%{opacity:0;}
+  }
+  @keyframes aPulse4{
+    0%,100%{text-shadow:0 0 10px rgba(0,229,160,.9),0 0 30px rgba(0,229,160,.4),0 0 60px rgba(0,229,160,.2);}
+    44%    {text-shadow:0 0 6px rgba(0,229,160,.5),0 0 18px rgba(0,229,160,.2);filter:brightness(.85);}
+    46%    {text-shadow:0 0 18px rgba(0,229,160,1),0 0 50px rgba(0,229,160,.7);filter:brightness(1.4);}
+    48%    {text-shadow:0 0 8px rgba(0,229,160,.6);filter:brightness(.9);}
+  }
+
+  /* 5 · QUANTUM DISSOLVE */
+  @keyframes aEnter5{
+    0%  {opacity:0;filter:blur(35px) saturate(0) brightness(6);}
+    20% {opacity:.35;filter:blur(14px) saturate(2.5) brightness(3);}
+    40% {opacity:.65;filter:blur(6px) saturate(1.8) brightness(1.8);}
+    62% {opacity:.9;filter:blur(2px) saturate(1.3) brightness(1.2);}
+    80% {opacity:1;filter:blur(.5px) saturate(1.1) brightness(1.05);}
+    100%{opacity:1;filter:none;}
+  }
+  @keyframes aExit5{
+    0%  {opacity:1;filter:none;}
+    28% {opacity:.7;filter:blur(4px) saturate(1.8) brightness(1.8);}
+    60% {opacity:.25;filter:blur(16px) saturate(3) brightness(3.5);}
+    100%{opacity:0;filter:blur(35px) saturate(0) brightness(6);}
+  }
+  @keyframes aPulse5{
+    0%,100%{text-shadow:0 0 8px rgba(0,229,160,.4),0 0 30px rgba(0,229,160,.15);filter:saturate(1);}
+    50%    {text-shadow:0 0 20px rgba(0,229,160,.8),0 0 60px rgba(0,229,160,.35);filter:saturate(1.4);}
+  }
+
+  /* 6 · SHATTER (filter seulement, pas de perspective) */
+  @keyframes aEnter6{
+    0%  {opacity:0;filter:blur(0) brightness(.05) invert(1);}
+    15% {opacity:.6;filter:blur(3px) brightness(1.8) invert(.5) hue-rotate(40deg);}
+    30% {opacity:.4;filter:blur(5px) brightness(2.5) invert(.8) hue-rotate(80deg);}
+    50% {opacity:.85;filter:blur(1px) brightness(1.4) invert(.2) hue-rotate(20deg);}
+    68% {opacity:1;filter:blur(0) brightness(1.1) invert(0);}
+    100%{opacity:1;filter:none;}
+  }
+  @keyframes aExit6{
+    0%  {opacity:1;filter:none;}
+    20% {opacity:.8;filter:brightness(1.5) invert(.1) hue-rotate(15deg);}
+    45% {opacity:.4;filter:blur(4px) brightness(2.5) invert(.6) hue-rotate(60deg);}
+    75% {opacity:.1;filter:blur(8px) brightness(.2) invert(1) hue-rotate(100deg);}
+    100%{opacity:0;filter:blur(12px) brightness(0) invert(1);}
+  }
+  @keyframes aPulse6{
+    0%,100%{text-shadow:0 0 6px rgba(0,229,160,.4);filter:brightness(1);}
+    33%    {text-shadow:0 0 12px rgba(0,229,160,.8),0 0 40px rgba(0,229,160,.3);filter:brightness(1.15);}
+    66%    {text-shadow:0 0 8px rgba(0,229,160,.5),0 0 25px rgba(0,229,160,.15);filter:brightness(.95);}
+  }
+
+  /* 7 · WARP SPEED (blur directionnel simulé) */
+  @keyframes aEnter7{
+    0%  {opacity:0;filter:blur(40px) brightness(8) saturate(0);}
+    12% {opacity:.5;filter:blur(18px) brightness(4) saturate(1);}
+    25% {opacity:.7;filter:blur(8px) brightness(2.2) saturate(1.5);}
+    42% {opacity:.9;filter:blur(2px) brightness(1.4) saturate(1.2);}
+    60% {opacity:1;filter:blur(.5px) brightness(1.1);}
+    75% {opacity:1;filter:none;}
+    100%{opacity:1;filter:none;}
+  }
+  @keyframes aExit7{
+    0%  {opacity:1;filter:none;}
+    18% {opacity:.8;filter:blur(3px) brightness(1.6) saturate(1.3);}
+    42% {opacity:.4;filter:blur(12px) brightness(3.5) saturate(2);}
+    70% {opacity:.1;filter:blur(28px) brightness(6) saturate(0);}
+    100%{opacity:0;filter:blur(42px) brightness(8);}
+  }
+  @keyframes aPulse7{
+    0%,100%{text-shadow:0 0 8px rgba(0,229,160,.5),0 0 25px rgba(0,229,160,.2);filter:brightness(1);}
+    40%    {text-shadow:0 0 18px rgba(0,229,160,.9),0 0 55px rgba(0,229,160,.4),0 0 6px #fff;filter:brightness(1.2);}
+    70%    {text-shadow:0 0 6px rgba(0,229,160,.4),0 0 18px rgba(0,229,160,.15);filter:brightness(.95);}
+  }
+
+  /* Classes d'état */
+  .ticker-quote.q-enter-1{animation:aEnter1 1.1s cubic-bezier(.22,1,.36,1) forwards;}
+  .ticker-quote.q-enter-2{animation:aEnter2 .9s cubic-bezier(.4,0,.2,1) forwards;}
+  .ticker-quote.q-enter-3{animation:aEnter3 1.0s ease-out forwards;}
+  .ticker-quote.q-enter-4{animation:aEnter4 1.3s ease-out forwards;}
+  .ticker-quote.q-enter-5{animation:aEnter5 1.1s ease-out forwards;}
+  .ticker-quote.q-enter-6{animation:aEnter6 1.0s cubic-bezier(.34,1.56,.64,1) forwards;}
+  .ticker-quote.q-enter-7{animation:aEnter7 1.0s cubic-bezier(.22,1,.36,1) forwards;}
+
+  .ticker-quote.q-stable-1{opacity:1;animation:aPulse1 3s ease-in-out infinite;}
+  .ticker-quote.q-stable-2{opacity:1;animation:aPulse2 2.5s ease-in-out infinite;}
+  .ticker-quote.q-stable-3{opacity:1;animation:aPulse3 3.5s ease-in-out infinite;}
+  .ticker-quote.q-stable-4{opacity:1;animation:aPulse4 2s ease-in-out infinite;}
+  .ticker-quote.q-stable-5{opacity:1;animation:aPulse5 3s ease-in-out infinite;}
+  .ticker-quote.q-stable-6{opacity:1;animation:aPulse6 4s ease-in-out infinite;}
+  .ticker-quote.q-stable-7{opacity:1;animation:aPulse7 3s ease-in-out infinite;}
+
+  .ticker-quote.q-exit-1{animation:aExit1 .85s ease-in forwards;}
+  .ticker-quote.q-exit-2{animation:aExit2 .75s ease-in forwards;}
+  .ticker-quote.q-exit-3{animation:aExit3 .8s ease-in forwards;}
+  .ticker-quote.q-exit-4{animation:aExit4 .9s ease-in forwards;}
+  .ticker-quote.q-exit-5{animation:aExit5 .9s ease-in forwards;}
+  .ticker-quote.q-exit-6{animation:aExit6 .85s ease-in forwards;}
+  .ticker-quote.q-exit-7{animation:aExit7 .8s ease-in forwards;}
+  .btn-export{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:700;padding:7px 14px;border-radius:4px;cursor:pointer;letter-spacing:.06em;transition:all .15s;white-space:nowrap;}
+  .btn-export:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-add-header{background:var(--accent);border:none;color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:7px 18px;border-radius:4px;cursor:pointer;letter-spacing:.08em;transition:opacity .15s;white-space:nowrap;display:flex;align-items:center;gap:.5rem;}
+  .btn-add-header:hover{opacity:.85;}
+
+  .container{max-width:1400px;margin:0 auto;padding:2rem;position:relative;z-index:1;}
+
+  .fcount{font-family:var(--mono);font-size:10px;opacity:.7;margin-left:2px;}
+
+  /* FILTERS */
+  .filters{display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+  .filter-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-right:.5rem;}
+  .filter-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;padding:5px 14px;border-radius:3px;cursor:pointer;transition:all .15s;}
+  .filter-btn:hover,.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
+  .filter-btn[data-cat="hebdo"].active{background:var(--warn);border-color:var(--warn);}
+  .filter-btn[data-cat="mensuel"].active{background:var(--accent2);border-color:var(--accent2);}
+  .filter-btn[data-cat="trade"].active{background:var(--red);border-color:var(--red);color:#fff;}
+  .search-wrap{position:relative;margin-left:auto;}
+  .search-wrap input{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:6px 12px 6px 30px;border-radius:4px;width:200px;outline:none;transition:border-color .2s,width .3s;}
+  .search-wrap input:focus{border-color:var(--accent);width:260px;}
+  .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--dimmed);font-size:12px;pointer-events:none;}
+
+  /* GRID */
+  .articles-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;background:transparent;border:none;border-radius:0;padding:4px 0;}
+  @media(max-width:1200px){.articles-grid{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:768px){.articles-grid{grid-template-columns:1fr;}}
+  .article-card{background:var(--surface);padding:1.5rem;cursor:pointer;transition:background .15s,border-color .2s;display:flex;flex-direction:column;gap:.75rem;position:relative;overflow:hidden;border:1px solid var(--border2);border-radius:10px;}
+  .article-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transition:transform .2s;transform-origin:bottom;}
+  .article-card[data-cat="hebdo"]::before{background:var(--warn);}
+  .article-card[data-cat="mensuel"]::before{background:var(--accent2);}
+  .article-card[data-cat="trade"]::before{background:var(--red);}
+  .article-card:hover{background:var(--surface2);border-color:var(--accent);}
+  .article-card:hover::before{transform:scaleY(1);}
+  .card-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
+  .cat-badge{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:3px 8px;border-radius:2px;}
+  .cat-badge.weekahead{background:rgba(160,100,255,.15);color:#a064ff;}
+  .cat-badge.ideetrade{background:rgba(255,160,50,.15);color:#ffa032;}
+  .filter-btn[data-cat="weekahead"].active{background:#a064ff;border-color:#a064ff;color:#fff;}
+  .filter-btn[data-cat="ideetrade"].active{background:#ffa032;border-color:#ffa032;color:#000;}
+  .pill.weekahead input:checked+label{background:rgba(160,100,255,.15);border-color:#a064ff;color:#a064ff;font-weight:700;}
+  .pill.ideetrade input:checked+label{background:rgba(255,160,50,.15);border-color:#ffa032;color:#ffa032;font-weight:700;}
+  .article-card[data-cat="weekahead"]::before{background:#a064ff;}
+  .article-card[data-cat="ideetrade"]::before{background:#ffa032;}  .cat-badge.hebdo{background:rgba(247,183,49,.15);color:var(--warn);}
+  .cat-badge.mensuel{background:rgba(0,255,255,.12);color:var(--accent2);}
+  .cat-badge.trade{background:rgba(255,77,109,.15);color:var(--red);}
+  .card-date{font-family:var(--mono);font-size:10px;color:var(--dimmed);}
+  .card-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.35;}
+  .card-desc{font-size:12px;color:var(--muted);line-height:1.6;flex:1;}
+  .card-thumb{width:100%;height:120px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
+  .card-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:.75rem;margin-top:auto;}
+  .card-meta{font-family:var(--mono);font-size:10px;color:var(--dimmed);display:flex;align-items:center;gap:1rem;}
+  .card-actions{display:flex;align-items:center;gap:.75rem;}
+  .card-open{font-family:var(--mono);font-size:10px;color:var(--accent);display:flex;align-items:center;gap:.3rem;transition:gap .15s;}
+  .article-card:hover .card-open{gap:.6rem;}
+  .btn-del{background:transparent;border:none;color:var(--dimmed);font-size:13px;cursor:pointer;padding:2px 5px;border-radius:3px;transition:color .15s;line-height:1;}
+  .btn-del:hover{color:var(--red);}
+  .empty-state{grid-column:1/-1;padding:5rem 2rem;text-align:center;}
+  .empty-icon{font-size:48px;margin-bottom:1.5rem;opacity:.4;}
+  .empty-text{font-family:var(--mono);font-size:13px;color:var(--dimmed);line-height:2;}
+  .empty-cta{display:inline-block;margin-top:1.5rem;background:var(--accent);color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:10px 24px;border-radius:4px;cursor:pointer;letter-spacing:.08em;border:none;transition:opacity .15s;}
+  .empty-cta:hover{opacity:.85;}
+
+  /* VIEW TOGGLE */
+  .view-toggle{display:flex;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:2px;margin-left:auto;}
+  .view-btn{background:transparent;border:none;color:var(--muted);width:30px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;transition:all .15s;flex-shrink:0;}
+  .view-btn.active{background:var(--accent);color:#000;}
+  .view-btn svg{width:14px;height:14px;fill:currentColor;}
+
+  /* LIST VIEW */
+  .articles-grid.list-view{grid-template-columns:1fr;gap:6px;}
+  .articles-grid.list-view .article-card{flex-direction:row;align-items:center;gap:1rem;padding:1rem 1.25rem;border-radius:8px;}
+  .articles-grid.list-view .article-card::before{top:0;bottom:0;left:0;width:3px;height:auto;transform:scaleX(0);transform-origin:left;transition:transform .2s;}
+  .articles-grid.list-view .article-card:hover::before{transform:scaleX(1);}
+  .articles-grid.list-view .card-thumb{width:64px;height:52px;flex-shrink:0;border-radius:4px;margin:0;}
+  .articles-grid.list-view .card-top{flex-direction:column;align-items:flex-start;gap:.25rem;min-width:140px;flex-shrink:0;}
+  .articles-grid.list-view .card-title{font-size:14px;flex:1;min-width:0;}
+  .articles-grid.list-view .card-desc{font-size:11px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;flex:2;min-width:0;}
+  .articles-grid.list-view .card-footer{border-top:none;padding-top:0;margin-top:0;flex-shrink:0;min-width:120px;justify-content:flex-end;}
+  .articles-grid.list-view .empty-state{grid-column:1/-1;}
+
+  /* OVERLAY */
+  .overlay{position:fixed;inset:0;background:rgba(8,12,16,.96);backdrop-filter:blur(12px);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto;}
+  .overlay.open{display:flex;}
+  .modal{width:100%;max-width:580px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;overflow:hidden;animation:up .22s ease;margin:auto;}
+  @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);background:var(--surface2);position:sticky;top:0;z-index:2;}
+  .modal-head-title{font-size:16px;font-weight:700;color:var(--accent);}
+  .modal-head-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
+  .btn-x{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:3px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+  .btn-x:hover{border-color:var(--red);color:var(--red);}
+  .modal-body{padding:1.75rem;display:flex;flex-direction:column;gap:1.25rem;}
+
+  /* MODE SWITCHER */
+  .mode-switcher{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border2);border-radius:7px;overflow:hidden;}
+  .mode-btn{background:var(--surface2);border:none;color:var(--muted);font-family:var(--mono);font-size:11px;padding:11px 8px;cursor:pointer;transition:all .2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .mode-btn .mico{font-size:20px;}
+  .mode-btn .mlbl{letter-spacing:.06em;font-weight:700;}
+  .mode-btn .msub{font-size:9px;opacity:.7;}
+  .mode-btn.active{background:rgba(0,229,160,.12);color:var(--accent);border-bottom:2px solid var(--accent);}
+  .mode-btn:first-child{border-right:1px solid var(--border2);}
+
+  /* SECTIONS */
+  .section{display:none;flex-direction:column;gap:1.2rem;}
+  .section.on{display:flex;}
+
+  /* DROP ZONE */
+  .drop-zone{border:2px dashed var(--border2);border-radius:8px;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+  .drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:rgba(0,229,160,.04);}
+  .drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .drop-icon{font-size:32px;margin-bottom:.6rem;display:block;}
+  .drop-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:.3rem;}
+  .drop-sub{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .drop-btn-lbl{display:inline-block;margin-top:.8rem;background:var(--surface2);border:1px solid var(--border2);color:var(--accent);font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 16px;border-radius:4px;letter-spacing:.08em;}
+
+  /* FILE PREVIEW */
+  .file-prev{display:none;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:.9rem 1.1rem;gap:.9rem;align-items:center;}
+  .file-prev.on{display:flex;}
+  .file-ico{font-size:26px;flex-shrink:0;}
+  .file-inf{flex:1;min-width:0;}
+  .file-nm{font-weight:700;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .file-sz{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;}
+  .btn-chg{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:10px;padding:4px 10px;border-radius:3px;cursor:pointer;white-space:nowrap;transition:all .15s;}
+  .btn-chg:hover{border-color:var(--accent);color:var(--accent);}
+
+  /* FORM */
+  .field{display:flex;flex-direction:column;gap:.4rem;}
+  .field label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+  .field input,.field textarea{background:var(--surface2);border:1px solid var(--border2);color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;border-radius:5px;outline:none;transition:border-color .2s;width:100%;}
+  .field input:focus,.field textarea:focus{border-color:var(--accent);}
+  .field textarea{resize:vertical;min-height:80px;line-height:1.6;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .field-hint{font-family:var(--mono);font-size:10px;color:var(--dimmed);margin-top:2px;}
+
+  /* CAT PILLS */
+  .cat-pills{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;}
+  .pill{position:relative;}
+  .pill input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
+  .pill label{display:block;text-align:center;padding:8px 4px;border:1px solid var(--border2);border-radius:5px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;color:var(--muted);}
+  .pill.banques input:checked+label{background:rgba(0,229,160,.15);border-color:var(--accent);color:var(--accent);font-weight:700;}
+  .pill.hebdo   input:checked+label{background:rgba(247,183,49,.15);border-color:var(--warn);color:var(--warn);font-weight:700;}
+  .pill.mensuel input:checked+label{background:rgba(0,255,255,.12);border-color:var(--accent2);color:var(--accent2);font-weight:700;}
+  .pill.trade   input:checked+label{background:rgba(255,77,109,.15);border-color:var(--red);color:var(--red);font-weight:700;}
+
+  /* IMAGE UPLOAD ZONE */
+  .img-drop{border:2px dashed var(--border2);border-radius:8px;padding:1.25rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+  .img-drop:hover,.img-drop.drag{border-color:var(--warn);background:rgba(247,183,49,.04);}
+  .img-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .img-drop-txt{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .img-drop-txt span{color:var(--warn);font-weight:700;}
+
+  /* IMAGE PREVIEWS */
+  .img-previews{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.5rem;}
+  .img-thumb-wrap{position:relative;width:80px;height:80px;flex-shrink:0;}
+  .img-thumb-wrap img{width:80px;height:80px;object-fit:cover;border-radius:5px;border:1px solid var(--border2);display:block;}
+  .img-thumb-del{position:absolute;top:-6px;right:-6px;background:var(--red);border:none;color:#fff;width:18px;height:18px;border-radius:50%;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;}
+
+  .btn-submit{background:var(--accent);border:none;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;padding:13px;border-radius:6px;cursor:pointer;width:100%;letter-spacing:.1em;transition:opacity .15s;margin-top:.25rem;}
+  .btn-submit:hover{opacity:.85;}
+  .btn-submit:disabled{opacity:.35;cursor:not-allowed;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:2rem;right:2rem;background:var(--accent);color:#000;font-family:var(--mono);font-size:12px;font-weight:700;padding:10px 20px;border-radius:5px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.err{background:var(--red);color:#fff;}
+
+  @media(max-width:768px){
+    .stats-bar{grid-template-columns:repeat(2,1fr);}
+    .ticker-bar{display:none;}
+    .articles-grid{grid-template-columns:1fr;}
+    .field-row,.cat-pills{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+
+  <!-- Firebase compat (global SDK) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo-orbital" href="#">
+      <!-- Hexagone + texte orbital -->
+      <div class="orbital-wrap">
+        <!-- Halo pulse -->
+        <div class="orbital-hex-glow"></div>
+        <!-- Hexagone central avec SMF dedans -->
+        <div class="orbital-hex" style="font-family:'Space Mono',monospace;font-size:7px;font-weight:700;color:#000;display:flex;align-items:center;justify-content:center;letter-spacing:.1em;">S-M-F</div>
+        <!-- Texte qui tourne autour -->
+        <svg class="orbital-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Demi-cercle haut : SMART -->
+            <path id="orbitTop" d="M8,32 a24,24 0 0,1 48,0"/>
+            <!-- Demi-cercle bas : FINANCE -->
+            <path id="orbitBot" d="M56,32 a24,24 0 0,1 -48,0"/>
+          </defs>
+          <!-- SMART en haut, centré -->
+          <text font-family="'Space Mono',monospace" font-size="5.2" font-weight="400" fill="#00e5a0" letter-spacing="2">
+            <textPath href="#orbitTop" startOffset="50%" text-anchor="middle">SMART</textPath>
+          </text>
+          <!-- FINANCE en bas, centré -->
+          <text font-family="'Space Mono',monospace" font-size="5.2" font-weight="400" fill="#00e5a0" letter-spacing="2">
+            <textPath href="#orbitBot" startOffset="50%" text-anchor="middle">FINANCE</textPath>
+          </text>
+        </svg>
+      </div>
+      <!-- S-M-F à droite -->
+      <div class="orbital-smf">
+        <span class="o-smart">SMART</span>
+        <span class="o-main">S-M-F</span>
+        <span class="o-fin">FINANCE</span>
+      </div>
+    </a>
+    <div class="ticker-bar">
+      <div class="ticker-quote-wrap" id="tickerWrap">
+        <div class="ticker-quote" id="tickerSlot1"></div>
+        <div class="ticker-quote" id="tickerSlot2"></div>
+      </div>
+    </div>
+    <div id="headerActions" style="display:flex;align-items:center;gap:.75rem;">
+      <!-- rempli dynamiquement selon l'état de connexion -->
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="filters">
+    <span class="filter-label">Filtre :</span>
+    <button class="filter-btn active" data-cat="all">Tous <span class="fcount" id="fc-all"></span></button>
+    <button class="filter-btn" data-cat="weekahead">Week Ahead <span class="fcount" id="fc-weekahead"></span></button>
+    <button class="filter-btn" data-cat="hebdo">Hebdo <span class="fcount" id="fc-hebdo"></span></button>
+    <button class="filter-btn" data-cat="mensuel">Mensuels <span class="fcount" id="fc-mensuel"></span></button>
+    <button class="filter-btn" data-cat="banques">Banques Centrales <span class="fcount" id="fc-banques"></span></button>
+    <button class="filter-btn" data-cat="ideetrade">Idée de Trades <span class="fcount" id="fc-ideetrade"></span></button>
+    <button class="filter-btn" data-cat="trade">Trades <span class="fcount" id="fc-trade"></span></button>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Rechercher...">
+    </div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="btnGrid" title="Vue grille" onclick="setView('grid')">
+        <svg viewBox="0 0 14 14"><rect x="0" y="0" width="6" height="6"/><rect x="8" y="0" width="6" height="6"/><rect x="0" y="8" width="6" height="6"/><rect x="8" y="8" width="6" height="6"/></svg>
+      </button>
+      <button class="view-btn" id="btnList" title="Vue liste" onclick="setView('list')">
+        <svg viewBox="0 0 14 14"><rect x="0" y="0" width="14" height="2.5" rx="1"/><rect x="0" y="5.5" width="14" height="2.5" rx="1"/><rect x="0" y="11" width="14" height="2.5" rx="1"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="articles-grid" id="articlesGrid"></div>
+</div>
+
+<!-- ====== MODAL ====== -->
+<div class="overlay" id="importOv">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-head-title">Nouvel article</div>
+        <div class="modal-head-sub">Choisis le type de contenu à importer</div>
+      </div>
+      <button class="btn-x" onclick="closeImport()">✕ Fermer</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- MODE SWITCHER -->
+      <div class="mode-switcher">
+        <button class="mode-btn active" id="modeHtml" onclick="setMode('html')">
+          <span class="mico">🗂️</span>
+          <span class="mlbl">Fichier HTML</span>
+          <span class="msub">article déjà fait</span>
+        </button>
+        <button class="mode-btn" id="modeManual" onclick="setMode('manual')">
+          <span class="mico">✏️ 🖼️</span>
+          <span class="mlbl">Texte + Images</span>
+          <span class="msub">saisie libre</span>
+        </button>
+      </div>
+
+      <!-- ===== MODE HTML ===== -->
+      <div class="section on" id="secHtml">
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="fileInput" accept=".html,.htm" onchange="onHtmlFile(this.files[0])">
+          <span class="drop-icon">📄</span>
+          <div class="drop-title">Glisse ton fichier HTML ici</div>
+          <div class="drop-sub">ou clique pour ouvrir l'explorateur</div>
+          <div class="drop-btn-lbl">Choisir un fichier .html</div>
+        </div>
+        <div class="file-prev" id="filePrev">
+          <div class="file-ico">📄</div>
+          <div class="file-inf">
+            <div class="file-nm" id="fileName">—</div>
+            <div class="file-sz" id="fileSize">—</div>
+          </div>
+          <button class="btn-chg" onclick="resetHtml()">Changer</button>
+        </div>
+      </div>
+
+      <!-- ===== MODE MANUEL ===== -->
+      <div class="section" id="secManual">
+        <div class="field">
+          <label>Contenu texte</label>
+          <textarea id="fContent" style="min-height:120px" placeholder="Écris ton analyse de trade ici...&#10;&#10;Ex:&#10;Setup : Double bottom sur 4H&#10;Entrée : 1.0850&#10;SL : 1.0810&#10;TP1 : 1.0920 / TP2 : 1.0980&#10;RR : 1:2"></textarea>
+        </div>
+        <div class="field">
+          <label>Images (graphiques, screenshots)</label>
+          <div class="img-drop" id="imgDrop">
+            <input type="file" id="imgInput" accept="image/*" multiple onchange="onImagesSelected(this.files)">
+            <div class="img-drop-txt">📸 Clique ou glisse tes images ici<br><span>JPG, PNG, WebP — plusieurs images acceptées</span></div>
+          </div>
+          <div class="img-previews" id="imgPreviews"></div>
+        </div>
+      </div>
+
+      <!-- ===== CHAMPS COMMUNS ===== -->
+      <div class="field">
+        <label>Titre *</label>
+        <input type="text" id="fTitre" placeholder="Ex: Trade EUR/USD — Setup 4H Round Numbers">
+      </div>
+
+      <div class="field">
+        <label>Description courte *</label>
+        <textarea id="fDesc" style="min-height:60px" placeholder="Résumé en 1-2 phrases visible sur la carte..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Catégorie *</label>
+        <div class="cat-pills">
+          <div class="pill weekahead"><input type="radio" name="rCat" id="cWA" value="weekahead"><label for="cWA">Week Ahead</label></div>
+          <div class="pill hebdo"><input type="radio" name="rCat" id="cH" value="hebdo"><label for="cH">Hebdo</label></div>
+          <div class="pill mensuel"><input type="radio" name="rCat" id="cM" value="mensuel"><label for="cM">Mensuels</label></div>
+          <div class="pill banques"><input type="radio" name="rCat" id="cG" value="banques"><label for="cG">Banques Centrales</label></div>
+          <div class="pill ideetrade"><input type="radio" name="rCat" id="cI" value="ideetrade"><label for="cI">Idée de Trades</label></div>
+          <div class="pill trade"><input type="radio" name="rCat" id="cT" value="trade" checked><label for="cT">Trades</label></div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Date *</label>
+          <input type="date" id="fDate">
+        </div>
+        <div class="field">
+          <label>Paire / Instrument</label>
+          <input type="text" id="fPaire" placeholder="EUR/USD, XAU/USD...">
+        </div>
+      </div>
+
+      <button class="btn-submit" id="btnSubmit" onclick="submitImport()">✓ Publier l'article</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== ÉCRAN D'ACCÈS ====== -->
+<div id="gateScreen" style="position:fixed;inset:0;background:#02040a;z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem;">
+  <div style="width:100%;max-width:420px;background:#060a0f;border:1px solid #1c2430;border-radius:12px;overflow:hidden;animation:up .3s ease;">
+    <!-- Logo -->
+    <div style="padding:2rem 2rem 1rem;text-align:center;border-bottom:1px solid #131820;">
+      <div style="width:48px;height:48px;background:#00e5a0;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:16px;font-weight:700;color:#000;">S</div>
+      <div style="font-size:20px;font-weight:800;color:#d0dae8;letter-spacing:-.01em;">S-M-F Research Hub</div>
+      <div style="font-family:var(--mono);font-size:10px;color:#5a6578;letter-spacing:.2em;margin-top:4px;text-transform:uppercase;">Accès privé</div>
+    </div>
+    <!-- Onglets -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #131820;">
+      <button id="tabLogin" onclick="switchTab('login')" style="background:#060a0f;border:none;color:#00e5a0;font-family:var(--mono);font-size:11px;font-weight:700;padding:12px;cursor:pointer;border-bottom:2px solid #00e5a0;letter-spacing:.08em;">CONNEXION</button>
+      <button id="tabRegister" onclick="switchTab('register')" style="background:transparent;border:none;color:#5a6578;font-family:var(--mono);font-size:11px;font-weight:700;padding:12px;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.08em;">INSCRIPTION</button>
+    </div>
+    <!-- Connexion -->
+    <div id="panelLogin" style="padding:1.75rem;display:flex;flex-direction:column;gap:1rem;">
+      <div class="field">
+        <label>Identifiant (admin) ou Téléphone</label>
+        <input type="text" id="lUser" placeholder="smf  ou  +228 90000000..." autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input type="password" id="lPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div id="loginErr" style="display:none;font-family:var(--mono);font-size:11px;color:var(--red);padding:8px 12px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.2);border-radius:4px;"></div>
+      <button class="btn-submit" onclick="doLogin()" style="margin-top:.25rem;">→ Accéder au Hub</button>
+    </div>
+    <!-- Inscription invité -->
+    <div id="panelRegister" style="display:none;padding:1.75rem;flex-direction:column;gap:1rem;">
+      <div class="field">
+        <label>Indicatif + Numéro de téléphone</label>
+        <div style="display:flex;gap:.5rem;">
+          <select id="rIndicatif" style="background:#0b1018;border:1px solid #1c2430;color:#d0dae8;font-family:var(--mono);font-size:12px;padding:9px 8px;border-radius:5px;outline:none;width:130px;flex-shrink:0;">
+            <option value="+228">🇹🇬 +228</option>
+            <option value="+225">🇨🇮 +225</option>
+            <option value="+237">🇨🇲 +237</option>
+            <option value="+221">🇸🇳 +221</option>
+            <option value="+212">🇲🇦 +212</option>
+            <option value="+213">🇩🇿 +213</option>
+            <option value="+216">🇹🇳 +216</option>
+            <option value="+234">🇳🇬 +234</option>
+            <option value="+233">🇬🇭 +233</option>
+            <option value="+243">🇨🇩 +243</option>
+            <option value="+242">🇨🇬 +242</option>
+            <option value="+241">🇬🇦 +241</option>
+            <option value="+229">🇧🇯 +229</option>
+            <option value="+226">🇧🇫 +226</option>
+            <option value="+223">🇲🇱 +223</option>
+            <option value="+224">🇬🇳 +224</option>
+            <option value="+227">🇳🇪 +227</option>
+            <option value="+222">🇲🇷 +222</option>
+            <option value="+32">🇧🇪 +32</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+41">🇨🇭 +41</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+39">🇮🇹 +39</option>
+          </select>
+          <input type="tel" id="rPhone" placeholder="90000000" style="background:#0b1018;border:1px solid #1c2430;color:#d0dae8;font-family:var(--mono);font-size:13px;padding:9px 12px;border-radius:5px;outline:none;flex:1;transition:border-color .2s;" onfocus="this.style.borderColor='#00e5a0'" onblur="this.style.borderColor='#1c2430'">
+        </div>
+      </div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input type="password" id="rPass" placeholder="Minimum 6 caractères" style="background:#0b1018;border:1px solid #1c2430;color:#d0dae8;font-family:var(--mono);font-size:13px;padding:9px 12px;border-radius:5px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#00e5a0'" onblur="this.style.borderColor='#1c2430'">
+      </div>
+      <div class="field">
+        <label>Confirmer le mot de passe</label>
+        <input type="password" id="rPass2" placeholder="••••••••" style="background:#0b1018;border:1px solid #1c2430;color:#d0dae8;font-family:var(--mono);font-size:13px;padding:9px 12px;border-radius:5px;outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='#00e5a0'" onblur="this.style.borderColor='#1c2430'" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <div id="registerErr" style="display:none;font-family:var(--mono);font-size:11px;color:var(--red);padding:8px 12px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.2);border-radius:4px;"></div>
+      <button class="btn-submit" onclick="doRegister()" style="margin-top:.25rem;">📱 Créer mon compte</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PANNEAU ADMIN ====== -->
+<div id="adminPanel" style="position:fixed;inset:0;background:rgba(8,12,16,.97);backdrop-filter:blur(12px);z-index:300;display:none;align-items:flex-start;justify-content:center;padding:2rem;overflow-y:auto;">
+  <div style="width:100%;max-width:700px;margin:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+      <div style="font-size:20px;font-weight:800;color:#00e5a0;font-family:var(--mono);">⚙ Gestion du Hub</div>
+      <button onclick="closeAdminPanel()" style="background:transparent;border:1px solid #1c2430;color:#5a6578;font-family:var(--mono);font-size:11px;padding:6px 14px;border-radius:4px;cursor:pointer;">✕ Fermer</button>
+    </div>
+
+    <!-- Mots de passe -->
+    <div style="background:#060a0f;border:1px solid #1c2430;border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-family:var(--mono);font-size:11px;color:#00e5a0;letter-spacing:.15em;margin-bottom:1rem;">🔑 MOTS DE PASSE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="field">
+          <label>Nouveau mot de passe Admin</label>
+          <input type="password" id="newAdminPass" placeholder="Nouveau mdp admin" style="background:#0b1018;border:1px solid #1c2430;color:#d0dae8;font-family:var(--mono);font-size:12px;padding:8px 10px;border-radius:5px;outline:none;width:100%;">
+        </div>
+        <div class="field">
+          <label>Nouveau mot de passe Invité global</label>
+          <input type="password" id="newGuestPass" placeholder="(si pas de comptes individuels)" style="background:#0b1018;border:1px solid #1c2430;color:#d0dae8;font-family:var(--mono);font-size:12px;padding:8px 10px;border-radius:5px;outline:none;width:100%;">
+        </div>
+      </div>
+      <button onclick="savePasswords()" style="margin-top:1rem;background:#00e5a0;border:none;color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 20px;border-radius:4px;cursor:pointer;">💾 Sauvegarder</button>
+    </div>
+
+    <!-- Limite connexions -->
+    <div style="background:#060a0f;border:1px solid #1c2430;border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-family:var(--mono);font-size:11px;color:#00e5a0;letter-spacing:.15em;margin-bottom:1rem;">🔢 LIMITE D'INVITÉS SIMULTANÉS</div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <input type="number" id="maxGuests" min="1" max="100" value="10" style="background:#0b1018;border:1px solid #1c2430;color:#d0dae8;font-family:var(--mono);font-size:14px;padding:8px 12px;border-radius:5px;outline:none;width:100px;">
+        <span style="font-family:var(--mono);font-size:11px;color:#5a6578;">invités maximum en même temps</span>
+        <button onclick="saveMaxGuests()" style="background:#00e5a0;border:none;color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 16px;border-radius:4px;cursor:pointer;margin-left:auto;">Sauvegarder</button>
+      </div>
+    </div>
+
+    <!-- Catégories autorisées -->
+    <div style="background:#060a0f;border:1px solid #1c2430;border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-family:var(--mono);font-size:11px;color:#00e5a0;letter-spacing:.15em;margin-bottom:1rem;">👁 CATÉGORIES VISIBLES PAR LES INVITÉS</div>
+      <div id="catToggles" style="display:flex;flex-wrap:wrap;gap:.5rem;"></div>
+      <button onclick="saveCatAccess()" style="margin-top:1rem;background:#00e5a0;border:none;color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 20px;border-radius:4px;cursor:pointer;">💾 Sauvegarder</button>
+    </div>
+
+    <!-- Liste invités -->
+    <div style="background:#060a0f;border:1px solid #1c2430;border-radius:10px;padding:1.25rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div style="font-family:var(--mono);font-size:11px;color:#00e5a0;letter-spacing:.15em;">👥 COMPTES INVITÉS <span id="guestCountBadge" style="background:rgba(0,229,160,.15);color:#00e5a0;padding:2px 8px;border-radius:10px;font-size:10px;margin-left:.5rem;"></span></div>
+        <div style="font-family:var(--mono);font-size:10px;color:#5a6578;">🟢 = connecté maintenant</div>
+      </div>
+      <div id="guestList" style="display:flex;flex-direction:column;gap:.5rem;max-height:300px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SK = "smf_hub_v4";
+const CAT_LABEL = {weekahead:"Week Ahead",hebdo:"Hebdo",mensuel:"Mensuels",banques:"Banques Centrales",ideetrade:"Idée de Trades",trade:"Trades"};
+
+// ── Firebase ─────────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:"AIzaSyCne4G3T-dLYyNu31RRi-HNFTXjASnPVNE",
+  authDomain:"fir-m-f.firebaseapp.com",
+  projectId:"fir-m-f",
+  storageBucket:"fir-m-f.firebasestorage.app",
+  messagingSenderId:"567813195919",
+  appId:"1:567813195919:web:cf9192d273d8f59010c8fa"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ── Settings stored in Firestore /config/settings ────────────────────────────
+let SETTINGS = {
+  adminPass : "trading2026",
+  guestPass : "smfhub2026",
+  maxGuests : 10,
+  allowedCats: ["weekahead","hebdo","mensuel","banques","ideetrade","trade"]
+};
+
+async function loadSettings(){
+  try{
+    const snap = await db.collection("config").doc("settings").get();
+    if(snap.exists) SETTINGS = {...SETTINGS,...snap.data()};
+  }catch(e){console.warn("settings load",e);}
+}
+
+async function pushSettings(){
+  await db.collection("config").doc("settings").set(SETTINGS);
+}
+
+// ── State ────────────────────────────────────────────────────────────────────
+let role        = sessionStorage.getItem("smf_role") || null;
+let currentUser = JSON.parse(sessionStorage.getItem("smf_user")||"null");
+let arts        = [];
+let filt="all", sq="";
+let mode="html";
+let pendingHTML=null, pendingImages=[];
+let unsubscribe = null;
+
+// ── Utils ────────────────────────────────────────────────────────────────────
+function save(){ localStorage.setItem(SK, JSON.stringify(arts)); }
+function fmtD(s){ return new Date(s+"T00:00:00").toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"}); }
+function fmtSz(b){ return b<1024?"< 1 Ko":b<1048576?(b/1024).toFixed(0)+" Ko":(b/1048576).toFixed(1)+" Mo"; }
+function toast(msg,err=false){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.className="toast"+(err?" err":"");
+  t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2800);
+}
+
+// ── Tab switcher on gate ──────────────────────────────────────────────────────
+function switchTab(tab){
+  const isLogin = tab==="login";
+  document.getElementById("tabLogin").style.cssText    = isLogin
+    ? "background:#060a0f;border:none;color:#00e5a0;font-family:var(--mono);font-size:11px;font-weight:700;padding:12px;cursor:pointer;border-bottom:2px solid #00e5a0;letter-spacing:.08em;"
+    : "background:transparent;border:none;color:#5a6578;font-family:var(--mono);font-size:11px;font-weight:700;padding:12px;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.08em;";
+  document.getElementById("tabRegister").style.cssText = !isLogin
+    ? "background:#060a0f;border:none;color:#00e5a0;font-family:var(--mono);font-size:11px;font-weight:700;padding:12px;cursor:pointer;border-bottom:2px solid #00e5a0;letter-spacing:.08em;"
+    : "background:transparent;border:none;color:#5a6578;font-family:var(--mono);font-size:11px;font-weight:700;padding:12px;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:.08em;";
+  document.getElementById("panelLogin").style.display    = isLogin ? "flex" : "none";
+  document.getElementById("panelRegister").style.display = !isLogin ? "flex" : "none";
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+async function doLogin(){
+  const u = document.getElementById("lUser").value.trim();
+  const p = document.getElementById("lPass").value;
+  const errEl = document.getElementById("loginErr");
+  errEl.style.display="none";
+
+  await loadSettings();
+
+  // Admin
+  const ADMINS = [
+    { user: "SMF",  pass: "77" },
+    { user: "KGB",  pass: "77" },
+  ];
+  if(ADMINS.some(a => a.user === u && a.pass === p)){
+    role="admin"; sessionStorage.setItem("smf_role","admin");
+    sessionStorage.setItem("smf_username", u);
+    document.getElementById("gateScreen").style.display="none";
+    renderHeaderActions(); startRealtimeSync();
+    toast("✓ Bienvenue Admin !");
+    return;
+  }
+
+  // Invité par numéro de téléphone
+  const phone = u.startsWith("+") ? u : null;
+  if(phone){
+    try{
+      const snap = await db.collection("users").where("phone","==",phone).limit(1).get();
+      if(snap.empty){ errEl.textContent="✕ Numéro non trouvé"; errEl.style.display="block"; return; }
+      const userDoc = snap.docs[0];
+      const userData = userDoc.data();
+      if(userData.banned){ errEl.textContent="✕ Compte suspendu par l'administrateur"; errEl.style.display="block"; return; }
+      if(userData.status !== "approved"){ errEl.textContent="✕ Compte en attente de validation par l'admin"; errEl.style.display="block"; return; }
+      if(userData.password !== p){ errEl.textContent="✕ Mot de passe incorrect"; errEl.style.display="block"; return; }
+
+      // Vérifier limite connectés
+      const activeSnap = await db.collection("users").where("online","==",true).get();
+      if(activeSnap.size >= SETTINGS.maxGuests && !userData.online){
+        errEl.textContent="✕ Nombre maximum d'invités atteint ("+SETTINGS.maxGuests+")"; errEl.style.display="block"; return;
+      }
+
+      // Marquer online
+      await db.collection("users").doc(userDoc.id).update({online:true, lastSeen: firebase.firestore.FieldValue.serverTimestamp()});
+
+      role="guest"; sessionStorage.setItem("smf_role","guest");
+      currentUser={id:userDoc.id, phone};
+      sessionStorage.setItem("smf_user", JSON.stringify(currentUser));
+      document.getElementById("gateScreen").style.display="none";
+      renderHeaderActions(); startRealtimeSync();
+      toast("✓ Bienvenue !");
+    }catch(e){ errEl.textContent="✕ Erreur: "+e.message; errEl.style.display="block"; }
+    return;
+  }
+
+  errEl.textContent="✕ Identifiant ou mot de passe incorrect";
+  errEl.style.display="block";
+  document.getElementById("lPass").value="";
+}
+
+async function doRegister(){
+  const indicatif = document.getElementById("rIndicatif").value;
+  const num       = document.getElementById("rPhone").value.trim();
+  const pass      = document.getElementById("rPass").value;
+  const pass2     = document.getElementById("rPass2").value;
+  const errEl     = document.getElementById("registerErr");
+  errEl.style.display="none";
+
+  if(!num){ errEl.textContent="✕ Entrez votre numéro"; errEl.style.display="block"; return; }
+  if(pass.length<6){ errEl.textContent="✕ Mot de passe minimum 6 caractères"; errEl.style.display="block"; return; }
+  if(pass!==pass2){ errEl.textContent="✕ Les mots de passe ne correspondent pas"; errEl.style.display="block"; return; }
+
+  const fullPhone = indicatif + num;
+  await loadSettings();
+
+  try{
+    // Vérifier si déjà inscrit
+    const existing = await db.collection("users").where("phone","==",fullPhone).limit(1).get();
+    if(!existing.empty){ errEl.textContent="✕ Ce numéro est déjà inscrit"; errEl.style.display="block"; return; }
+
+    await db.collection("users").add({
+      phone: fullPhone,
+      password: pass,
+      online: false,
+      banned: false,
+      status: "pending",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastSeen: null
+    });
+
+    toast("✓ Demande envoyée ! En attente de validation par l'admin.");
+    switchTab("login");
+    document.getElementById("lUser").value="";
+    document.getElementById("registerErr").style.display="none";
+  }catch(e){ errEl.textContent="✕ Erreur: "+e.message; errEl.style.display="block"; }
+}
+
+async function doLogout(){
+  if(currentUser){
+    try{ await db.collection("users").doc(currentUser.id).update({online:false}); }catch(e){}
+  }
+  role=null; currentUser=null;
+  sessionStorage.removeItem("smf_role");
+  sessionStorage.removeItem("smf_user");
+  sessionStorage.removeItem("smf_username");
+  if(banWatchUnsub){ banWatchUnsub(); banWatchUnsub=null; }
+  if(unsubscribe){ unsubscribe(); unsubscribe=null; }
+  arts=[];
+  document.getElementById("lUser").value="";
+  document.getElementById("lPass").value="";
+  document.getElementById("loginErr").style.display="none";
+  document.getElementById("gateScreen").style.display="flex";
+  renderHeaderActions(); render();
+  setTimeout(()=>document.getElementById("lUser").focus(),100);
+}
+
+// marquer offline si l'onglet se ferme
+window.addEventListener("beforeunload",()=>{
+  if(currentUser) navigator.sendBeacon && db.collection("users").doc(currentUser.id).update({online:false});
+});
+
+// ── HEADER ────────────────────────────────────────────────────────────────────
+function renderHeaderActions(){
+  const div=document.getElementById("headerActions");
+  if(role==="admin"){
+    const username = sessionStorage.getItem("smf_username") || "ADMIN";
+    div.innerHTML=`
+      <span style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;">● ${username}</span>
+      <button class="btn-export" onclick="openAdminPanel()">⚙ Gestion</button>
+      <button class="btn-add-header" onclick="openImport()">📂 Nouvel article</button>
+      <button class="btn-export" onclick="doLogout()">Déconnexion</button>`;
+  } else if(role==="guest"){
+    div.innerHTML=`
+      <span style="font-family:var(--mono);font-size:10px;color:var(--warn);letter-spacing:.1em;">● INVITÉ</span>
+      <button class="btn-export" onclick="doLogout()">Déconnexion</button>`;
+  }
+}
+
+// ── ADMIN PANEL ───────────────────────────────────────────────────────────────
+async function openAdminPanel(){
+  await loadSettings();
+  document.getElementById("newAdminPass").value="";
+  document.getElementById("newGuestPass").value="";
+  document.getElementById("maxGuests").value = SETTINGS.maxGuests;
+
+  // Catégories
+  const ct=document.getElementById("catToggles");
+  ct.innerHTML=Object.entries(CAT_LABEL).map(([k,v])=>{
+    const on = SETTINGS.allowedCats.includes(k);
+    return `<button id="catbtn_${k}" onclick="toggleCat('${k}')" style="
+      background:${on?"rgba(0,229,160,.15)":"transparent"};
+      border:1px solid ${on?"#00e5a0":"#1c2430"};
+      color:${on?"#00e5a0":"#5a6578"};
+      font-family:var(--mono);font-size:10px;font-weight:700;
+      padding:6px 14px;border-radius:4px;cursor:pointer;
+      letter-spacing:.08em;text-transform:uppercase;">${v}</button>`;
+  }).join("");
+
+  // Liste invités
+  await refreshGuestList();
+
+  document.getElementById("adminPanel").style.display="flex";
+  document.body.style.overflow="hidden";
+}
+
+function toggleCat(k){
+  const idx = SETTINGS.allowedCats.indexOf(k);
+  if(idx>=0) SETTINGS.allowedCats.splice(idx,1); else SETTINGS.allowedCats.push(k);
+  const btn=document.getElementById("catbtn_"+k);
+  const on=SETTINGS.allowedCats.includes(k);
+  btn.style.background=on?"rgba(0,229,160,.15)":"transparent";
+  btn.style.borderColor=on?"#00e5a0":"#1c2430";
+  btn.style.color=on?"#00e5a0":"#5a6578";
+}
+
+async function refreshGuestList(){
+  const snap = await db.collection("users").orderBy("createdAt","desc").get();
+  const list = document.getElementById("guestList");
+  document.getElementById("guestCountBadge").textContent = snap.size+" compte(s)";
+  if(snap.empty){ list.innerHTML=`<div style="font-family:var(--mono);font-size:11px;color:#5a6578;padding:.5rem;">Aucun invité inscrit</div>`; return; }
+  // Separate pending vs approved/banned
+  const pending  = snap.docs.filter(d=>d.data().status==="pending");
+  const approved = snap.docs.filter(d=>d.data().status!=="pending");
+
+  let html="";
+
+  if(pending.length){
+    html+=`<div style="font-family:var(--mono);font-size:10px;color:var(--warn);letter-spacing:.12em;margin:.25rem 0 .4rem;">⏳ EN ATTENTE DE VALIDATION (${pending.length})</div>`;
+    html+=pending.map(d=>{
+      const u=d.data();
+      return `<div style="display:flex;align-items:center;gap:.75rem;background:rgba(247,183,49,.05);border:1px solid rgba(247,183,49,.25);border-radius:6px;padding:.6rem 1rem;">
+        <span style="font-size:14px;">⏳</span>
+        <span style="font-family:var(--mono);font-size:12px;color:#d0dae8;flex:1;">${u.phone}</span>
+        <button onclick="approveUser('${d.id}')" style="background:rgba(0,229,160,.15);border:1px solid #00e5a0;color:#00e5a0;font-family:var(--mono);font-size:9px;font-weight:700;padding:4px 12px;border-radius:3px;cursor:pointer;">✓ Approuver</button>
+        <button onclick="deleteUser('${d.id}')" style="background:transparent;border:1px solid rgba(255,77,109,.3);color:var(--red);font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:3px;cursor:pointer;">✕ Refuser</button>
+      </div>`;
+    }).join("");
+    html+=`<div style="border-top:1px solid #1c2430;margin:.6rem 0;"></div>`;
+  }
+
+  if(approved.length){
+    html+=`<div style="font-family:var(--mono);font-size:10px;color:#5a6578;letter-spacing:.12em;margin:.25rem 0 .4rem;">MEMBRES (${approved.length})</div>`;
+    html+=approved.map(d=>{
+      const u=d.data();
+      const online=u.online===true;
+      const banned=u.banned===true;
+      return `<div style="display:flex;align-items:center;gap:.75rem;background:#0b1018;border:1px solid ${banned?"rgba(255,77,109,.2)":"#1c2430"};border-radius:6px;padding:.6rem 1rem;">
+        <span style="font-size:10px;">${online?"🟢":"⚫"}</span>
+        <span style="font-family:var(--mono);font-size:12px;color:${banned?"#5a6578":"#d0dae8"};flex:1;text-decoration:${banned?"line-through":"none"};">${u.phone}</span>
+        ${banned?`<span style="font-family:var(--mono);font-size:9px;color:var(--red);background:rgba(255,77,109,.1);padding:2px 8px;border-radius:3px;">BANNI</span>`:""}
+        <button onclick="banUser('${d.id}',${!banned})" style="background:transparent;border:1px solid ${banned?"#00e5a0":"rgba(255,77,109,.3)"};color:${banned?"#00e5a0":"var(--red)"};font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:3px;cursor:pointer;">${banned?"Débloquer":"Bannir"}</button>
+        <button onclick="deleteUser('${d.id}')" style="background:transparent;border:1px solid #1c2430;color:#5a6578;font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:3px;cursor:pointer;">Supprimer</button>
+      </div>`;
+    }).join("");
+  }
+
+  list.innerHTML=html;
+}
+
+async function approveUser(id){
+  await db.collection("users").doc(id).update({status:"approved", banned:false});
+  toast("✓ Compte approuvé — l'invité peut maintenant se connecter");
+  await refreshGuestList();
+}
+
+async function banUser(id, ban){
+  await db.collection("users").doc(id).update({banned:ban, online:false});
+  toast(ban?"✓ Utilisateur banni — déconnecté instantanément":"✓ Utilisateur débloqué");
+  await refreshGuestList();
+}
+
+async function deleteUser(id){
+  if(!confirm("Supprimer définitivement ce compte ?"))return;
+  await db.collection("users").doc(id).delete();
+  toast("✓ Compte supprimé");
+  await refreshGuestList();
+}
+
+async function savePasswords(){
+  const a=document.getElementById("newAdminPass").value.trim();
+  const g=document.getElementById("newGuestPass").value.trim();
+  if(a) SETTINGS.adminPass=a;
+  if(g) SETTINGS.guestPass=g;
+  await pushSettings();
+  toast("✓ Mots de passe sauvegardés");
+  document.getElementById("newAdminPass").value="";
+  document.getElementById("newGuestPass").value="";
+}
+
+async function saveMaxGuests(){
+  SETTINGS.maxGuests = parseInt(document.getElementById("maxGuests").value)||10;
+  await pushSettings();
+  toast("✓ Limite sauvegardée : "+SETTINGS.maxGuests+" invités max");
+}
+
+async function saveCatAccess(){
+  await pushSettings();
+  toast("✓ Catégories mises à jour");
+  render();
+}
+
+function closeAdminPanel(){
+  document.getElementById("adminPanel").style.display="none";
+  document.body.style.overflow="";
+}
+
+// ── FIRESTORE ARTICLES ────────────────────────────────────────────────────────
+function startRealtimeSync(){
+  if(unsubscribe) unsubscribe();
+  unsubscribe = db.collection("articles").orderBy("date","desc")
+    .onSnapshot(snap=>{
+      arts=snap.docs.map(d=>({id:d.id,...d.data()}));
+      save(); render();
+    }, err=>console.error("sync",err));
+
+  // Real-time ban/status watch for guests
+  if(role==="guest" && currentUser){
+    startBanWatch();
+  }
+}
+
+let banWatchUnsub = null;
+function startBanWatch(){
+  if(banWatchUnsub) banWatchUnsub();
+  banWatchUnsub = db.collection("users").doc(currentUser.id)
+    .onSnapshot(snap=>{
+      if(!snap.exists) { forcedLogout("✕ Compte supprimé par l'administrateur"); return; }
+      const d = snap.data();
+      if(d.banned){ forcedLogout("✕ Votre accès a été révoqué par l'administrateur"); return; }
+      if(d.status !== "approved"){ forcedLogout("✕ Votre compte a été désactivé"); return; }
+    });
+}
+
+function forcedLogout(msg){
+  if(banWatchUnsub){ banWatchUnsub(); banWatchUnsub=null; }
+  if(unsubscribe){ unsubscribe(); unsubscribe=null; }
+  role=null; currentUser=null;
+  sessionStorage.removeItem("smf_role");
+  sessionStorage.removeItem("smf_user");
+  arts=[];
+  document.getElementById("gateScreen").style.display="flex";
+  document.getElementById("loginErr").textContent=msg;
+  document.getElementById("loginErr").style.display="block";
+  renderHeaderActions(); render();
+}
+
+async function fbAdd(art){
+  try{ const ref=await db.collection("articles").add(art); return ref.id; }
+  catch(e){ toast("⚠ Erreur Firebase: "+e.message,true); return null; }
+}
+
+async function fbDel(id){
+  try{ await db.collection("articles").doc(id).delete(); }
+  catch(e){ toast("⚠ Erreur suppression",true); }
+}
+
+// ── STATS & GRID ──────────────────────────────────────────────────────────────
+function renderStats(){
+  const counts={all:arts.length,weekahead:0,hebdo:0,mensuel:0,banques:0,ideetrade:0,trade:0};
+  arts.forEach(a=>{ if(counts[a.cat]!==undefined) counts[a.cat]++; });
+  Object.keys(counts).forEach(k=>{
+    const el=document.getElementById("fc-"+k); if(el) el.textContent=counts[k]>0?"("+counts[k]+")":"";
+  });
+}
+
+function filtered(){
+  let l=[...arts].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(role==="guest") l=l.filter(a=>SETTINGS.allowedCats.includes(a.cat));
+  if(filt!=="all") l=l.filter(a=>a.cat===filt);
+  if(sq){ const lq=sq.toLowerCase(); l=l.filter(a=>a.titre.toLowerCase().includes(lq)||a.desc.toLowerCase().includes(lq)||(a.paire&&a.paire.toLowerCase().includes(lq))); }
+  return l;
+}
+
+function renderGrid(){
+  const g=document.getElementById("articlesGrid");
+  const l=filtered();
+  if(!l.length){
+    g.innerHTML=`<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-text">Aucun article encore</div>${role==="admin"?`<button class="empty-cta" onclick="openImport()">📂 Ajouter mon premier article</button>`:""}</div>`;
+    return;
+  }
+  g.innerHTML=l.map(a=>{
+    const thumb=a.images&&a.images.length?`<img class="card-thumb" src="${a.images[0]}" alt="">`:"";
+    return `<div class="article-card" data-cat="${a.cat}" onclick="openArt('${a.id}')">
+      <div class="card-top">
+        <span class="cat-badge ${a.cat}">${CAT_LABEL[a.cat]||a.cat||"?"}</span>
+        <span class="card-date">${fmtD(a.date)}</span>
+      </div>
+      ${thumb}
+      <div class="card-title">${a.titre}</div>
+      <div class="card-desc">${a.desc}</div>
+      <div class="card-footer">
+        <div class="card-meta">${a.paire?`<span>📊 ${a.paire}</span>`:""}<span style="color:var(--dimmed)">${a.type==="html"?"HTML":"Texte/Images"}</span></div>
+        <div class="card-actions">
+          ${role==="admin"?`<button class="btn-del" onclick="delArt(event,'${a.id}')" title="Supprimer">🗑</button>`:""}
+          <div class="card-open">Lire →</div>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function render(){ renderStats(); renderGrid(); }
+
+// ── DELETE ARTICLE ────────────────────────────────────────────────────────────
+function delArt(e,id){
+  e.stopPropagation();
+  if(!confirm("Supprimer cet article ?"))return;
+  fbDel(id).then(()=>toast("Article supprimé"));
+}
+
+// ── OPEN ARTICLE ──────────────────────────────────────────────────────────────
+function openArt(id){
+  const a=arts.find(x=>x.id===id); if(!a)return;
+  let html="";
+  if(a.type==="html"){
+    html=a.html;
+  } else {
+    const imgs=(a.images||[]).map(src=>`<img src="${src}" style="max-width:100%;border-radius:8px;margin:1rem 0;display:block;">`).join("");
+    const txt=a.content?(a.content.replace(/\n/g,"<br>")):"";
+    html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${a.titre}</title>
+    <style>body{background:#080c10;color:#e6edf3;font-family:'Segoe UI',sans-serif;max-width:860px;margin:0 auto;padding:2rem 1.5rem;line-height:1.8;}
+    h1{color:#00e5a0;}.meta{font-size:12px;color:#7d8590;margin-bottom:2rem;font-family:monospace;}
+    .badge{display:inline-block;background:rgba(255,77,109,.15);color:#ff4d6d;font-size:10px;font-weight:700;letter-spacing:.2em;padding:3px 8px;border-radius:2px;text-transform:uppercase;margin-bottom:.5rem;}
+    .content{font-size:14px;color:#c9d1d9;white-space:pre-wrap;}img{border:1px solid #21262d;max-width:100%;}</style></head><body>
+    <div class="badge">${CAT_LABEL[a.cat]||a.cat}</div><h1>${a.titre}</h1>
+    <div class="meta">${fmtD(a.date)}${a.paire?" · "+a.paire:""}</div>
+    <div class="content">${txt}</div>${imgs}</body></html>`;
+  }
+  const blob=new Blob([html],{type:"text/html"});
+  window.open(URL.createObjectURL(blob),"_blank");
+}
+
+// ── IMPORT MODAL ──────────────────────────────────────────────────────────────
+function setMode(m){
+  mode=m;
+  document.getElementById("modeHtml").classList.toggle("active",m==="html");
+  document.getElementById("modeManual").classList.toggle("active",m==="manual");
+  document.getElementById("secHtml").classList.toggle("on",m==="html");
+  document.getElementById("secManual").classList.toggle("on",m==="manual");
+}
+
+function onHtmlFile(file){
+  if(!file)return;
+  if(!file.name.match(/\.html?$/i)){toast("⚠ Sélectionne un fichier .html",true);return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    pendingHTML=e.target.result;
+    const doc=new DOMParser().parseFromString(pendingHTML,"text/html");
+    const detected=(doc.querySelector("title")?.textContent.trim())||(doc.querySelector("h1")?.textContent.trim())||"";
+    if(detected)document.getElementById("fTitre").value=detected;
+    document.getElementById("fileName").textContent=file.name;
+    document.getElementById("fileSize").textContent=fmtSz(file.size)+" · HTML";
+    document.getElementById("dropZone").style.display="none";
+    document.getElementById("filePrev").classList.add("on");
+    document.getElementById("fTitre").focus();
+  };
+  r.readAsText(file);
+}
+
+function resetHtml(){
+  pendingHTML=null;
+  document.getElementById("fileInput").value="";
+  document.getElementById("dropZone").style.display="block";
+  document.getElementById("filePrev").classList.remove("on");
+  document.getElementById("fTitre").value="";
+}
+
+function onImagesSelected(files){
+  Array.from(files).forEach(file=>{
+    if(!file.type.startsWith("image/"))return;
+    const r=new FileReader();
+    r.onload=e=>{ pendingImages.push({name:file.name,dataUrl:e.target.result}); renderImgPreviews(); };
+    r.readAsDataURL(file);
+  });
+  document.getElementById("imgInput").value="";
+}
+
+function renderImgPreviews(){
+  document.getElementById("imgPreviews").innerHTML=pendingImages.map((img,i)=>`
+    <div class="img-thumb-wrap"><img src="${img.dataUrl}" alt="${img.name}">
+    <button class="img-thumb-del" onclick="removeImg(${i})">✕</button></div>`).join("");
+}
+function removeImg(i){ pendingImages.splice(i,1); renderImgPreviews(); }
+
+async function submitImport(){
+  const titre=document.getElementById("fTitre").value.trim();
+  const desc =document.getElementById("fDesc").value.trim();
+  const date =document.getElementById("fDate").value;
+  const cat  =document.querySelector("input[name=rCat]:checked")?.value||"trade";
+  const paire=document.getElementById("fPaire").value.trim();
+  if(!titre){toast("⚠ Le titre est obligatoire",true);return;}
+  if(!desc){toast("⚠ La description est obligatoire",true);return;}
+  if(!date){toast("⚠ La date est obligatoire",true);return;}
+  let newArt;
+  if(mode==="html"){
+    if(!pendingHTML){toast("⚠ Sélectionne un fichier HTML",true);return;}
+    newArt={type:"html",titre,desc,date,cat,paire,html:pendingHTML,fileName:document.getElementById("fileName").textContent};
+  } else {
+    const fc=document.getElementById("fContent").value.trim();
+    if(!fc&&pendingImages.length===0){toast("⚠ Ajoute du texte ou au moins une image",true);return;}
+    newArt={type:"manual",titre,desc,date,cat,paire,content:fc,images:pendingImages.map(i=>i.dataUrl)};
+  }
+  const btn=document.getElementById("btnSubmit");
+  btn.disabled=true; btn.textContent="Publication...";
+  const id=await fbAdd(newArt);
+  btn.disabled=false; btn.textContent="✓ Publier l'article";
+  if(id){ closeImport(); toast("✓ Publié — visible instantanément !"); }
+}
+
+function openImport(){
+  if(role!=="admin"){toast("⚠ Accès réservé à l'administrateur",true);return;}
+  document.getElementById("fDate").value=new Date().toISOString().slice(0,10);
+  document.getElementById("importOv").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
+function closeImport(){
+  document.getElementById("importOv").classList.remove("open");
+  document.body.style.overflow="";
+  resetHtml(); pendingImages=[]; renderImgPreviews();
+  document.getElementById("fTitre").value="";
+  document.getElementById("fDesc").value="";
+  document.getElementById("fContent").value="";
+  document.getElementById("fPaire").value="";
+  document.getElementById("cT").checked=true;
+  setMode("html");
+}
+
+// ── DRAG & DROP ───────────────────────────────────────────────────────────────
+const dz=document.getElementById("dropZone");
+dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag");});
+dz.addEventListener("dragleave",()=>dz.classList.remove("drag"));
+dz.addEventListener("drop",e=>{e.preventDefault();dz.classList.remove("drag");const f=e.dataTransfer.files[0];if(f)onHtmlFile(f);});
+const id2=document.getElementById("imgDrop");
+id2.addEventListener("dragover",e=>{e.preventDefault();id2.classList.add("drag");});
+id2.addEventListener("dragleave",()=>id2.classList.remove("drag"));
+id2.addEventListener("drop",e=>{e.preventDefault();id2.classList.remove("drag");onImagesSelected(e.dataTransfer.files);});
+
+// ── FILTERS ───────────────────────────────────────────────────────────────────
+document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".filter-btn").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); filt=b.dataset.cat; renderGrid();
+}));
+document.getElementById("searchInput").addEventListener("input",e=>{sq=e.target.value;renderGrid();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeImport();closeAdminPanel();}});
+
+// ── VIEW MODE ─────────────────────────────────────────────────────────────────
+let viewMode = localStorage.getItem("smf_view") || "grid";
+function setView(m){
+  viewMode=m;
+  localStorage.setItem("smf_view",m);
+  const g=document.getElementById("articlesGrid");
+  g.classList.toggle("list-view",m==="list");
+  document.getElementById("btnGrid").classList.toggle("active",m==="grid");
+  document.getElementById("btnList").classList.toggle("active",m==="list");
+}
+// Apply saved view on load
+setTimeout(()=>setView(viewMode),0);
+
+// ── QUOTES TICKER ─────────────────────────────────────────────────────────────
+const QUOTES=[
+  {text:"Les marchés peuvent rester irrationnels plus longtemps que vous ne pouvez rester solvable.",author:"John Maynard Keynes"},
+  {text:"Le marché n'a jamais tort, ce sont les opinions qui le sont.",author:"Jesse Livermore"},
+  {text:"La Bourse est un mécanisme qui transfère de l'argent de l'impatient au patient.",author:"Warren Buffett"},
+  {text:"Le secret pour gagner en bourse n'est pas d'avoir raison tout le temps, mais de gagner même si vous vous trompez plus d'une fois sur deux.",author:"William O'Neil"},
+  {text:"Les marchés financiers sont le lieu où l'avidité rencontre la peur.",author:"George Soros"},
+  {text:"Achetez quand tout le monde vend, tenez jusqu'à ce que tout le monde achète.",author:"Warren Buffett"},
+  {text:"Le risque vient du fait de ne pas savoir ce que vous faites.",author:"Warren Buffett"},
+  {text:"La volatilité n'est pas le risque. L'ignorance est le risque.",author:"Peter Lynch"},
+  {text:"À court terme, le marché est une machine à voter, mais à long terme, c'est une machine à peser.",author:"Benjamin Graham"},
+  {text:"La première règle de la vie est de ne pas se tromper soi-même — et vous êtes la personne la plus facile à tromper.",author:"Charlie Munger"},
+  {text:"Ne cherchez pas l'aiguille dans la botte de foin. Achetez la botte de foin.",author:"Jack Bogle"},
+  {text:"Le moment d'acheter est quand il y a du sang dans les rues.",author:"John Templeton"},
+  {text:"Le plus grand risque n'est pas la volatilité, mais la perte permanente de capital.",author:"Howard Marks"},
+  {text:"Celui qui vit par l'épée de ses prévisions mourra par l'épée de ses prévisions.",author:"Ray Dalio"},
+  {text:"La Bourse, c'est l'art d'anticiper l'anticipation des autres.",author:"André Kostolany"},
+  {text:"Le marché boursier est rempli d'individus qui connaissent le prix de tout, mais la valeur de rien.",author:"Philip Fisher"},
+];
+
+(function initTicker(){
+  // Durées par style d'animation (entrée, stable, sortie) en ms
+  const ANIM_STYLES = [
+    {enter:1100, stable:6000, exit:850},  // 1 · Glitch Hologram
+    {enter: 900, stable:5500, exit:750},  // 2 · Static TV
+    {enter:1000, stable:6500, exit:800},  // 3 · Matrix Rain
+    {enter:1300, stable:5000, exit:900},  // 4 · Neon Flicker
+    {enter:1100, stable:6000, exit:900},  // 5 · Quantum Dissolve
+    {enter:1000, stable:6500, exit:850},  // 6 · Shatter 3D
+    {enter:1000, stable:5800, exit:800},  // 7 · Warp Speed
+  ];
+  const PAUSE_MS = 350;
+
+  const slots = [
+    document.getElementById("tickerSlot1"),
+    document.getElementById("tickerSlot2"),
+  ];
+
+  let qi = 0;
+  let active = 0;
+
+  function showQuote(q, slot, styleIdx){
+    const n = styleIdx + 1;
+    const s = ANIM_STYLES[styleIdx];
+
+    return new Promise(resolve=>{
+      // Reset complet
+      slot.className = "ticker-quote";
+      slot.innerHTML = `"${q.text}" <span class="qa">— ${q.author}</span>`;
+      void slot.offsetWidth;
+
+      // Phase 1 : entrée
+      slot.classList.add(`q-enter-${n}`);
+
+      setTimeout(()=>{
+        // Phase 2 : stable
+        slot.className = `ticker-quote q-stable-${n}`;
+
+        setTimeout(()=>{
+          // Phase 3 : sortie
+          slot.className = `ticker-quote q-exit-${n}`;
+
+          setTimeout(()=>{
+            slot.className = "ticker-quote";
+            resolve();
+          }, s.exit);
+        }, s.stable);
+      }, s.enter);
+    });
+  }
+
+  async function loop(){
+    while(true){
+      const q       = QUOTES[qi % QUOTES.length];
+      const styleI  = qi % ANIM_STYLES.length;   // animation différente à chaque citation
+      const slot    = slots[active % 2];
+      qi++;
+      active++;
+
+      await showQuote(q, slot, styleI);
+      await new Promise(r=>setTimeout(r, PAUSE_MS));
+    }
+  }
+
+  loop();
+})();
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+(async()=>{
+  await loadSettings();
+  if(role){
+    document.getElementById("gateScreen").style.display="none";
+    renderHeaderActions();
+    startRealtimeSync();
+  } else {
+    renderHeaderActions();
+    render();
+    setTimeout(()=>document.getElementById("lUser").focus(),100);
+  }
+})();
+</script>
+</body>
+</html>
