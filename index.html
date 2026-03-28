@@ -283,6 +283,7 @@
   .filter-btn[data-cat="hebdo"].active{background:var(--warn);border-color:var(--warn);}
   .filter-btn[data-cat="mensuel"].active{background:var(--accent2);border-color:var(--accent2);}
   .filter-btn[data-cat="trade"].active{background:var(--red);border-color:var(--red);color:#fff;}
+  .filter-btn[data-cat="tradeinvites"].active{background:#7c3aed;border-color:#7c3aed;color:#fff;}
   .search-wrap{position:relative;margin-left:auto;}
   .search-wrap input{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:6px 12px 6px 30px;border-radius:4px;width:200px;outline:none;transition:border-color .2s,width .3s;}
   .search-wrap input:focus{border-color:var(--accent);width:260px;}
@@ -297,12 +298,14 @@
   .article-card[data-cat="hebdo"]::before{background:var(--warn);}
   .article-card[data-cat="mensuel"]::before{background:var(--accent2);}
   .article-card[data-cat="trade"]::before{background:var(--red);}
+  .article-card[data-cat="tradeinvites"]::before{background:#7c3aed;}
   .article-card:hover{background:var(--surface2);border-color:var(--accent);}
   .article-card:hover::before{transform:scaleY(1);}
   .card-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
   .cat-badge{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:3px 8px;border-radius:2px;}
   .cat-badge.weekahead{background:rgba(160,100,255,.15);color:#a064ff;}
   .cat-badge.ideetrade{background:rgba(255,160,50,.15);color:#ffa032;}
+  .cat-badge.tradeinvites{background:rgba(124,58,237,.15);color:#7c3aed;}
   .filter-btn[data-cat="weekahead"].active{background:#a064ff;border-color:#a064ff;color:#fff;}
   .filter-btn[data-cat="ideetrade"].active{background:#ffa032;border-color:#ffa032;color:#000;}
   .pill.weekahead input:checked+label{background:rgba(160,100,255,.15);border-color:#a064ff;color:#a064ff;font-weight:700;}
@@ -334,6 +337,7 @@
   .view-btn.active{background:var(--accent);color:#000;}
   .view-btn svg{width:14px;height:14px;fill:currentColor;}
 
+  .card-title-desc{display:contents;}
   /* LIST VIEW */
   .articles-grid.list-view{grid-template-columns:1fr;gap:6px;}
   .articles-grid.list-view .article-card{flex-direction:row;align-items:center;gap:1rem;padding:1rem 1.25rem;border-radius:8px;}
@@ -341,9 +345,11 @@
   .articles-grid.list-view .article-card:hover::before{transform:scaleX(1);}
   .articles-grid.list-view .card-thumb{width:64px;height:52px;flex-shrink:0;border-radius:4px;margin:0;}
   .articles-grid.list-view .card-top{flex-direction:column;align-items:flex-start;gap:.25rem;min-width:140px;flex-shrink:0;}
-  .articles-grid.list-view .card-title{font-size:14px;flex:1;min-width:0;}
-  .articles-grid.list-view .card-desc{font-size:11px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;flex:2;min-width:0;}
-  .articles-grid.list-view .card-footer{border-top:none;padding-top:0;margin-top:0;flex-shrink:0;min-width:120px;justify-content:flex-end;}
+  .articles-grid.list-view .card-title-desc{display:flex;flex-direction:column;align-items:flex-start;gap:.2rem;flex:1;min-width:0;text-align:left;}
+  .articles-grid.list-view .card-title{font-size:14px;width:100%;}
+  .articles-grid.list-view .card-desc{font-size:11px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;width:100%;color:var(--muted);}
+  .articles-grid.list-view .card-footer{border-top:none;padding-top:0;margin-top:0;flex-shrink:0;min-width:80px;justify-content:flex-end;}
+  .articles-grid.list-view .card-meta .type-label{display:none;}
   .articles-grid.list-view .empty-state{grid-column:1/-1;}
 
   /* OVERLAY */
@@ -430,6 +436,11 @@
   .pill.hebdo   input:checked+label{background:rgba(247,183,49,.15);border-color:var(--warn);color:var(--warn);font-weight:700;}
   .pill.mensuel input:checked+label{background:rgba(0,255,255,.12);border-color:var(--accent2);color:var(--accent2);font-weight:700;}
   .pill.trade   input:checked+label{background:rgba(255,77,109,.15);border-color:var(--red);color:var(--red);font-weight:700;}
+  .pill.tradeinvites input:checked+label{background:rgba(124,58,237,.15);border-color:#7c3aed;color:#7c3aed;font-weight:700;}
+  .mode-switcher.three-col{grid-template-columns:1fr 1fr 1fr;}
+  .mode-switcher.three-col .mode-btn:first-child{border-right:1px solid var(--border2);}
+  .mode-switcher.three-col .mode-btn:nth-child(2){border-right:1px solid var(--border2);}
+  .mode-switcher.three-col .mode-btn:first-child{border-right:1px solid var(--border2);}
 
   /* IMAGE UPLOAD ZONE */
   .img-drop{border:2px dashed var(--border2);border-radius:8px;padding:1.25rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
@@ -517,13 +528,13 @@
 
   <div class="filters">
     <span class="filter-label">Filtre :</span>
-    <button class="filter-btn active" data-cat="all">Tous <span class="fcount" id="fc-all"></span></button>
+    <button class="filter-btn active" data-cat="hebdo">Hebdo <span class="fcount" id="fc-hebdo"></span></button>
     <button class="filter-btn" data-cat="weekahead">Week Ahead <span class="fcount" id="fc-weekahead"></span></button>
-    <button class="filter-btn" data-cat="hebdo">Hebdo <span class="fcount" id="fc-hebdo"></span></button>
-    <button class="filter-btn" data-cat="mensuel">Mensuels <span class="fcount" id="fc-mensuel"></span></button>
-    <button class="filter-btn" data-cat="banques">Banques Centrales <span class="fcount" id="fc-banques"></span></button>
-    <button class="filter-btn" data-cat="ideetrade">Idée de Trades <span class="fcount" id="fc-ideetrade"></span></button>
-    <button class="filter-btn" data-cat="trade">Trades <span class="fcount" id="fc-trade"></span></button>
+    <button class="filter-btn" data-cat="mensuel">Monthly Recap <span class="fcount" id="fc-mensuel"></span></button>
+    <button class="filter-btn" data-cat="banques">Bank Meeting <span class="fcount" id="fc-banques"></span></button>
+    <button class="filter-btn" data-cat="ideetrade">Trade Ideas <span class="fcount" id="fc-ideetrade"></span></button>
+    <button class="filter-btn" data-cat="trade">Trades Admins <span class="fcount" id="fc-trade"></span></button>
+    <button class="filter-btn" data-cat="tradeinvites">Trades Invites <span class="fcount" id="fc-tradeinvites"></span></button>
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
       <input type="text" id="searchInput" placeholder="Rechercher...">
@@ -616,12 +627,13 @@
       <div class="field">
         <label>Catégorie *</label>
         <div class="cat-pills">
-          <div class="pill weekahead"><input type="radio" name="rCat" id="cWA" value="weekahead"><label for="cWA">Week Ahead</label></div>
           <div class="pill hebdo"><input type="radio" name="rCat" id="cH" value="hebdo"><label for="cH">Hebdo</label></div>
-          <div class="pill mensuel"><input type="radio" name="rCat" id="cM" value="mensuel"><label for="cM">Mensuels</label></div>
-          <div class="pill banques"><input type="radio" name="rCat" id="cG" value="banques"><label for="cG">Banques Centrales</label></div>
-          <div class="pill ideetrade"><input type="radio" name="rCat" id="cI" value="ideetrade"><label for="cI">Idée de Trades</label></div>
-          <div class="pill trade"><input type="radio" name="rCat" id="cT" value="trade" checked><label for="cT">Trades</label></div>
+          <div class="pill weekahead"><input type="radio" name="rCat" id="cWA" value="weekahead"><label for="cWA">Week Ahead</label></div>
+          <div class="pill mensuel"><input type="radio" name="rCat" id="cM" value="mensuel"><label for="cM">Monthly Recap</label></div>
+          <div class="pill banques"><input type="radio" name="rCat" id="cG" value="banques"><label for="cG">Bank Meeting</label></div>
+          <div class="pill ideetrade"><input type="radio" name="rCat" id="cI" value="ideetrade"><label for="cI">Trade Ideas</label></div>
+          <div class="pill trade"><input type="radio" name="rCat" id="cT" value="trade" checked><label for="cT">Trades Admins</label></div>
+          <div class="pill tradeinvites"><input type="radio" name="rCat" id="cTI" value="tradeinvites"><label for="cTI">Trades Invites</label></div>
         </div>
       </div>
 
@@ -788,6 +800,105 @@
   </div>
 </div>
 
+<!-- ====== MODAL INVITÉ — TRADE INVITE ====== -->
+<div class="overlay" id="guestSubmitOv">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-head-title">📤 Soumettre un Trade</div>
+        <div class="modal-head-sub">Choisis le format de ta soumission</div>
+      </div>
+      <button class="btn-x" onclick="closeGuestSubmit()">✕ Fermer</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- MODE SWITCHER INVITÉ -->
+      <div class="mode-switcher three-col">
+        <button class="mode-btn active" id="gModeText" onclick="setGuestMode('text')">
+          <span class="mico">✏️</span>
+          <span class="mlbl">Texte seul</span>
+          <span class="msub">analyse écrite</span>
+        </button>
+        <button class="mode-btn" id="gModeTextImg" onclick="setGuestMode('textimg')">
+          <span class="mico">✏️ 🖼️</span>
+          <span class="mlbl">Texte + Images</span>
+          <span class="msub">texte & graphiques</span>
+        </button>
+        <button class="mode-btn" id="gModePdf" onclick="setGuestMode('pdf')">
+          <span class="mico">📑</span>
+          <span class="mlbl">PDF uniquement</span>
+          <span class="msub">fichier PDF</span>
+        </button>
+      </div>
+
+      <!-- Mode : Texte seul -->
+      <div class="section on" id="gSecText">
+        <div class="field">
+          <label>Contenu texte *</label>
+          <textarea id="gContent" style="min-height:140px" placeholder="Décris ton setup de trade...&#10;&#10;Ex:&#10;Paire : EUR/USD&#10;Setup : Double bottom sur 4H&#10;Entrée : 1.0850&#10;SL : 1.0810&#10;TP1 : 1.0920 / TP2 : 1.0980&#10;RR : 1:2"></textarea>
+        </div>
+      </div>
+
+      <!-- Mode : Texte + Images -->
+      <div class="section" id="gSecTextImg">
+        <div class="field">
+          <label>Contenu texte</label>
+          <textarea id="gContentImg" style="min-height:100px" placeholder="Décris ton setup de trade..."></textarea>
+        </div>
+        <div class="field">
+          <label>Images (graphiques, screenshots) *</label>
+          <div class="img-drop" id="gImgDrop">
+            <input type="file" id="gImgInput" accept="image/*" multiple onchange="onGuestImagesSelected(this.files)">
+            <div class="img-drop-txt">📸 Clique ou glisse tes images ici<br><span>JPG, PNG, WebP — plusieurs images acceptées</span></div>
+          </div>
+          <div class="img-previews" id="gImgPreviews"></div>
+        </div>
+      </div>
+
+      <!-- Mode : PDF uniquement -->
+      <div class="section" id="gSecPdf">
+        <div class="drop-zone" id="gPdfDropZone" style="cursor:pointer;" onclick="document.getElementById('gPdfInput').click()">
+          <input type="file" id="gPdfInput" accept=".pdf" style="display:none" onchange="onGuestPdfFile(this.files[0])">
+          <span class="drop-icon">📑</span>
+          <div class="drop-title">Glisse ton fichier PDF ici</div>
+          <div class="drop-sub">ou clique pour ouvrir l'explorateur</div>
+          <div class="drop-btn-lbl">Choisir un fichier .pdf</div>
+        </div>
+        <div class="file-prev" id="gPdfPrev">
+          <div class="file-ico">📑</div>
+          <div class="file-inf">
+            <div class="file-nm" id="gPdfName">—</div>
+            <div class="file-sz" id="gPdfSize">—</div>
+          </div>
+          <button class="btn-chg" onclick="resetGuestPdf()">Changer</button>
+        </div>
+      </div>
+
+      <!-- Champs communs -->
+      <div class="field">
+        <label>Titre *</label>
+        <input type="text" id="gTitre" placeholder="Ex: Setup EUR/USD — Round Numbers 4H">
+      </div>
+      <div class="field">
+        <label>Description courte *</label>
+        <textarea id="gDesc" style="min-height:60px" placeholder="Résumé en 1-2 phrases..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Date *</label>
+          <input type="date" id="gDate">
+        </div>
+        <div class="field">
+          <label>Paire / Instrument</label>
+          <input type="text" id="gPaire" placeholder="EUR/USD, XAU/USD...">
+        </div>
+      </div>
+
+      <button class="btn-submit" id="gBtnSubmit" onclick="submitGuestTrade()">📤 Soumettre mon Trade</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -889,7 +1000,7 @@ async function verifyOtp(){
   }
   btn.disabled=false; btn.textContent="✓ Confirmer le code";
 }
-const CAT_LABEL = {weekahead:"Week Ahead",hebdo:"Hebdo",mensuel:"Mensuels",banques:"Banques Centrales",ideetrade:"Idée de Trades",trade:"Trades"};
+const CAT_LABEL = {hebdo:"Hebdo",weekahead:"Week Ahead",mensuel:"Monthly Recap",banques:"Bank Meeting",ideetrade:"Trade Ideas",trade:"Trades Admins",tradeinvites:"Trades Invites"};
 
 // ── Firebase ─────────────────────────────────────────────────────────────────
 const firebaseConfig = {
@@ -908,7 +1019,7 @@ let SETTINGS = {
   adminPass : "trading2026",
   guestPass : "smfhub2026",
   maxGuests : 10,
-  allowedCats: ["weekahead","hebdo","mensuel","banques","ideetrade","trade"]
+  allowedCats: ["hebdo","weekahead","mensuel","banques","ideetrade","trade","tradeinvites"]
 };
 
 async function loadSettings(){
@@ -926,7 +1037,7 @@ async function pushSettings(){
 let role        = sessionStorage.getItem("smf_role") || null;
 let currentUser = JSON.parse(sessionStorage.getItem("smf_user")||"null");
 let arts        = [];
-let filt="all", sq="";
+let filt="hebdo", sq="";
 let mode="html";
 let pendingHTML=null, pendingImages=[];
 let unsubscribe = null;
@@ -1107,6 +1218,7 @@ function renderHeaderActions(){
       : "INVITÉ";
     div.innerHTML=`
       <span style="font-family:var(--mono);font-size:10px;color:var(--warn);letter-spacing:.1em;">● ${displayName}</span>
+      <button class="btn-add-header" onclick="openGuestSubmit()" style="background:#7c3aed;">📤 Soumettre un Trade</button>
       <button class="btn-export" onclick="doLogout()">Déconnexion</button>`;
   }
 }
@@ -1291,7 +1403,7 @@ async function fbDel(id){
 
 // ── STATS & GRID ──────────────────────────────────────────────────────────────
 function renderStats(){
-  const counts={all:arts.length,weekahead:0,hebdo:0,mensuel:0,banques:0,ideetrade:0,trade:0};
+  const counts={hebdo:0,weekahead:0,mensuel:0,banques:0,ideetrade:0,trade:0,tradeinvites:0};
   arts.forEach(a=>{ if(counts[a.cat]!==undefined) counts[a.cat]++; });
   Object.keys(counts).forEach(k=>{
     const el=document.getElementById("fc-"+k); if(el) el.textContent=counts[k]>0?"("+counts[k]+")":"";
@@ -1301,7 +1413,7 @@ function renderStats(){
 function filtered(){
   let l=[...arts].sort((a,b)=>new Date(b.date)-new Date(a.date));
   if(role==="guest") l=l.filter(a=>SETTINGS.allowedCats.includes(a.cat));
-  if(filt!=="all") l=l.filter(a=>a.cat===filt);
+  l=l.filter(a=>a.cat===filt);
   if(sq){ const lq=sq.toLowerCase(); l=l.filter(a=>a.titre.toLowerCase().includes(lq)||a.desc.toLowerCase().includes(lq)||(a.paire&&a.paire.toLowerCase().includes(lq))); }
   return l;
 }
@@ -1315,19 +1427,28 @@ function renderGrid(){
   }
   g.innerHTML=l.map(a=>{
     const thumb=a.images&&a.images.length?`<img class="card-thumb" src="${a.images[0]}" alt="">`:"";
+    const typeLabel=a.type==="html"?"HTML":a.type==="pdf"?"PDF 📑":"Texte/Images";
+    const authorName=a.submittedBy||"";
+    const authorColor="var(--muted)";
+    const authorIcon="✍ ";
     return `<div class="article-card" data-cat="${a.cat}" onclick="openArt('${a.id}')">
       <div class="card-top">
         <span class="cat-badge ${a.cat}">${CAT_LABEL[a.cat]||a.cat||"?"}</span>
         <span class="card-date">${fmtD(a.date)}</span>
       </div>
       ${thumb}
-      <div class="card-title">${a.titre}</div>
-      <div class="card-desc">${a.desc}</div>
+      <div class="card-title-desc">
+        <div class="card-title">${a.titre}</div>
+        <div class="card-desc">${a.desc}</div>
+      </div>
       <div class="card-footer">
-        <div class="card-meta">${a.paire?`<span>📊 ${a.paire}</span>`:""}<span style="color:var(--dimmed)">${a.type==="html"?"HTML":"Texte/Images"}</span></div>
+        <div class="card-meta">${a.paire?`<span>📊 ${a.paire}</span>`:""}<span class="type-label" style="color:var(--dimmed)">${typeLabel}</span></div>
         <div class="card-actions">
           ${role==="admin"?`<button class="btn-del" onclick="delArt(event,'${a.id}')" title="Supprimer">🗑</button>`:""}
-          <div class="card-open">Lire →</div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+            <div class="card-open">Lire →</div>
+            ${authorName?`<span style="font-family:var(--mono);font-size:9px;color:${authorColor};letter-spacing:.04em;white-space:nowrap;">${authorIcon}${authorName}</span>`:""}
+          </div>
         </div>
       </div>
     </div>`;
@@ -1349,9 +1470,19 @@ function openArt(id){
   let html="";
   if(a.type==="html"){
     html=a.html;
+  } else if(a.type==="pdf"){
+    // Open PDF in new tab directly from base64
+    const byteStr=atob(a.pdfData.split(",")[1]);
+    const ab=new ArrayBuffer(byteStr.length);
+    const ia=new Uint8Array(ab);
+    for(let i=0;i<byteStr.length;i++) ia[i]=byteStr.charCodeAt(i);
+    const blob=new Blob([ab],{type:"application/pdf"});
+    window.open(URL.createObjectURL(blob),"_blank");
+    return;
   } else {
     const imgs=(a.images||[]).map(src=>`<img src="${src}" style="max-width:100%;border-radius:8px;margin:1rem 0;display:block;">`).join("");
     const txt=a.content?(a.content.replace(/\n/g,"<br>")):"";
+    const submittedInfo=a.submittedBy?`<div style="font-family:monospace;font-size:11px;color:#7c3aed;margin-bottom:1rem;">📤 Soumis par : ${a.submittedBy}</div>`:"";
     html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${a.titre}</title>
     <style>body{background:#080c10;color:#e6edf3;font-family:'Segoe UI',sans-serif;max-width:860px;margin:0 auto;padding:2rem 1.5rem;line-height:1.8;}
     h1{color:#00e5a0;}.meta{font-size:12px;color:#7d8590;margin-bottom:2rem;font-family:monospace;}
@@ -1359,6 +1490,7 @@ function openArt(id){
     .content{font-size:14px;color:#c9d1d9;white-space:pre-wrap;}img{border:1px solid #21262d;max-width:100%;}</style></head><body>
     <div class="badge">${CAT_LABEL[a.cat]||a.cat}</div><h1>${a.titre}</h1>
     <div class="meta">${fmtD(a.date)}${a.paire?" · "+a.paire:""}</div>
+    ${submittedInfo}
     <div class="content">${txt}</div>${imgs}</body></html>`;
   }
   const blob=new Blob([html],{type:"text/html"});
@@ -1427,13 +1559,14 @@ async function submitImport(){
   if(!desc){toast("⚠ La description est obligatoire",true);return;}
   if(!date){toast("⚠ La date est obligatoire",true);return;}
   let newArt;
+  const adminUsername = sessionStorage.getItem("smf_username") || "Admin";
   if(mode==="html"){
     if(!pendingHTML){toast("⚠ Sélectionne un fichier HTML",true);return;}
-    newArt={type:"html",titre,desc,date,cat,paire,html:pendingHTML,fileName:document.getElementById("fileName").textContent};
+    newArt={type:"html",titre,desc,date,cat,paire,html:pendingHTML,fileName:document.getElementById("fileName").textContent,submittedBy:adminUsername};
   } else {
     const fc=document.getElementById("fContent").value.trim();
     if(!fc&&pendingImages.length===0){toast("⚠ Ajoute du texte ou au moins une image",true);return;}
-    newArt={type:"manual",titre,desc,date,cat,paire,content:fc,images:pendingImages.map(i=>i.dataUrl)};
+    newArt={type:"manual",titre,desc,date,cat,paire,content:fc,images:pendingImages.map(i=>i.dataUrl),submittedBy:adminUsername};
   }
   const btn=document.getElementById("btnSubmit");
   btn.disabled=true; btn.textContent="Publication...";
@@ -1457,8 +1590,112 @@ function closeImport(){
   document.getElementById("fDesc").value="";
   document.getElementById("fContent").value="";
   document.getElementById("fPaire").value="";
-  document.getElementById("cT").checked=true;
+  document.getElementById("cH").checked=true;
   setMode("html");
+}
+
+// ── GUEST TRADE SUBMIT ────────────────────────────────────────────────────────
+let guestMode="text", guestPendingImages=[], guestPendingPdf=null;
+
+function openGuestSubmit(){
+  if(role!=="guest"){toast("⚠ Accès réservé aux invités",true);return;}
+  document.getElementById("gDate").value=new Date().toISOString().slice(0,10);
+  document.getElementById("guestSubmitOv").classList.add("open");
+  document.body.style.overflow="hidden";
+  setGuestMode("text");
+}
+
+function closeGuestSubmit(){
+  document.getElementById("guestSubmitOv").classList.remove("open");
+  document.body.style.overflow="";
+  guestPendingImages=[]; guestPendingPdf=null;
+  document.getElementById("gContent").value="";
+  document.getElementById("gContentImg").value="";
+  document.getElementById("gTitre").value="";
+  document.getElementById("gDesc").value="";
+  document.getElementById("gPaire").value="";
+  document.getElementById("gImgPreviews").innerHTML="";
+  resetGuestPdf();
+  setGuestMode("text");
+}
+
+function setGuestMode(m){
+  guestMode=m;
+  ["text","textimg","pdf"].forEach(mode=>{
+    document.getElementById("gMode"+mode.charAt(0).toUpperCase()+mode.slice(1)).classList.toggle("active",m===mode);
+    const sec=document.getElementById("gSec"+mode.charAt(0).toUpperCase()+mode.slice(1));
+    if(sec) sec.classList.toggle("on",m===mode);
+  });
+}
+
+function onGuestImagesSelected(files){
+  Array.from(files).forEach(file=>{
+    if(!file.type.startsWith("image/"))return;
+    const r=new FileReader();
+    r.onload=e=>{ guestPendingImages.push({name:file.name,dataUrl:e.target.result}); renderGuestImgPreviews(); };
+    r.readAsDataURL(file);
+  });
+  document.getElementById("gImgInput").value="";
+}
+
+function renderGuestImgPreviews(){
+  document.getElementById("gImgPreviews").innerHTML=guestPendingImages.map((img,i)=>`
+    <div class="img-thumb-wrap"><img src="${img.dataUrl}" alt="${img.name}">
+    <button class="img-thumb-del" onclick="removeGuestImg(${i})">✕</button></div>`).join("");
+}
+function removeGuestImg(i){ guestPendingImages.splice(i,1); renderGuestImgPreviews(); }
+
+function onGuestPdfFile(file){
+  if(!file)return;
+  if(!file.name.match(/\.pdf$/i)){toast("⚠ Sélectionne un fichier .pdf",true);return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    guestPendingPdf={name:file.name,size:file.size,dataUrl:e.target.result};
+    document.getElementById("gPdfName").textContent=file.name;
+    document.getElementById("gPdfSize").textContent=fmtSz(file.size)+" · PDF";
+    document.getElementById("gPdfDropZone").style.display="none";
+    document.getElementById("gPdfPrev").classList.add("on");
+  };
+  r.readAsDataURL(file);
+}
+
+function resetGuestPdf(){
+  guestPendingPdf=null;
+  const inp=document.getElementById("gPdfInput"); if(inp) inp.value="";
+  const dz=document.getElementById("gPdfDropZone"); if(dz) dz.style.display="block";
+  const fp=document.getElementById("gPdfPrev"); if(fp) fp.classList.remove("on");
+}
+
+async function submitGuestTrade(){
+  const titre=document.getElementById("gTitre").value.trim();
+  const desc =document.getElementById("gDesc").value.trim();
+  const date =document.getElementById("gDate").value;
+  const paire=document.getElementById("gPaire").value.trim();
+  if(!titre){toast("⚠ Le titre est obligatoire",true);return;}
+  if(!desc){toast("⚠ La description est obligatoire",true);return;}
+  if(!date){toast("⚠ La date est obligatoire",true);return;}
+
+  let newArt;
+  const submittedBy=currentUser?((currentUser.prenom||"")+" "+(currentUser.nom||"")).trim()||currentUser.username:"Invité";
+
+  if(guestMode==="text"){
+    const fc=document.getElementById("gContent").value.trim();
+    if(!fc){toast("⚠ Ajoute du texte",true);return;}
+    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,content:fc,images:[],submittedBy};
+  } else if(guestMode==="textimg"){
+    const fc=document.getElementById("gContentImg").value.trim();
+    if(!fc&&guestPendingImages.length===0){toast("⚠ Ajoute du texte ou au moins une image",true);return;}
+    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,content:fc,images:guestPendingImages.map(i=>i.dataUrl),submittedBy};
+  } else if(guestMode==="pdf"){
+    if(!guestPendingPdf){toast("⚠ Sélectionne un fichier PDF",true);return;}
+    newArt={type:"pdf",titre,desc,date,cat:"tradeinvites",paire,pdfData:guestPendingPdf.dataUrl,pdfName:guestPendingPdf.name,submittedBy};
+  }
+
+  const btn=document.getElementById("gBtnSubmit");
+  btn.disabled=true; btn.textContent="Publication...";
+  const id=await fbAdd(newArt);
+  btn.disabled=false; btn.textContent="📤 Soumettre mon Trade";
+  if(id){ closeGuestSubmit(); toast("✓ Trade soumis — visible dans Trades Invites !"); }
 }
 
 // ── DRAG & DROP ───────────────────────────────────────────────────────────────
@@ -1470,6 +1707,20 @@ const id2=document.getElementById("imgDrop");
 id2.addEventListener("dragover",e=>{e.preventDefault();id2.classList.add("drag");});
 id2.addEventListener("dragleave",()=>id2.classList.remove("drag"));
 id2.addEventListener("drop",e=>{e.preventDefault();id2.classList.remove("drag");onImagesSelected(e.dataTransfer.files);});
+// Guest image drop
+const gid=document.getElementById("gImgDrop");
+if(gid){
+  gid.addEventListener("dragover",e=>{e.preventDefault();gid.classList.add("drag");});
+  gid.addEventListener("dragleave",()=>gid.classList.remove("drag"));
+  gid.addEventListener("drop",e=>{e.preventDefault();gid.classList.remove("drag");onGuestImagesSelected(e.dataTransfer.files);});
+}
+// Guest PDF drop
+const gpdf=document.getElementById("gPdfDropZone");
+if(gpdf){
+  gpdf.addEventListener("dragover",e=>{e.preventDefault();gpdf.classList.add("drag");});
+  gpdf.addEventListener("dragleave",()=>gpdf.classList.remove("drag"));
+  gpdf.addEventListener("drop",e=>{e.preventDefault();gpdf.classList.remove("drag");const f=e.dataTransfer.files[0];if(f)onGuestPdfFile(f);});
+}
 
 // ── FILTERS ───────────────────────────────────────────────────────────────────
 document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{
