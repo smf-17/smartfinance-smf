@@ -1477,7 +1477,7 @@ async function fbDel(id){
 function renderStats(){
   const counts={hebdo:0,weekahead:0,mensuel:0,banques:0,trade:0,tradeinvites:0};
   arts.forEach(a=>{ if(counts[a.cat]!==undefined) counts[a.cat]++; });
-  const total=Object.values(counts).reduce((s,v)=>s+v,0);
+  const total=Object.entries(counts).filter(([k])=>k!=="tradeinvites").reduce((s,[,v])=>s+v,0);
   Object.keys(counts).forEach(k=>{
     const el=document.getElementById("fc-"+k); if(el) el.textContent=counts[k]>0?"("+counts[k]+")":"";
   });
@@ -1490,6 +1490,7 @@ function filtered(){
   // Exclure ideetrade dans tous les cas (catégorie supprimée)
   l=l.filter(a=>a.cat!=="ideetrade");
   if(filt!=="tous") l=l.filter(a=>a.cat===filt);
+  else l=l.filter(a=>a.cat!=="tradeinvites");
   if(sq){ const lq=sq.toLowerCase(); l=l.filter(a=>a.titre.toLowerCase().includes(lq)||a.desc.toLowerCase().includes(lq)||(a.paire&&a.paire.toLowerCase().includes(lq))); }
   return l;
 }
