@@ -458,6 +458,17 @@
   .btn-submit{background:var(--accent);border:none;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;padding:13px;border-radius:6px;cursor:pointer;width:100%;letter-spacing:.1em;transition:opacity .15s;margin-top:.25rem;}
   .btn-submit:hover{opacity:.85;}
   .btn-submit:disabled{opacity:.35;cursor:not-allowed;}
+  /* ── TRADE BLOCKS SYSTEM ────────────────────────────────── */
+  .blocks-badge{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.04em;border:1px solid;}
+  .blocks-badge.trade{background:rgba(255,77,109,.12);border-color:rgba(255,77,109,.3);color:var(--red);}
+  .blocks-badge.tradeinvites{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.3);color:#7c3aed;}
+  .btn-add-block{background:transparent;border:1px dashed;font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 9px;border-radius:3px;cursor:pointer;letter-spacing:.05em;transition:all .15s;white-space:nowrap;}
+  .btn-add-block.trade{border-color:var(--red);color:var(--red);}
+  .btn-add-block.trade:hover{background:rgba(255,77,109,.1);}
+  .btn-add-block.tradeinvites{border-color:#7c3aed;color:#7c3aed;}
+  .btn-add-block.tradeinvites:hover{background:rgba(124,58,237,.1);}
+  .ab-block-form{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:1.25rem;display:flex;flex-direction:column;gap:1rem;}
+  .ab-block-num{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.1rem;}
 
   /* TOAST */
   .toast{position:fixed;bottom:2rem;right:2rem;background:var(--accent);color:#000;font-family:var(--mono);font-size:12px;font-weight:700;padding:10px 20px;border-radius:5px;z-index:999;transform:translateY(80px);opacity:0;transition:all .3s;pointer-events:none;}
@@ -532,9 +543,9 @@
     <button class="filter-btn" data-cat="weekahead">Week Ahead <span class="fcount" id="fc-weekahead"></span></button>
     <button class="filter-btn" data-cat="mensuel">Monthly Recap <span class="fcount" id="fc-mensuel"></span></button>
     <button class="filter-btn" data-cat="banques">Bank Meeting <span class="fcount" id="fc-banques"></span></button>
-    <button class="filter-btn" data-cat="ideetrade">Trade Ideas <span class="fcount" id="fc-ideetrade"></span></button>
     <button class="filter-btn" data-cat="trade">Trades Admins <span class="fcount" id="fc-trade"></span></button>
     <button class="filter-btn" data-cat="tradeinvites">Trades Invites <span class="fcount" id="fc-tradeinvites"></span></button>
+    <button class="filter-btn" data-cat="tous">Tous <span class="fcount" id="fc-tous"></span></button>
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
       <input type="text" id="searchInput" placeholder="Rechercher...">
@@ -631,7 +642,6 @@
           <div class="pill weekahead"><input type="radio" name="rCat" id="cWA" value="weekahead"><label for="cWA">Week Ahead</label></div>
           <div class="pill mensuel"><input type="radio" name="rCat" id="cM" value="mensuel"><label for="cM">Monthly Recap</label></div>
           <div class="pill banques"><input type="radio" name="rCat" id="cG" value="banques"><label for="cG">Bank Meeting</label></div>
-          <div class="pill ideetrade"><input type="radio" name="rCat" id="cI" value="ideetrade"><label for="cI">Trade Ideas</label></div>
           <div class="pill trade"><input type="radio" name="rCat" id="cT" value="trade" checked><label for="cT">Trades Admins</label></div>
           <div class="pill tradeinvites"><input type="radio" name="rCat" id="cTI" value="tradeinvites"><label for="cTI">Trades Invites</label></div>
         </div>
@@ -899,6 +909,41 @@
   </div>
 </div>
 
+<!-- ====== MODAL AJOUT BLOC TRADE ====== -->
+<div class="overlay" id="addBlockOv">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-head-title" id="abModalTitle">➕ Ajouter la suite</div>
+        <div class="modal-head-sub" id="abModalSub">Bloc suivant dans la chronologie</div>
+      </div>
+      <button class="btn-x" onclick="closeAddBlock()">✕ Fermer</button>
+    </div>
+    <div class="modal-body">
+      <div class="ab-block-form">
+        <div class="ab-block-num" id="abBlockNum" style="color:var(--accent);">BLOC 2 · MISE À JOUR</div>
+        <div class="field">
+          <label>Texte / Analyse</label>
+          <textarea id="abText" style="min-height:130px" placeholder="Résultat du trade, évolution du setup, nouveau SL/TP..."></textarea>
+        </div>
+        <div class="field">
+          <label>Image (graphique, screenshot)</label>
+          <div class="img-drop" id="abImgDrop">
+            <input type="file" id="abImgInput" accept="image/*" onchange="onAbImg(this.files[0])">
+            <div class="img-drop-txt">📸 Clique ou glisse une image<br><span>JPG · PNG · WebP</span></div>
+          </div>
+          <div id="abImgPreview" style="margin-top:.5rem;display:flex;flex-wrap:wrap;gap:.5rem;"></div>
+        </div>
+        <div class="field">
+          <label>Date du bloc *</label>
+          <input type="date" id="abDate">
+        </div>
+      </div>
+      <button class="btn-submit" id="abBtnSubmit" onclick="submitAddBlock()">➕ Publier ce bloc</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1000,7 +1045,7 @@ async function verifyOtp(){
   }
   btn.disabled=false; btn.textContent="✓ Confirmer le code";
 }
-const CAT_LABEL = {hebdo:"Hebdo",weekahead:"Week Ahead",mensuel:"Monthly Recap",banques:"Bank Meeting",ideetrade:"Trade Ideas",trade:"Trades Admins",tradeinvites:"Trades Invites"};
+const CAT_LABEL = {hebdo:"Hebdo",weekahead:"Week Ahead",mensuel:"Monthly Recap",banques:"Bank Meeting",trade:"Trades Admins",tradeinvites:"Trades Invites",tous:"Tous"};
 
 // ── Firebase ─────────────────────────────────────────────────────────────────
 const firebaseConfig = {
@@ -1019,7 +1064,7 @@ let SETTINGS = {
   adminPass : "trading2026",
   guestPass : "smfhub2026",
   maxGuests : 10,
-  allowedCats: ["hebdo","weekahead","mensuel","banques","ideetrade","trade","tradeinvites"]
+  allowedCats: ["hebdo","weekahead","mensuel","banques","trade","tradeinvites"]
 };
 
 async function loadSettings(){
@@ -1050,6 +1095,27 @@ function toast(msg,err=false){
   const t=document.getElementById("toast");
   t.textContent=msg; t.className="toast"+(err?" err":"");
   t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2800);
+}
+
+// ── IMAGE COMPRESSION ─────────────────────────────────────────────────────────
+// Compresse toute image en JPEG max 900px, qualité 0.72 → ~80-150 Ko typique
+function compressImage(dataUrl, maxPx=900, quality=0.72){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      let w=img.width, h=img.height;
+      if(w>maxPx||h>maxPx){
+        if(w>=h){ h=Math.round(h*maxPx/w); w=maxPx; }
+        else     { w=Math.round(w*maxPx/h); h=maxPx; }
+      }
+      const c=document.createElement("canvas");
+      c.width=w; c.height=h;
+      c.getContext("2d").drawImage(img,0,0,w,h);
+      resolve(c.toDataURL("image/jpeg",quality));
+    };
+    img.onerror=()=>resolve(dataUrl); // fallback sans compression
+    img.src=dataUrl;
+  });
 }
 
 // ── Tab switcher on gate ──────────────────────────────────────────────────────
@@ -1396,6 +1462,12 @@ async function fbAdd(art){
   catch(e){ toast("⚠ Erreur Firebase: "+e.message,true); return null; }
 }
 
+
+async function fbUpdate(id, data){
+  try{ await db.collection("articles").doc(id).update(data); return true; }
+  catch(e){ toast("⚠ Erreur mise à jour: "+e.message,true); return false; }
+}
+
 async function fbDel(id){
   try{ await db.collection("articles").doc(id).delete(); }
   catch(e){ toast("⚠ Erreur suppression",true); }
@@ -1403,17 +1475,21 @@ async function fbDel(id){
 
 // ── STATS & GRID ──────────────────────────────────────────────────────────────
 function renderStats(){
-  const counts={hebdo:0,weekahead:0,mensuel:0,banques:0,ideetrade:0,trade:0,tradeinvites:0};
+  const counts={hebdo:0,weekahead:0,mensuel:0,banques:0,trade:0,tradeinvites:0};
   arts.forEach(a=>{ if(counts[a.cat]!==undefined) counts[a.cat]++; });
+  const total=Object.values(counts).reduce((s,v)=>s+v,0);
   Object.keys(counts).forEach(k=>{
     const el=document.getElementById("fc-"+k); if(el) el.textContent=counts[k]>0?"("+counts[k]+")":"";
   });
+  const elTous=document.getElementById("fc-tous"); if(elTous) elTous.textContent=total>0?"("+total+")":"";
 }
 
 function filtered(){
   let l=[...arts].sort((a,b)=>new Date(b.date)-new Date(a.date));
   if(role==="guest") l=l.filter(a=>SETTINGS.allowedCats.includes(a.cat));
-  l=l.filter(a=>a.cat===filt);
+  // Exclure ideetrade dans tous les cas (catégorie supprimée)
+  l=l.filter(a=>a.cat!=="ideetrade");
+  if(filt!=="tous") l=l.filter(a=>a.cat===filt);
   if(sq){ const lq=sq.toLowerCase(); l=l.filter(a=>a.titre.toLowerCase().includes(lq)||a.desc.toLowerCase().includes(lq)||(a.paire&&a.paire.toLowerCase().includes(lq))); }
   return l;
 }
@@ -1426,11 +1502,29 @@ function renderGrid(){
     return;
   }
   g.innerHTML=l.map(a=>{
-    const thumb=a.images&&a.images.length?`<img class="card-thumb" src="${a.images[0]}" alt="">`:"";
+    // Detect blocks-based trade articles
+    const isBlocks=(a.cat==="trade"||a.cat==="tradeinvites")&&Array.isArray(a.blocks)&&a.blocks.length>0;
+    // Pour les Trades Admins : les admins peuvent toujours ajouter des blocs (même sur article HTML)
+    const isAdminTrade = a.cat==="trade" && role==="admin";
+    // Thumbnail: first block image, or legacy first image
+    let thumbSrc=null;
+    if(isBlocks){ thumbSrc=a.blocks[0].image||null; }
+    else if(a.images&&a.images.length){ thumbSrc=a.images[0]; }
+    const thumb=thumbSrc?`<img class="card-thumb" src="${thumbSrc}" alt="">`:"";
     const typeLabel=a.type==="html"?"HTML":a.type==="pdf"?"PDF 📑":"Texte/Images";
     const authorName=a.submittedBy||"";
-    const authorColor="var(--muted)";
     const authorIcon="✍ ";
+    // Blocks badge
+    let blocksBadge="", addBtn="";
+    const nbBlocks=isBlocks?a.blocks.length:0;
+    if(isBlocks){
+      const nb=nbBlocks;
+      blocksBadge=`<span class="blocks-badge ${a.cat}">🔗 ${nb}/5 bloc${nb>1?"s":""}</span>`;
+    }
+    const canAdd = (isBlocks&&nbBlocks<5||isAdminTrade&&!isBlocks) && (
+      role==="admin"||(role==="guest"&&a.cat==="tradeinvites"&&currentUser&&a.submittedById===currentUser.id)
+    );
+    if(canAdd) addBtn=`<button class="btn-add-block ${a.cat}" onclick="openAddBlock(event,'${a.id}')" title="Ajouter le prochain bloc">➕ Suite</button>`;
     return `<div class="article-card" data-cat="${a.cat}" onclick="openArt('${a.id}')">
       <div class="card-top">
         <span class="cat-badge ${a.cat}">${CAT_LABEL[a.cat]||a.cat||"?"}</span>
@@ -1442,12 +1536,13 @@ function renderGrid(){
         <div class="card-desc">${a.desc}</div>
       </div>
       <div class="card-footer">
-        <div class="card-meta">${a.paire?`<span>📊 ${a.paire}</span>`:""}<span class="type-label" style="color:var(--dimmed)">${typeLabel}</span></div>
+        <div class="card-meta">${a.paire?`<span>📊 ${a.paire}</span>`:""}<span class="type-label" style="color:var(--dimmed)">${typeLabel}</span>${blocksBadge}</div>
         <div class="card-actions">
+          ${addBtn}
           ${role==="admin"?`<button class="btn-del" onclick="delArt(event,'${a.id}')" title="Supprimer">🗑</button>`:""}
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
             <div class="card-open">Lire →</div>
-            ${authorName?`<span style="font-family:var(--mono);font-size:9px;color:${authorColor};letter-spacing:.04em;white-space:nowrap;">${authorIcon}${authorName}</span>`:""}
+            ${authorName?`<span style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.04em;white-space:nowrap;">✍ ${authorName}</span>`:""}
           </div>
         </div>
       </div>
@@ -1479,6 +1574,31 @@ function openArt(id){
     const blob=new Blob([ab],{type:"application/pdf"});
     window.open(URL.createObjectURL(blob),"_blank");
     return;
+  } else if(Array.isArray(a.blocks)&&a.blocks.length>0){
+    // ── TRADE BLOCKS : chronologie texte/image par bloc ──
+    const acc=a.cat==="tradeinvites"?"#7c3aed":"#ff4d6d";
+    const submittedInfo=a.submittedBy?`<div style="font-family:monospace;font-size:11px;color:${acc};margin-bottom:1.5rem;">📤 Soumis par : ${a.submittedBy}</div>`:"";
+    const blocksHtml=a.blocks.map((b,i)=>{
+      const bDate=b.date?new Date(b.date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}):"";
+      const sep=i===0
+        ?`<div style="font-family:monospace;font-size:10px;color:${acc};letter-spacing:.12em;margin-bottom:.9rem;opacity:.75;">📅 PUBLICATION INITIALE · ${bDate}</div>`
+        :`<div style="display:flex;align-items:center;gap:.75rem;margin:2rem 0 1.5rem;opacity:.55;"><span style="flex:1;height:1px;background:#21262d;display:block;"></span><span style="font-family:monospace;font-size:10px;color:${acc};white-space:nowrap;letter-spacing:.1em;">── MISE À JOUR ${i+1} · ${bDate}${b.addedBy?" · ✍ "+b.addedBy:""} ──</span><span style="flex:1;height:1px;background:#21262d;display:block;"></span></div>`;
+      // Bloc initial vide (article HTML sans blocs au départ) : ne rien afficher
+      if(b.isInitial&&!b.text&&!b.image) return sep.replace(/📅.*?<\/div>/,"");
+      const txt=b.text?(b.text.replace(/\n/g,"<br>")):"";
+      const img=b.image?`<img src="${b.image}" style="max-width:100%;border-radius:8px;margin:1rem 0;display:block;border:1px solid #21262d;">`:"";
+      return `${sep}${txt?`<div class="content">${txt}</div>`:""}${img}`;
+    }).join("");
+    html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${a.titre}</title>
+    <style>body{background:#080c10;color:#e6edf3;font-family:'Segoe UI',sans-serif;max-width:860px;margin:0 auto;padding:2rem 1.5rem;line-height:1.8;}
+    h1{color:#00e5a0;}.meta{font-size:12px;color:#7d8590;margin-bottom:.75rem;font-family:monospace;}
+    .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.2em;padding:3px 8px;border-radius:2px;text-transform:uppercase;margin-bottom:.5rem;background:rgba(255,77,109,.15);color:${acc};}
+    .content{font-size:14px;color:#c9d1d9;white-space:pre-wrap;margin-bottom:.25rem;}
+    img{border:1px solid #21262d;max-width:100%;border-radius:6px;}</style></head><body>
+    <div class="badge">${CAT_LABEL[a.cat]||a.cat} · 🔗 ${a.blocks.length}/5 bloc${a.blocks.length>1?"s":""}</div>
+    <h1>${a.titre}</h1>
+    <div class="meta">${fmtD(a.date)}${a.paire?" · "+a.paire:""}</div>
+    ${submittedInfo}${blocksHtml}</body></html>`;
   } else {
     const imgs=(a.images||[]).map(src=>`<img src="${src}" style="max-width:100%;border-radius:8px;margin:1rem 0;display:block;">`).join("");
     const txt=a.content?(a.content.replace(/\n/g,"<br>")):"";
@@ -1536,7 +1656,11 @@ function onImagesSelected(files){
   Array.from(files).forEach(file=>{
     if(!file.type.startsWith("image/"))return;
     const r=new FileReader();
-    r.onload=e=>{ pendingImages.push({name:file.name,dataUrl:e.target.result}); renderImgPreviews(); };
+    r.onload=async e=>{
+      const compressed=await compressImage(e.target.result);
+      pendingImages.push({name:file.name,dataUrl:compressed});
+      renderImgPreviews();
+    };
     r.readAsDataURL(file);
   });
   document.getElementById("imgInput").value="";
@@ -1566,7 +1690,14 @@ async function submitImport(){
   } else {
     const fc=document.getElementById("fContent").value.trim();
     if(!fc&&pendingImages.length===0){toast("⚠ Ajoute du texte ou au moins une image",true);return;}
-    newArt={type:"manual",titre,desc,date,cat,paire,content:fc,images:pendingImages.map(i=>i.dataUrl),submittedBy:adminUsername};
+    if(cat==="trade"||cat==="tradeinvites"){
+      // Structure par blocs — premier bloc uniquement
+      const img1=pendingImages.length>0?pendingImages[0].dataUrl:null;
+      const block1={text:fc,image:img1,date};
+      newArt={type:"manual",titre,desc,date,cat,paire,blocks:[block1],submittedBy:adminUsername};
+    } else {
+      newArt={type:"manual",titre,desc,date,cat,paire,content:fc,images:pendingImages.map(i=>i.dataUrl),submittedBy:adminUsername};
+    }
   }
   const btn=document.getElementById("btnSubmit");
   btn.disabled=true; btn.textContent="Publication...";
@@ -1632,7 +1763,11 @@ function onGuestImagesSelected(files){
   Array.from(files).forEach(file=>{
     if(!file.type.startsWith("image/"))return;
     const r=new FileReader();
-    r.onload=e=>{ guestPendingImages.push({name:file.name,dataUrl:e.target.result}); renderGuestImgPreviews(); };
+    r.onload=async e=>{
+      const compressed=await compressImage(e.target.result);
+      guestPendingImages.push({name:file.name,dataUrl:compressed});
+      renderGuestImgPreviews();
+    };
     r.readAsDataURL(file);
   });
   document.getElementById("gImgInput").value="";
@@ -1677,18 +1812,22 @@ async function submitGuestTrade(){
 
   let newArt;
   const submittedBy=currentUser?((currentUser.prenom||"")+" "+(currentUser.nom||"")).trim()||currentUser.username:"Invité";
+  const submittedById=currentUser?currentUser.id:null;
 
   if(guestMode==="text"){
     const fc=document.getElementById("gContent").value.trim();
     if(!fc){toast("⚠ Ajoute du texte",true);return;}
-    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,content:fc,images:[],submittedBy};
+    const block1={text:fc,image:null,date};
+    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,blocks:[block1],submittedBy,submittedById};
   } else if(guestMode==="textimg"){
     const fc=document.getElementById("gContentImg").value.trim();
     if(!fc&&guestPendingImages.length===0){toast("⚠ Ajoute du texte ou au moins une image",true);return;}
-    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,content:fc,images:guestPendingImages.map(i=>i.dataUrl),submittedBy};
+    const img1=guestPendingImages.length>0?guestPendingImages[0].dataUrl:null;
+    const block1={text:fc,image:img1,date};
+    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,blocks:[block1],submittedBy,submittedById};
   } else if(guestMode==="pdf"){
     if(!guestPendingPdf){toast("⚠ Sélectionne un fichier PDF",true);return;}
-    newArt={type:"pdf",titre,desc,date,cat:"tradeinvites",paire,pdfData:guestPendingPdf.dataUrl,pdfName:guestPendingPdf.name,submittedBy};
+    newArt={type:"pdf",titre,desc,date,cat:"tradeinvites",paire,pdfData:guestPendingPdf.dataUrl,pdfName:guestPendingPdf.name,submittedBy,submittedById};
   }
 
   const btn=document.getElementById("gBtnSubmit");
@@ -1696,6 +1835,78 @@ async function submitGuestTrade(){
   const id=await fbAdd(newArt);
   btn.disabled=false; btn.textContent="📤 Soumettre mon Trade";
   if(id){ closeGuestSubmit(); toast("✓ Trade soumis — visible dans Trades Invites !"); }
+}
+
+
+// ── ADD BLOCK (mise à jour chronologique) ─────────────────────────────────────
+let _abTargetId=null, _abImg=null;
+
+function openAddBlock(e,id){
+  e.stopPropagation();
+  const a=arts.find(x=>x.id===id); if(!a)return;
+  const blocks=a.blocks||[];
+  if(blocks.length>=5){toast("⚠ Maximum 5 blocs atteint pour ce trade",true);return;}
+  _abTargetId=id; _abImg=null;
+  const next=blocks.length+1;
+  const acc=a.cat==="tradeinvites"?"#7c3aed":"#ff4d6d";
+  document.getElementById("abModalTitle").textContent=`➕ Bloc ${next} — Suite du trade`;
+  document.getElementById("abModalSub").textContent=a.titre;
+  document.getElementById("abBlockNum").textContent=`BLOC ${next} · MISE À JOUR`;
+  document.getElementById("abBlockNum").style.color=acc;
+  document.getElementById("abText").value="";
+  document.getElementById("abDate").value=new Date().toISOString().slice(0,10);
+  document.getElementById("abImgPreview").innerHTML="";
+  document.getElementById("abImgInput").value="";
+  document.getElementById("addBlockOv").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
+function closeAddBlock(){
+  document.getElementById("addBlockOv").classList.remove("open");
+  document.body.style.overflow="";
+  _abTargetId=null; _abImg=null;
+}
+
+function onAbImg(file){
+  if(!file||!file.type.startsWith("image/"))return;
+  const r=new FileReader();
+  r.onload=async e=>{
+    _abImg=await compressImage(e.target.result);
+    document.getElementById("abImgPreview").innerHTML=`
+      <div class="img-thumb-wrap" style="width:90px;height:90px;">
+        <img src="${_abImg}" style="width:90px;height:90px;object-fit:cover;border-radius:5px;border:1px solid var(--border2);">
+        <button class="img-thumb-del" onclick="_abImg=null;document.getElementById('abImgPreview').innerHTML='';document.getElementById('abImgInput').value='';">✕</button>
+      </div>`;
+  };
+  r.readAsDataURL(file);
+}
+
+async function submitAddBlock(){
+  const text=document.getElementById("abText").value.trim();
+  const date=document.getElementById("abDate").value;
+  if(!text&&!_abImg){toast("⚠ Ajoute du texte ou une image",true);return;}
+  if(!date){toast("⚠ La date est obligatoire",true);return;}
+  if(!_abTargetId){toast("⚠ Erreur interne",true);return;}
+  const a=arts.find(x=>x.id===_abTargetId);
+  if(!a){toast("⚠ Article introuvable",true);return;}
+  const existingBlocks=a.blocks||[];
+  if(existingBlocks.length>=5){toast("⚠ Maximum 5 blocs atteint",true);return;}
+  const adminUsername = sessionStorage.getItem("smf_username") || "Admin";
+  const newBlock={text,image:_abImg||null,date,addedBy:adminUsername};
+  // Si l'article n'avait pas encore de blocs (ex: HTML), on initialise avec un bloc vide initial
+  let updated;
+  if(existingBlocks.length===0){
+    // Premier ajout sur un article HTML : on crée un bloc 0 symbolique (info article original)
+    const block0={text:"",image:null,date:a.date,addedBy:a.submittedBy||"Admin",isInitial:true};
+    updated=[block0,newBlock];
+  } else {
+    updated=[...existingBlocks,newBlock];
+  }
+  const btn=document.getElementById("abBtnSubmit");
+  btn.disabled=true; btn.textContent="Publication...";
+  const ok=await fbUpdate(_abTargetId,{blocks:updated});
+  btn.disabled=false; btn.textContent="➕ Publier ce bloc";
+  if(ok){closeAddBlock();toast("✓ Bloc ajouté par "+adminUsername+" — chronologie mise à jour !");}
 }
 
 // ── DRAG & DROP ───────────────────────────────────────────────────────────────
@@ -1713,6 +1924,13 @@ if(gid){
   gid.addEventListener("dragover",e=>{e.preventDefault();gid.classList.add("drag");});
   gid.addEventListener("dragleave",()=>gid.classList.remove("drag"));
   gid.addEventListener("drop",e=>{e.preventDefault();gid.classList.remove("drag");onGuestImagesSelected(e.dataTransfer.files);});
+}
+// Add-block image drop
+const abd=document.getElementById("abImgDrop");
+if(abd){
+  abd.addEventListener("dragover",e=>{e.preventDefault();abd.classList.add("drag");});
+  abd.addEventListener("dragleave",()=>abd.classList.remove("drag"));
+  abd.addEventListener("drop",e=>{e.preventDefault();abd.classList.remove("drag");const f=e.dataTransfer.files[0];if(f)onAbImg(f);});
 }
 // Guest PDF drop
 const gpdf=document.getElementById("gPdfDropZone");
