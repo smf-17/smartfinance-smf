@@ -638,12 +638,12 @@
       <div class="field">
         <label>Catégorie *</label>
         <div class="cat-pills">
-          <div class="pill hebdo"><input type="radio" name="rCat" id="cH" value="hebdo"><label for="cH">Hebdo</label></div>
-          <div class="pill weekahead"><input type="radio" name="rCat" id="cWA" value="weekahead"><label for="cWA">Week Ahead</label></div>
-          <div class="pill mensuel"><input type="radio" name="rCat" id="cM" value="mensuel"><label for="cM">Monthly Recap</label></div>
-          <div class="pill banques"><input type="radio" name="rCat" id="cG" value="banques"><label for="cG">Bank Meeting</label></div>
-          <div class="pill trade"><input type="radio" name="rCat" id="cT" value="trade" checked><label for="cT">Trades Admins</label></div>
-          <div class="pill tradeinvites"><input type="radio" name="rCat" id="cTI" value="tradeinvites"><label for="cTI">Trades Invites</label></div>
+          <div class="pill hebdo"><input type="radio" name="rCat" id="cH" value="hebdo" onchange="updateModeForCat(this.value)"><label for="cH">Hebdo</label></div>
+          <div class="pill weekahead"><input type="radio" name="rCat" id="cWA" value="weekahead" onchange="updateModeForCat(this.value)"><label for="cWA">Week Ahead</label></div>
+          <div class="pill mensuel"><input type="radio" name="rCat" id="cM" value="mensuel" onchange="updateModeForCat(this.value)"><label for="cM">Monthly Recap</label></div>
+          <div class="pill banques"><input type="radio" name="rCat" id="cG" value="banques" onchange="updateModeForCat(this.value)"><label for="cG">Bank Meeting</label></div>
+          <div class="pill trade"><input type="radio" name="rCat" id="cT" value="trade" checked onchange="updateModeForCat(this.value)"><label for="cT">Trades Admins</label></div>
+          <div class="pill tradeinvites"><input type="radio" name="rCat" id="cTI" value="tradeinvites" onchange="updateModeForCat(this.value)"><label for="cTI">Trades Invites</label></div>
         </div>
       </div>
 
@@ -857,8 +857,8 @@
         </div>
         <div class="field">
           <label>Images (graphiques, screenshots) *</label>
-          <div class="img-drop" id="gImgDrop">
-            <input type="file" id="gImgInput" accept="image/*" multiple onchange="onGuestImagesSelected(this.files)">
+          <div class="img-drop" id="gImgDrop" onclick="document.getElementById('gImgInput').click()">
+            <input type="file" id="gImgInput" accept="image/*" multiple style="display:none" onchange="onGuestImagesSelected(this.files)">
             <div class="img-drop-txt">📸 Clique ou glisse tes images ici<br><span>JPG, PNG, WebP — plusieurs images acceptées</span></div>
           </div>
           <div class="img-previews" id="gImgPreviews"></div>
@@ -1707,11 +1707,30 @@ async function submitImport(){
   if(id){ closeImport(); toast("✓ Publié — visible instantanément !"); }
 }
 
+// ── MODE SWITCHER selon catégorie ────────────────────────────────────────────
+function updateModeForCat(cat){
+  const tradeOnly = cat==="trade"||cat==="tradeinvites";
+  const htmlBtn   = document.getElementById("modeHtml");
+  const switcher  = htmlBtn.parentElement;
+  if(tradeOnly){
+    // Cacher le bouton HTML, forcer mode manuel
+    htmlBtn.style.display="none";
+    // Retirer le séparateur du premier bouton si HTML caché
+    document.getElementById("modeManual").style.borderLeft="none";
+    if(mode==="html") setMode("manual");
+  } else {
+    htmlBtn.style.display="";
+    document.getElementById("modeManual").style.borderLeft="";
+  }
+}
+
 function openImport(){
   if(role!=="admin"){toast("⚠ Accès réservé à l'administrateur",true);return;}
   document.getElementById("fDate").value=new Date().toISOString().slice(0,10);
   document.getElementById("importOv").classList.add("open");
   document.body.style.overflow="hidden";
+  // trade est sélectionné par défaut → cacher HTML
+  updateModeForCat("trade");
 }
 
 function closeImport(){
@@ -1722,8 +1741,11 @@ function closeImport(){
   document.getElementById("fDesc").value="";
   document.getElementById("fContent").value="";
   document.getElementById("fPaire").value="";
-  document.getElementById("cH").checked=true;
-  setMode("html");
+  document.getElementById("cT").checked=true;
+  // Réafficher le bouton HTML au reset
+  document.getElementById("modeHtml").style.display="none";
+  document.getElementById("modeManual").style.borderLeft="none";
+  setMode("manual");
 }
 
 // ── GUEST TRADE SUBMIT ────────────────────────────────────────────────────────
