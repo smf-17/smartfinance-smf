@@ -1541,6 +1541,7 @@ function renderGrid(){
         <div class="card-actions">
           ${addBtn}
           ${role==="admin"?`<button class="btn-del" onclick="delArt(event,'${a.id}')" title="Supprimer">🗑</button>`:""}
+          ${isMyPost(a)?`<button class="btn-del" onclick="delOwnArt(event,'${a.id}')" title="Supprimer mon post" style="color:var(--red);border:1px solid rgba(255,77,109,.4);padding:3px 7px;border-radius:3px;">🗑 Supprimer</button>`:""}
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
             <div class="card-open">Lire →</div>
             ${authorName?`<span style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.04em;white-space:nowrap;">✍ ${authorName}</span>`:""}
@@ -1551,13 +1552,29 @@ function renderGrid(){
   }).join("");
 }
 
-function render(){ renderStats(); renderGrid(); }
+// Vérifie si l'article appartient à l'invité connecté (double vérif ID + username)
+function isMyPost(a){
+  if(role!=="guest"||!currentUser) return false;
+  if(a.cat!=="tradeinvites") return false;
+  const byId       = currentUser.id       && a.submittedById       && a.submittedById===currentUser.id;
+  const byUsername = currentUser.username  && a.submittedByUsername && a.submittedByUsername===currentUser.username;
+  return byId||byUsername;
+}
 
-// ── DELETE ARTICLE ────────────────────────────────────────────────────────────
+function render(){ renderStats(); renderGrid(); }
 function delArt(e,id){
   e.stopPropagation();
   if(!confirm("Supprimer cet article ?"))return;
   fbDel(id).then(()=>toast("Article supprimé"));
+}
+
+function delOwnArt(e,id){
+  e.stopPropagation();
+  if(role!=="guest"||!currentUser){toast("⚠ Accès non autorisé",true);return;}
+  const a=arts.find(x=>x.id===id);
+  if(!a||!isMyPost(a)){toast("⚠ Tu ne peux supprimer que tes propres posts",true);return;}
+  if(!confirm("Supprimer ton post ? Cette action est irréversible."))return;
+  fbDel(id).then(()=>toast("✓ Ton post a été supprimé"));
 }
 
 // ── OPEN ARTICLE ──────────────────────────────────────────────────────────────
@@ -1841,20 +1858,21 @@ async function submitGuestTrade(){
   let newArt;
   const submittedBy=currentUser?((currentUser.prenom||"")+" "+(currentUser.nom||"")).trim()||currentUser.username:"Invité";
   const submittedById=currentUser?currentUser.id:null;
+  const submittedByUsername=currentUser?currentUser.username:null;
 
   if(guestMode==="text"){
     const fc=document.getElementById("gContent").value.trim();
     if(!fc){toast("⚠ Ajoute du texte",true);return;}
     const block1={text:fc,image:null,date};
-    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,blocks:[block1],submittedBy,submittedById};
+    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,blocks:[block1],submittedBy,submittedById,submittedByUsername};
   } else if(guestMode==="textimg"){
     const fc=document.getElementById("gContentImg").value.trim();
     if(!fc&&guestPendingImages.length===0){toast("⚠ Ajoute du texte ou au moins une image",true);return;}
     const block1={text:fc,images:guestPendingImages.map(i=>i.dataUrl),image:guestPendingImages[0]?.dataUrl||null,date};
-    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,blocks:[block1],submittedBy,submittedById};
+    newArt={type:"manual",titre,desc,date,cat:"tradeinvites",paire,blocks:[block1],submittedBy,submittedById,submittedByUsername};
   } else if(guestMode==="pdf"){
     if(!guestPendingPdf){toast("⚠ Sélectionne un fichier PDF",true);return;}
-    newArt={type:"pdf",titre,desc,date,cat:"tradeinvites",paire,pdfData:guestPendingPdf.dataUrl,pdfName:guestPendingPdf.name,submittedBy,submittedById};
+    newArt={type:"pdf",titre,desc,date,cat:"tradeinvites",paire,pdfData:guestPendingPdf.dataUrl,pdfName:guestPendingPdf.name,submittedBy,submittedById,submittedByUsername};
   }
 
   const btn=document.getElementById("gBtnSubmit");
