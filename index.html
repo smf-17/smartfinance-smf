@@ -481,6 +481,202 @@
     .articles-grid{grid-template-columns:1fr;}
     .field-row,.cat-pills{grid-template-columns:repeat(2,1fr);}
   }
+
+  /* ═══════════════════════════════════════
+     FAB — Floating Action Button
+  ═══════════════════════════════════════ */
+  .fab{
+    position:fixed;bottom:2rem;right:2rem;z-index:200;
+    width:58px;height:58px;border-radius:50%;border:none;cursor:pointer;
+    background:var(--accent);color:#000;font-size:24px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 0 rgba(0,229,160,.5),0 8px 32px rgba(0,229,160,.35);
+    animation:fabPulse 2.8s ease-in-out infinite;
+    transition:transform .2s,box-shadow .2s;
+  }
+  .fab:hover{transform:scale(1.1) rotate(45deg);box-shadow:0 0 0 8px rgba(0,229,160,.12),0 12px 40px rgba(0,229,160,.4);}
+  @keyframes fabPulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(0,229,160,.4),0 8px 28px rgba(0,229,160,.3);}
+    50%    {box-shadow:0 0 0 10px rgba(0,229,160,.08),0 10px 36px rgba(0,229,160,.45);}
+  }
+  .fab-label{
+    position:fixed;bottom:2.45rem;right:5.5rem;z-index:200;
+    background:rgba(6,10,15,.92);border:1px solid var(--border2);
+    color:var(--accent);font-family:var(--mono);font-size:11px;font-weight:700;
+    padding:6px 12px;border-radius:5px;letter-spacing:.08em;
+    opacity:0;pointer-events:none;transition:opacity .18s;white-space:nowrap;
+  }
+  .fab:hover ~ .fab-label,.fab-label:hover{opacity:1;}
+
+  /* ═══════════════════════════════════════
+     WIZARD MODAL
+  ═══════════════════════════════════════ */
+  .wiz-overlay{
+    position:fixed;inset:0;background:rgba(2,4,10,.88);backdrop-filter:blur(16px);
+    z-index:400;display:none;align-items:center;justify-content:center;padding:1.5rem;
+  }
+  .wiz-overlay.open{display:flex;}
+  .wiz-modal{
+    width:100%;max-width:640px;background:var(--surface);
+    border:1px solid var(--border2);border-radius:16px;
+    overflow:hidden;animation:up .28s cubic-bezier(.34,1.56,.64,1);
+    display:flex;flex-direction:column;max-height:90vh;
+  }
+  @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+  /* Step bar */
+  .wiz-steps{display:flex;align-items:stretch;background:var(--surface2);border-bottom:1px solid var(--border);}
+  .wiz-step{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;padding:14px 8px;cursor:default;position:relative;
+    font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--dimmed);transition:color .2s;
+  }
+  .wiz-step .sn{
+    width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:700;color:var(--dimmed);
+    transition:all .25s;background:transparent;
+  }
+  .wiz-step.active .sn{background:var(--accent);border-color:var(--accent);color:#000;}
+  .wiz-step.done .sn{background:rgba(0,229,160,.15);border-color:rgba(0,229,160,.4);color:var(--accent);}
+  .wiz-step.done .sn::after{content:'✓';}
+  .wiz-step.done .sn span{display:none;}
+  .wiz-step.active{color:var(--accent);}
+  .wiz-step+.wiz-step::before{
+    content:'';position:absolute;left:0;top:50%;width:1px;height:40%;
+    background:var(--border);transform:translateY(-50%);
+  }
+
+  /* Wiz head */
+  .wiz-head{padding:1.25rem 1.5rem .75rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+  .wiz-title{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);letter-spacing:.06em;}
+  .wiz-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.04em;}
+  .btn-wiz-close{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:4px;cursor:pointer;transition:all .15s;}
+  .btn-wiz-close:hover{border-color:var(--red);color:var(--red);}
+
+  /* Wiz body */
+  .wiz-body{padding:1.5rem;overflow-y:auto;flex:1;}
+  .wiz-panel{display:none;}
+  .wiz-panel.active{display:block;}
+
+  /* Category cards */
+  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:.5rem;}
+  @media(max-width:500px){.cat-grid{grid-template-columns:repeat(2,1fr);}}
+  .cat-card{
+    background:var(--surface2);border:2px solid var(--border2);border-radius:10px;
+    padding:1rem .75rem;cursor:pointer;transition:all .18s;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  }
+  .cat-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3);}
+  .cat-card.selected{border-color:var(--cc,var(--accent));background:rgba(0,229,160,.06);box-shadow:0 0 0 1px var(--cc,var(--accent));}
+  .cat-card .cc-ico{font-size:22px;}
+  .cat-card .cc-lbl{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .18s;}
+  .cat-card.selected .cc-lbl{color:var(--cc,var(--accent));}
+  .cat-card .cc-dot{width:8px;height:8px;border-radius:50%;background:var(--cc,var(--accent));opacity:.35;transition:opacity .18s;}
+  .cat-card.selected .cc-dot{opacity:1;}
+
+  /* Mode toggle */
+  .mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.25rem;}
+  .mode-tog-btn{
+    background:var(--surface2);border:1px solid var(--border2);border-radius:8px;
+    padding:.75rem;cursor:pointer;transition:all .18s;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:.3rem;
+  }
+  .mode-tog-btn .mt-ico{font-size:18px;}
+  .mode-tog-btn .mt-lbl{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--muted);}
+  .mode-tog-btn .mt-sub{font-family:var(--mono);font-size:9px;color:var(--dimmed);}
+  .mode-tog-btn.active{border-color:var(--accent);background:rgba(0,229,160,.06);}
+  .mode-tog-btn.active .mt-lbl{color:var(--accent);}
+
+  /* Content area */
+  .wiz-textarea{
+    width:100%;background:var(--surface2);border:1px solid var(--border2);
+    color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.7;
+    padding:1rem;border-radius:8px;resize:vertical;min-height:160px;
+    outline:none;transition:border-color .2s;
+  }
+  .wiz-textarea:focus{border-color:var(--accent);}
+  .wiz-textarea::placeholder{color:var(--dimmed);}
+
+  /* Image upload zone */
+  .wiz-img-drop{
+    background:var(--surface2);border:1.5px dashed var(--border2);border-radius:8px;
+    padding:1.25rem;text-align:center;cursor:pointer;transition:border-color .18s;
+    position:relative;margin-top:.75rem;
+  }
+  .wiz-img-drop:hover,.wiz-img-drop.drag{border-color:var(--accent);}
+  .wiz-img-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .wiz-img-drop .wid-txt{font-family:var(--mono);font-size:11px;color:var(--muted);}
+  .wiz-img-drop .wid-sub{font-family:var(--mono);font-size:9px;color:var(--dimmed);margin-top:3px;}
+
+  /* Wiz fields */
+  .wiz-field{margin-bottom:1rem;}
+  .wiz-field label{display:block;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem;}
+  .wiz-input{
+    width:100%;background:var(--surface2);border:1px solid var(--border2);
+    color:var(--text);font-family:var(--mono);font-size:13px;
+    padding:9px 12px;border-radius:6px;outline:none;transition:border-color .2s;
+  }
+  .wiz-input:focus{border-color:var(--accent);}
+  .wiz-input::placeholder{color:var(--dimmed);}
+  .wiz-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+
+  /* Preview */
+  .wiz-preview-frame{
+    background:var(--surface2);border:1px solid var(--border2);border-radius:10px;
+    overflow:hidden;height:340px;
+  }
+  .wiz-preview-frame iframe{width:100%;height:100%;border:none;border-radius:10px;}
+  .wiz-preview-hint{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:.6rem;text-align:center;}
+
+  /* Wiz footer */
+  .wiz-footer{
+    padding:1rem 1.5rem;border-top:1px solid var(--border);
+    display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+    background:var(--surface2);
+  }
+  .btn-wiz-back{
+    background:transparent;border:1px solid var(--border2);color:var(--muted);
+    font-family:var(--mono);font-size:11px;font-weight:700;
+    padding:9px 20px;border-radius:6px;cursor:pointer;transition:all .15s;
+    letter-spacing:.06em;
+  }
+  .btn-wiz-back:hover{border-color:var(--text);color:var(--text);}
+  .btn-wiz-next{
+    background:var(--accent);border:none;color:#000;
+    font-family:var(--mono);font-size:11px;font-weight:700;
+    padding:9px 24px;border-radius:6px;cursor:pointer;transition:opacity .15s;
+    letter-spacing:.08em;display:flex;align-items:center;gap:.5rem;
+  }
+  .btn-wiz-next:hover{opacity:.85;}
+  .btn-wiz-next:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-wiz-publish{background:var(--accent);border:none;color:#000;font-family:var(--mono);font-size:12px;font-weight:700;padding:10px 28px;border-radius:6px;cursor:pointer;letter-spacing:.08em;transition:opacity .15s;}
+  .btn-wiz-publish:hover{opacity:.85;}
+  .btn-wiz-publish:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* ─── BLOCK EDITOR ─── */
+  .wb-list{display:flex;flex-direction:column;gap:.9rem;}
+  .wb{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;transition:border-color .2s;}
+  .wb:hover{border-color:rgba(0,229,160,.3);}
+  .wb-head{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border);}
+  .wb-num{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);}
+  .wb-num.is-header{color:var(--warn);}
+  .wb-actions{display:flex;gap:.35rem;}
+  .wb-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:3px;cursor:pointer;transition:all .15s;line-height:1;}
+  .wb-btn.del:hover{border-color:var(--red);color:var(--red);}
+  .wb-btn.mv:hover{border-color:var(--accent);color:var(--accent);}
+  .wb-body{padding:1rem;display:flex;flex-direction:column;gap:.85rem;}
+  .wb-img-zone{border:1.5px dashed var(--border2);border-radius:7px;position:relative;cursor:pointer;transition:border-color .18s;text-align:center;padding:.85rem;}
+  .wb-img-zone:hover{border-color:var(--accent);}
+  .wb-img-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+  .wb-img-zone .iz-txt{font-family:var(--mono);font-size:10px;color:var(--muted);}
+  .wb-img-zone .iz-sub{font-family:var(--mono);font-size:8px;color:var(--dimmed);margin-top:2px;}
+  .wb-img-prev{position:relative;margin-top:.5rem;display:inline-block;}
+  .wb-img-prev img{max-height:110px;max-width:100%;border-radius:6px;border:1px solid var(--border2);display:block;}
+  .wb-img-prev .rm-img{position:absolute;top:-7px;right:-7px;background:var(--red);border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .btn-add-para{width:100%;background:transparent;border:1.5px dashed var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:700;padding:.75rem;border-radius:8px;cursor:pointer;transition:all .18s;letter-spacing:.08em;margin-top:.25rem;}
+  .btn-add-para:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,.04);}
 </style>
 
   <!-- Firebase compat (global SDK) -->
@@ -563,105 +759,151 @@
   <div class="articles-grid" id="articlesGrid"></div>
 </div>
 
-<!-- ====== MODAL ====== -->
-<div class="overlay" id="importOv">
-  <div class="modal">
-    <div class="modal-head">
-      <div>
-        <div class="modal-head-title">Nouvel article</div>
-        <div class="modal-head-sub">Choisis le type de contenu à importer</div>
-      </div>
-      <button class="btn-x" onclick="closeImport()">✕ Fermer</button>
+<!-- ====== FAB ====== -->
+<button class="fab" id="fabAdd" onclick="openImport()" style="display:none;" title="Nouvel article">＋</button>
+<div class="fab-label">Nouvel article</div>
+
+<!-- ====== WIZARD MODAL ====== -->
+<div class="wiz-overlay" id="wizOv">
+  <div class="wiz-modal">
+
+    <!-- Step bar -->
+    <div class="wiz-steps">
+      <div class="wiz-step active" id="ws1"><div class="sn"><span>1</span></div>Catégorie</div>
+      <div class="wiz-step" id="ws2"><div class="sn"><span>2</span></div>Contenu</div>
+      <div class="wiz-step" id="ws3"><div class="sn"><span>3</span></div>Aperçu</div>
     </div>
-    <div class="modal-body">
 
-      <!-- MODE SWITCHER -->
-      <div class="mode-switcher">
-        <button class="mode-btn active" id="modeHtml" onclick="setMode('html')">
-          <span class="mico">🗂️</span>
-          <span class="mlbl">Fichier HTML</span>
-          <span class="msub">article déjà fait</span>
-        </button>
-        <button class="mode-btn" id="modeManual" onclick="setMode('manual')">
-          <span class="mico">✏️ 🖼️</span>
-          <span class="mlbl">Texte + Images</span>
-          <span class="msub">saisie libre</span>
-        </button>
+    <!-- Head -->
+    <div class="wiz-head">
+      <div>
+        <div class="wiz-title" id="wizTitle">Choisir une catégorie</div>
+        <div class="wiz-sub" id="wizSub">Étape 1 sur 4</div>
       </div>
+      <button class="btn-wiz-close" onclick="closeImport()">✕ Fermer</button>
+    </div>
 
-      <!-- ===== MODE HTML ===== -->
-      <div class="section on" id="secHtml">
-        <div class="drop-zone" id="dropZone">
-          <input type="file" id="fileInput" accept=".html,.htm" onchange="onHtmlFile(this.files[0])">
-          <span class="drop-icon">📄</span>
-          <div class="drop-title">Glisse ton fichier HTML ici</div>
-          <div class="drop-sub">ou clique pour ouvrir l'explorateur</div>
-          <div class="drop-btn-lbl">Choisir un fichier .html</div>
-        </div>
-        <div class="file-prev" id="filePrev">
-          <div class="file-ico">📄</div>
-          <div class="file-inf">
-            <div class="file-nm" id="fileName">—</div>
-            <div class="file-sz" id="fileSize">—</div>
+    <!-- Body -->
+    <div class="wiz-body">
+
+      <!-- ── STEP 1 : Catégorie ── -->
+      <div class="wiz-panel active" id="wp1">
+        <div class="cat-grid">
+          <div class="cat-card" data-cat="hebdo" style="--cc:#f7b731" onclick="selectCat('hebdo',this)">
+            <span class="cc-ico">📈</span>
+            <span class="cc-lbl">Hebdo</span>
+            <span class="cc-dot"></span>
           </div>
-          <button class="btn-chg" onclick="resetHtml()">Changer</button>
-        </div>
-      </div>
-
-      <!-- ===== MODE MANUEL ===== -->
-      <div class="section" id="secManual">
-        <div class="field">
-          <label>Contenu texte</label>
-          <textarea id="fContent" style="min-height:120px" placeholder="Écris ton analyse de trade ici...&#10;&#10;Ex:&#10;Setup : Double bottom sur 4H&#10;Entrée : 1.0850&#10;SL : 1.0810&#10;TP1 : 1.0920 / TP2 : 1.0980&#10;RR : 1:2"></textarea>
-        </div>
-        <div class="field">
-          <label>Images (graphiques, screenshots)</label>
-          <div class="img-drop" id="imgDrop">
-            <input type="file" id="imgInput" accept="image/*" multiple onchange="onImagesSelected(this.files)">
-            <div class="img-drop-txt">📸 Clique ou glisse tes images ici<br><span>JPG, PNG, WebP — plusieurs images acceptées</span></div>
+          <div class="cat-card" data-cat="weekahead" style="--cc:#00e5a0" onclick="selectCat('weekahead',this)">
+            <span class="cc-ico">🗓️</span>
+            <span class="cc-lbl">Week Ahead</span>
+            <span class="cc-dot"></span>
           </div>
-          <div class="img-previews" id="imgPreviews"></div>
+          <div class="cat-card" data-cat="mensuel" style="--cc:#0ff" onclick="selectCat('mensuel',this)">
+            <span class="cc-ico">📊</span>
+            <span class="cc-lbl">Monthly Recap</span>
+            <span class="cc-dot"></span>
+          </div>
+          <div class="cat-card" data-cat="banques" style="--cc:#00e5a0" onclick="selectCat('banques',this)">
+            <span class="cc-ico">🏦</span>
+            <span class="cc-lbl">Bank Meeting</span>
+            <span class="cc-dot"></span>
+          </div>
+          <div class="cat-card" data-cat="trade" style="--cc:#ff4d6d" onclick="selectCat('trade',this)">
+            <span class="cc-ico">⚡</span>
+            <span class="cc-lbl">Trades Admins</span>
+            <span class="cc-dot"></span>
+          </div>
         </div>
       </div>
 
-      <!-- ===== CHAMPS COMMUNS ===== -->
-      <div class="field">
-        <label>Titre *</label>
-        <input type="text" id="fTitre" placeholder="Ex: Trade EUR/USD — Setup 4H Round Numbers">
-      </div>
+      <!-- ── STEP 2 : Contenu par blocs ── -->
+      <div class="wiz-panel" id="wp2">
 
-      <div class="field">
-        <label>Description courte *</label>
-        <textarea id="fDesc" style="min-height:60px" placeholder="Résumé en 1-2 phrases visible sur la carte..."></textarea>
-      </div>
-
-      <div class="field">
-        <label>Catégorie *</label>
-        <div class="cat-pills">
-          <div class="pill hebdo"><input type="radio" name="rCat" id="cH" value="hebdo" onchange="updateModeForCat(this.value)"><label for="cH">Hebdo</label></div>
-          <div class="pill weekahead"><input type="radio" name="rCat" id="cWA" value="weekahead" onchange="updateModeForCat(this.value)"><label for="cWA">Week Ahead</label></div>
-          <div class="pill mensuel"><input type="radio" name="rCat" id="cM" value="mensuel" onchange="updateModeForCat(this.value)"><label for="cM">Monthly Recap</label></div>
-          <div class="pill banques"><input type="radio" name="rCat" id="cG" value="banques" onchange="updateModeForCat(this.value)"><label for="cG">Bank Meeting</label></div>
-          <div class="pill trade"><input type="radio" name="rCat" id="cT" value="trade" checked onchange="updateModeForCat(this.value)"><label for="cT">Trades Admins</label></div>
-          <div class="pill tradeinvites"><input type="radio" name="rCat" id="cTI" value="tradeinvites" onchange="updateModeForCat(this.value)"><label for="cTI">Trades Invites</label></div>
+        <!-- Mode toggle (caché pour trade) -->
+        <div class="mode-toggle" id="wizModeToggle">
+          <button class="mode-tog-btn" id="wModeHtml" onclick="setWizMode('html')">
+            <span class="mt-ico">🗂️</span>
+            <span class="mt-lbl">Fichier HTML</span>
+            <span class="mt-sub">article déjà fait</span>
+          </button>
+          <button class="mode-tog-btn active" id="wModeManual" onclick="setWizMode('manual')">
+            <span class="mt-ico">📝</span>
+            <span class="mt-lbl">Éditeur par blocs</span>
+            <span class="mt-sub">template auto-appliqué</span>
+          </button>
         </div>
+
+        <!-- HTML mode -->
+        <div id="wSecHtml" style="display:none;">
+          <div class="drop-zone" id="wDropZone" style="cursor:pointer;">
+            <input type="file" id="wFileInput" accept=".html,.htm" onchange="onWizHtmlFile(this.files[0])" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+            <span class="drop-icon">📄</span>
+            <div class="drop-title">Glisse ton fichier HTML ici</div>
+            <div class="drop-sub">ou clique pour ouvrir l'explorateur</div>
+          </div>
+          <div class="file-prev" id="wFilePrev">
+            <div class="file-ico">📄</div>
+            <div class="file-inf">
+              <div class="file-nm" id="wFileName">—</div>
+              <div class="file-sz" id="wFileSize">—</div>
+            </div>
+            <button class="btn-chg" onclick="resetWizHtml()">Changer</button>
+          </div>
+        </div>
+
+        <!-- Block editor mode -->
+        <div id="wSecManual">
+          <div class="wb-list" id="wbList">
+            <!-- Bloc 1 : En-tête (rendu par JS) -->
+          </div>
+          <button class="btn-add-para" onclick="addParaBlock()">＋ Ajouter un paragraphe</button>
+
+          <!-- Meta bar : date + heure + paire -->
+          <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+            <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem;">Publication</div>
+            <div style="display:grid;grid-template-columns:1fr 120px 1fr;gap:.6rem;align-items:end;">
+              <div class="wiz-field" style="margin-bottom:0;">
+                <label>Date *</label>
+                <input class="wiz-input" type="date" id="wDate">
+              </div>
+              <div class="wiz-field" style="margin-bottom:0;">
+                <label>Heure</label>
+                <input class="wiz-input" type="time" id="wTime" placeholder="09:00">
+              </div>
+              <div class="wiz-field" style="margin-bottom:0;">
+                <label>Paire / Instrument</label>
+                <input class="wiz-input" type="text" id="wPaire" placeholder="EUR/USD, XAU/USD...">
+              </div>
+            </div>
+          </div>
+          <!-- Champs cachés pour compatibilité -->
+          <input type="hidden" id="wTitre">
+          <input type="hidden" id="wDesc">
+        </div>
+
       </div>
 
-      <div class="field-row">
-        <div class="field">
-          <label>Date *</label>
-          <input type="date" id="fDate">
+      <!-- ── STEP 3 : Aperçu ── -->
+      <div class="wiz-panel" id="wp3">
+        <div class="wiz-preview-frame">
+          <iframe id="wizPreviewFrame" sandbox="allow-same-origin"></iframe>
         </div>
-        <div class="field">
-          <label>Paire / Instrument</label>
-          <input type="text" id="fPaire" placeholder="EUR/USD, XAU/USD...">
-        </div>
+        <div class="wiz-preview-hint">📋 Aperçu de l'article tel qu'il sera affiché</div>
       </div>
 
-      <button class="btn-submit" id="btnSubmit" onclick="submitImport()">✓ Publier l'article</button>
+    </div><!-- /wiz-body -->
+
+    <!-- Footer -->
+    <div class="wiz-footer">
+      <button class="btn-wiz-back" id="wizBtnBack" onclick="wizBack()" style="visibility:hidden;">← Retour</button>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--dimmed);" id="wizStepLabel">1 / 4</div>
+      <button class="btn-wiz-next" id="wizBtnNext" onclick="wizNext()">Suivant →</button>
+      <button class="btn-wiz-publish" id="wizBtnPublish" style="display:none;" onclick="wizPublish()">✦ Publier l'article</button>
     </div>
   </div>
 </div>
+
 
 <!-- ====== ÉCRAN D'ACCÈS ====== -->
 <div id="gateScreen" style="position:fixed;inset:0;background:#02040a;z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem;">
@@ -797,6 +1039,16 @@
       <div style="font-family:var(--mono);font-size:11px;color:#00e5a0;letter-spacing:.15em;margin-bottom:1rem;">👁 CATÉGORIES VISIBLES PAR LES INVITÉS</div>
       <div id="catToggles" style="display:flex;flex-wrap:wrap;gap:.5rem;"></div>
       <button onclick="saveCatAccess()" style="margin-top:1rem;background:#00e5a0;border:none;color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 20px;border-radius:4px;cursor:pointer;">💾 Sauvegarder</button>
+    </div>
+
+    <!-- Migration : attribuer heure manquante -->
+    <div style="background:#060a0f;border:1px solid #1c2430;border-radius:10px;padding:1.25rem;margin-bottom:1rem;">
+      <div style="font-family:var(--mono);font-size:11px;color:#00e5a0;letter-spacing:.15em;margin-bottom:.6rem;">🕐 MIGRATION — HEURES MANQUANTES</div>
+      <div style="font-family:var(--mono);font-size:10px;color:#5a6578;margin-bottom:1rem;line-height:1.6;">Attribue <span style="color:#d0dae8;">00:00</span> à tous les articles sans heure pour un tri chronologique parfait.</div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button onclick="migrateArticleTimes()" id="btnMigrate" style="background:#00e5a0;border:none;color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 20px;border-radius:4px;cursor:pointer;">⚡ Lancer la migration</button>
+        <span id="migrateStatus" style="font-family:var(--mono);font-size:10px;color:#5a6578;"></span>
+      </div>
     </div>
 
     <!-- Liste invités -->
@@ -1089,7 +1341,7 @@ let unsubscribe = null;
 
 // ── Utils ────────────────────────────────────────────────────────────────────
 function save(){ localStorage.setItem(SK, JSON.stringify(arts)); }
-function fmtD(s){ return new Date(s+"T00:00:00").toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"}); }
+function fmtD(s,t){ const d=new Date(s+"T00:00:00").toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"}); return t?d+" · "+t:d; }
 function fmtSz(b){ return b<1024?"< 1 Ko":b<1048576?(b/1024).toFixed(0)+" Ko":(b/1048576).toFixed(1)+" Mo"; }
 function toast(msg,err=false){
   const t=document.getElementById("toast");
@@ -1271,13 +1523,14 @@ window.addEventListener("beforeunload",()=>{
 // ── HEADER ────────────────────────────────────────────────────────────────────
 function renderHeaderActions(){
   const div=document.getElementById("headerActions");
+  const fab=document.getElementById("fabAdd");
   if(role==="admin"){
     const username = sessionStorage.getItem("smf_username") || "ADMIN";
     div.innerHTML=`
       <span style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;">● ${username}</span>
       <button class="btn-export" onclick="openAdminPanel()">⚙ Gestion</button>
-      <button class="btn-add-header" onclick="openImport()">📂 Nouvel article</button>
       <button class="btn-export" onclick="doLogout()">Déconnexion</button>`;
+    if(fab) fab.style.display="flex";
   } else if(role==="guest"){
     const displayName = currentUser
       ? ((currentUser.prenom||"")+" "+(currentUser.nom||"")).trim() || currentUser.username || "INVITÉ"
@@ -1286,6 +1539,9 @@ function renderHeaderActions(){
       <span style="font-family:var(--mono);font-size:10px;color:var(--warn);letter-spacing:.1em;">● ${displayName}</span>
       <button class="btn-add-header" onclick="openGuestSubmit()" style="background:#7c3aed;">📤 Soumettre un Trade</button>
       <button class="btn-export" onclick="doLogout()">Déconnexion</button>`;
+    if(fab) fab.style.display="none";
+  } else {
+    if(fab) fab.style.display="none";
   }
 }
 
@@ -1406,6 +1662,45 @@ async function saveMaxGuests(){
   toast("✓ Limite sauvegardée : "+SETTINGS.maxGuests+" invités max");
 }
 
+async function migrateArticleTimes(){
+  const btn = document.getElementById("btnMigrate");
+  const status = document.getElementById("migrateStatus");
+  btn.disabled = true; btn.textContent = "Migration en cours...";
+  status.textContent = "";
+  try{
+    const snap = await db.collection("articles").get();
+    const toUpdate = snap.docs.filter(d => {
+      const data = d.data();
+      return !data.time || data.time.trim() === "";
+    });
+    if(toUpdate.length === 0){
+      status.textContent = "✓ Tous les articles ont déjà une heure.";
+      btn.disabled = false; btn.textContent = "⚡ Lancer la migration";
+      return;
+    }
+    // Batch updates (max 500 par batch Firestore)
+    const BATCH_SIZE = 400;
+    let done = 0;
+    for(let i = 0; i < toUpdate.length; i += BATCH_SIZE){
+      const batch = db.batch();
+      toUpdate.slice(i, i + BATCH_SIZE).forEach(doc => {
+        batch.update(doc.ref, { time: "00:00" });
+      });
+      await batch.commit();
+      done += Math.min(BATCH_SIZE, toUpdate.length - i);
+      status.textContent = `${done} / ${toUpdate.length} articles mis à jour...`;
+    }
+    status.style.color = "#00e5a0";
+    status.textContent = `✓ ${toUpdate.length} article(s) mis à jour avec 00:00`;
+    toast(`✓ Migration terminée — ${toUpdate.length} articles mis à jour`);
+  } catch(e){
+    status.style.color = "var(--red)";
+    status.textContent = "✕ Erreur : " + e.message;
+    toast("✕ Erreur migration : " + e.message, true);
+  }
+  btn.disabled = false; btn.textContent = "⚡ Lancer la migration";
+}
+
 async function saveCatAccess(){
   await pushSettings();
   toast("✓ Catégories mises à jour");
@@ -1485,7 +1780,11 @@ function renderStats(){
 }
 
 function filtered(){
-  let l=[...arts].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  let l=[...arts].sort((a,b)=>{
+    const da = new Date((a.date||"1970-01-01")+"T"+(a.time||"00:00"));
+    const db2= new Date((b.date||"1970-01-01")+"T"+(b.time||"00:00"));
+    return db2 - da;
+  });
   if(role==="guest") l=l.filter(a=>SETTINGS.allowedCats.includes(a.cat) || a.cat==="tradeinvites");
   // Exclure ideetrade dans tous les cas (catégorie supprimée)
   l=l.filter(a=>a.cat!=="ideetrade");
@@ -1529,7 +1828,7 @@ function renderGrid(){
     return `<div class="article-card" data-cat="${a.cat}" onclick="openArt('${a.id}')">
       <div class="card-top">
         <span class="cat-badge ${a.cat}">${CAT_LABEL[a.cat]||a.cat||"?"}</span>
-        <span class="card-date">${fmtD(a.date)}</span>
+        <span class="card-date">${fmtD(a.date,a.time||"")}</span>
       </div>
       ${thumb}
       <div class="card-title-desc">
@@ -1593,180 +1892,1166 @@ function openArt(id){
     window.open(URL.createObjectURL(blob),"_blank");
     return;
   } else if(Array.isArray(a.blocks)&&a.blocks.length>0){
-    // ── TRADE BLOCKS : chronologie texte/image par bloc ──
-    const acc=a.cat==="tradeinvites"?"#7c3aed":"#ff4d6d";
-    const submittedInfo=a.submittedBy?`<div style="font-family:monospace;font-size:11px;color:${acc};margin-bottom:1.5rem;">📤 Soumis par : ${a.submittedBy}</div>`:"";
-    const blocksHtml=a.blocks.map((b,i)=>{
-      const bDate=b.date?new Date(b.date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}):"";
-      const sep=i===0
-        ?`<div style="font-family:monospace;font-size:10px;color:${acc};letter-spacing:.12em;margin-bottom:.9rem;opacity:.75;">📅 PUBLICATION INITIALE · ${bDate}</div>`
-        :`<div style="display:flex;align-items:center;gap:.75rem;margin:2rem 0 1.5rem;opacity:.55;"><span style="flex:1;height:1px;background:#21262d;display:block;"></span><span style="font-family:monospace;font-size:10px;color:${acc};white-space:nowrap;letter-spacing:.1em;">── MISE À JOUR ${i+1} · ${bDate}${b.addedBy?" · ✍ "+b.addedBy:""} ──</span><span style="flex:1;height:1px;background:#21262d;display:block;"></span></div>`;
-      // Bloc initial vide (article HTML sans blocs au départ) : ne rien afficher
-      if(b.isInitial&&!b.text&&!b.image) return sep.replace(/📅.*?<\/div>/,"");
-      const txt=b.text?(b.text.replace(/\n/g,"<br>")):"";
-      // Support both legacy single image and new multiple images array
-      const imgSrcs=Array.isArray(b.images)&&b.images.length>0?b.images:(b.image?[b.image]:[]);
-      const img=imgSrcs.map(src=>`<img src="${src}" style="max-width:100%;border-radius:8px;margin:1rem 0;display:block;border:1px solid #21262d;">`).join("");
-      return `${sep}${txt?`<div class="content">${txt}</div>`:""}${img}`;
-    }).join("");
-    html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${a.titre}</title>
-    <style>body{background:#080c10;color:#e6edf3;font-family:'Segoe UI',sans-serif;max-width:860px;margin:0 auto;padding:2rem 1.5rem;line-height:1.8;}
-    h1{color:#00e5a0;}.meta{font-size:12px;color:#7d8590;margin-bottom:.75rem;font-family:monospace;}
-    .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.2em;padding:3px 8px;border-radius:2px;text-transform:uppercase;margin-bottom:.5rem;background:rgba(255,77,109,.15);color:${acc};}
-    .content{font-size:14px;color:#c9d1d9;white-space:pre-wrap;margin-bottom:.25rem;}
-    img{border:1px solid #21262d;max-width:100%;border-radius:6px;}</style></head><body>
-    <div class="badge">${CAT_LABEL[a.cat]||a.cat} · 🔗 ${a.blocks.length}/5 bloc${a.blocks.length>1?"s":""}</div>
-    <h1>${a.titre}</h1>
-    <div class="meta">${fmtD(a.date)}${a.paire?" · "+a.paire:""}</div>
-    ${submittedInfo}${blocksHtml}</body></html>`;
+    const fdate = fmtD(a.date, a.time||"");
+    const by    = a.submittedBy||"Admin";
+    if(a.cat==="tradeinvites"){
+      html = tplTradeInvites(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
+    } else {
+      html = tplTrade(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
+    }
   } else {
-    const imgs=(a.images||[]).map(src=>`<img src="${src}" style="max-width:100%;border-radius:8px;margin:1rem 0;display:block;">`).join("");
-    const txt=a.content?(a.content.replace(/\n/g,"<br>")):"";
-    const submittedInfo=a.submittedBy?`<div style="font-family:monospace;font-size:11px;color:#7c3aed;margin-bottom:1rem;">📤 Soumis par : ${a.submittedBy}</div>`:"";
-    html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${a.titre}</title>
-    <style>body{background:#080c10;color:#e6edf3;font-family:'Segoe UI',sans-serif;max-width:860px;margin:0 auto;padding:2rem 1.5rem;line-height:1.8;}
-    h1{color:#00e5a0;}.meta{font-size:12px;color:#7d8590;margin-bottom:2rem;font-family:monospace;}
-    .badge{display:inline-block;background:rgba(255,77,109,.15);color:#ff4d6d;font-size:10px;font-weight:700;letter-spacing:.2em;padding:3px 8px;border-radius:2px;text-transform:uppercase;margin-bottom:.5rem;}
-    .content{font-size:14px;color:#c9d1d9;white-space:pre-wrap;}img{border:1px solid #21262d;max-width:100%;}</style></head><body>
-    <div class="badge">${CAT_LABEL[a.cat]||a.cat}</div><h1>${a.titre}</h1>
-    <div class="meta">${fmtD(a.date)}${a.paire?" · "+a.paire:""}</div>
-    ${submittedInfo}
-    <div class="content">${txt}</div>${imgs}</body></html>`;
+    const fdate = fmtD(a.date, a.time||"");
+    const by    = a.submittedBy||"Admin";
+    const acc   = CAT_COLORS[a.cat]||"#00e5a0";
+    const catLbl= CAT_LABEL[a.cat]||a.cat;
+    const hb    = {subtitle:a.desc||"",image:null};
+    const paraBlocks = a.content
+      ? [{type:"para",text:a.content,image:null}]
+      : (a.images||[]).map((src,i)=>({type:"para",text:"",image:{dataUrl:src,name:"image-"+(i+1)}}));
+    const oldWizCat = wizCat;
+    wizCat = a.cat;
+    html = generateArticleTemplate(a.titre,a.desc||"",catLbl,acc,fdate,a.paire||"",
+      [{type:"header",titre:a.titre,subtitle:a.desc||"",image:null},...paraBlocks],by);
+    wizCat = oldWizCat;
   }
   const blob=new Blob([html],{type:"text/html"});
   window.open(URL.createObjectURL(blob),"_blank");
 }
 
-// ── IMPORT MODAL ──────────────────────────────────────────────────────────────
-function setMode(m){
-  mode=m;
-  document.getElementById("modeHtml").classList.toggle("active",m==="html");
-  document.getElementById("modeManual").classList.toggle("active",m==="manual");
-  document.getElementById("secHtml").classList.toggle("on",m==="html");
-  document.getElementById("secManual").classList.toggle("on",m==="manual");
+// ── WIZARD STATE ─────────────────────────────────────────────────────────────
+let wizStep = 1;
+let wizCat = null;
+let wizMode = "manual";
+let wizPendingHTML = null;
+
+// Block-based content
+// wizBlocks[0] = header block: { type:'header', subtitle:'', image:null }
+// wizBlocks[1..n] = para blocks: { type:'para', text:'', image:null }
+let wizBlocks = [];
+
+const WIZ_TITLES = ["Choisir une catégorie","Construire l'article","Aperçu & Publication"];
+const WIZ_SUBS   = ["Étape 1 sur 3","Étape 2 sur 3 · Titre · Blocs · Date","Étape 3 sur 3"];
+const CAT_COLORS = {hebdo:"#f7b731",weekahead:"#00e5a0",mensuel:"#0ff",banques:"#00e5a0",trade:"#ff4d6d",tradeinvites:"#7c3aed"};
+
+// ── BLOCK EDITOR ─────────────────────────────────────────────────────────────
+function initBlocks(){
+  wizBlocks = [{ type:"header", titre:"", subtitle:"", image:null }];
+  renderBlocks();
 }
 
-function onHtmlFile(file){
-  if(!file)return;
-  if(!file.name.match(/\.html?$/i)){toast("⚠ Sélectionne un fichier .html",true);return;}
-  const r=new FileReader();
-  r.onload=e=>{
-    pendingHTML=e.target.result;
-    const doc=new DOMParser().parseFromString(pendingHTML,"text/html");
-    const detected=(doc.querySelector("title")?.textContent.trim())||(doc.querySelector("h1")?.textContent.trim())||"";
-    if(detected)document.getElementById("fTitre").value=detected;
-    document.getElementById("fileName").textContent=file.name;
-    document.getElementById("fileSize").textContent=fmtSz(file.size)+" · HTML";
-    document.getElementById("dropZone").style.display="none";
-    document.getElementById("filePrev").classList.add("on");
-    document.getElementById("fTitre").focus();
+function addParaBlock(){
+  wizBlocks.push({ type:"para", text:"", image:null });
+  renderBlocks();
+  // Scroll to new block
+  setTimeout(()=>{
+    const list=document.getElementById("wbList");
+    list.lastElementChild?.scrollIntoView({behavior:"smooth",block:"nearest"});
+  },60);
+}
+
+function removeParaBlock(idx){
+  if(idx===0) return; // cannot remove header
+  wizBlocks.splice(idx,1);
+  renderBlocks();
+}
+
+function moveBlock(idx, dir){
+  const target = idx + dir;
+  if(target < 1 || target >= wizBlocks.length) return; // block 0 = header, immovable
+  [wizBlocks[idx], wizBlocks[target]] = [wizBlocks[target], wizBlocks[idx]];
+  renderBlocks();
+}
+
+function onBlockImg(idx, files){
+  const file = files[0]; if(!file||!file.type.startsWith("image/")) return;
+  const r = new FileReader();
+  r.onload = async e => {
+    const compressed = await compressImage(e.target.result);
+    wizBlocks[idx].image = { name: file.name, dataUrl: compressed };
+    renderBlocks();
   };
-  r.readAsText(file);
+  r.readAsDataURL(file);
 }
 
-function resetHtml(){
-  pendingHTML=null;
-  document.getElementById("fileInput").value="";
-  document.getElementById("dropZone").style.display="block";
-  document.getElementById("filePrev").classList.remove("on");
-  document.getElementById("fTitre").value="";
+function removeBlockImg(idx){
+  wizBlocks[idx].image = null;
+  renderBlocks();
 }
 
-function onImagesSelected(files){
-  Array.from(files).forEach(file=>{
-    if(!file.type.startsWith("image/"))return;
-    const r=new FileReader();
-    r.onload=async e=>{
-      const compressed=await compressImage(e.target.result);
-      pendingImages.push({name:file.name,dataUrl:compressed});
-      renderImgPreviews();
-    };
-    r.readAsDataURL(file);
-  });
-  document.getElementById("imgInput").value="";
+function syncBlockText(idx, val){
+  if(wizBlocks[idx]) wizBlocks[idx].text = val;
+}
+function syncBlockSubtitle(val){
+  if(wizBlocks[0]) wizBlocks[0].subtitle = val;
+}
+function syncBlockTitre(val){
+  if(wizBlocks[0]) wizBlocks[0].titre = val;
+  // Keep step-3 hidden field in sync
+  const f = document.getElementById("wTitre");
+  if(f) f.value = val;
 }
 
-function renderImgPreviews(){
-  document.getElementById("imgPreviews").innerHTML=pendingImages.map((img,i)=>`
-    <div class="img-thumb-wrap"><img src="${img.dataUrl}" alt="${img.name}">
-    <button class="img-thumb-del" onclick="removeImg(${i})">✕</button></div>`).join("");
-}
-function removeImg(i){ pendingImages.splice(i,1); renderImgPreviews(); }
+function renderBlocks(){
+  const list = document.getElementById("wbList");
+  if(!list) return;
+  list.innerHTML = wizBlocks.map((b, i) => {
+    const isHeader = b.type === "header";
+    const acc = CAT_COLORS[wizCat]||"#00e5a0";
+    const imgZone = b.image
+      ? `<div class="wb-img-prev">
+           <img src="${b.image.dataUrl}" alt="">
+           <button class="rm-img" onclick="removeBlockImg(${i})">✕</button>
+         </div>`
+      : `<div class="wb-img-zone">
+           <input type="file" accept="image/*" onchange="onBlockImg(${i},this.files)">
+           <div class="iz-txt">${isHeader?"🖼️ Image de couverture (optionnel)":"📸 Image (optionnel)"}</div>
+           <div class="iz-sub">JPG · PNG · WebP</div>
+         </div>`;
 
-async function submitImport(){
-  const titre=document.getElementById("fTitre").value.trim();
-  const desc =document.getElementById("fDesc").value.trim();
-  const date =document.getElementById("fDate").value;
-  const cat  =document.querySelector("input[name=rCat]:checked")?.value||"trade";
-  const paire=document.getElementById("fPaire").value.trim();
-  if(!titre){toast("⚠ Le titre est obligatoire",true);return;}
-  if(!desc){toast("⚠ La description est obligatoire",true);return;}
-  if(!date){toast("⚠ La date est obligatoire",true);return;}
-  let newArt;
-  const adminUsername = sessionStorage.getItem("smf_username") || "Admin";
-  if(mode==="html"){
-    if(!pendingHTML){toast("⚠ Sélectionne un fichier HTML",true);return;}
-    newArt={type:"html",titre,desc,date,cat,paire,html:pendingHTML,fileName:document.getElementById("fileName").textContent,submittedBy:adminUsername};
-  } else {
-    const fc=document.getElementById("fContent").value.trim();
-    if(!fc&&pendingImages.length===0){toast("⚠ Ajoute du texte ou au moins une image",true);return;}
-    if(cat==="trade"||cat==="tradeinvites"){
-      // Structure par blocs — premier bloc uniquement
-      const block1={text:fc,images:pendingImages.map(i=>i.dataUrl),image:pendingImages[0]?.dataUrl||null,date};
-      newArt={type:"manual",titre,desc,date,cat,paire,blocks:[block1],submittedBy:adminUsername};
+    if(isHeader){
+      return `<div class="wb" id="wb-0">
+        <div class="wb-head">
+          <span class="wb-num is-header">BLOC 1 · EN-TÊTE DE L'ARTICLE</span>
+        </div>
+        <div class="wb-body">
+          <div class="wiz-field" style="margin-bottom:0;">
+            <label>Titre de l'article *</label>
+            <input class="wiz-input" type="text"
+              placeholder="Ex : Analyse EUR/USD — Semaine du 30 mars"
+              oninput="syncBlockTitre(this.value)"
+              value="${(b.titre||'').replace(/"/g,'&quot;')}">
+          </div>
+          <div class="wiz-field" style="margin-bottom:0;">
+            <label>Sous-titre / Accroche</label>
+            <textarea class="wiz-textarea" style="min-height:65px;"
+              placeholder="Ex : Semaine marquée par la Fed hawkish. DXY consolide au-dessus de 104..."
+              oninput="syncBlockSubtitle(this.value)">${b.subtitle||""}</textarea>
+          </div>
+          <div class="wiz-field" style="margin-bottom:0;">
+            <label>Image principale</label>
+            ${imgZone}
+          </div>
+        </div>
+      </div>`;
     } else {
-      newArt={type:"manual",titre,desc,date,cat,paire,content:fc,images:pendingImages.map(i=>i.dataUrl),submittedBy:adminUsername};
+      const pIdx = i; // paragraph index in wizBlocks
+      return `<div class="wb" id="wb-${i}">
+        <div class="wb-head">
+          <span class="wb-num">PARAGRAPHE ${i}</span>
+          <div class="wb-actions">
+            ${i > 1 ? `<button class="wb-btn mv" onclick="moveBlock(${i},-1)" title="Monter">↑</button>` : ""}
+            ${i < wizBlocks.length-1 ? `<button class="wb-btn mv" onclick="moveBlock(${i},1)" title="Descendre">↓</button>` : ""}
+            <button class="wb-btn del" onclick="removeParaBlock(${i})" title="Supprimer">✕</button>
+          </div>
+        </div>
+        <div class="wb-body">
+          <div class="wiz-field" style="margin-bottom:0;">
+            <label>Texte du paragraphe</label>
+            <textarea class="wiz-textarea" style="min-height:110px;"
+              placeholder="Écris ton analyse ici..."
+              oninput="syncBlockText(${i},this.value)">${b.text||""}</textarea>
+          </div>
+          <div class="wiz-field" style="margin-bottom:0;">
+            <label>Image associée à ce paragraphe (optionnel)</label>
+            ${imgZone}
+          </div>
+        </div>
+      </div>`;
     }
-  }
-  const btn=document.getElementById("btnSubmit");
-  btn.disabled=true; btn.textContent="Publication...";
-  const id=await fbAdd(newArt);
-  btn.disabled=false; btn.textContent="✓ Publier l'article";
-  if(id){ closeImport(); toast("✓ Publié — visible instantanément !"); }
+  }).join("");
 }
 
-// ── MODE SWITCHER selon catégorie ────────────────────────────────────────────
-function updateModeForCat(cat){
-  const tradeOnly = cat==="trade"||cat==="tradeinvites";
-  const htmlBtn   = document.getElementById("modeHtml");
-  const switcher  = htmlBtn.parentElement;
-  if(tradeOnly){
-    // Cacher le bouton HTML, forcer mode manuel
-    htmlBtn.style.display="none";
-    // Retirer le séparateur du premier bouton si HTML caché
-    document.getElementById("modeManual").style.borderLeft="none";
-    if(mode==="html") setMode("manual");
-  } else {
-    htmlBtn.style.display="";
-    document.getElementById("modeManual").style.borderLeft="";
+function selectCat(cat, el){
+  wizCat = cat;
+  document.querySelectorAll(".cat-card").forEach(c=>c.classList.remove("selected"));
+  el.classList.add("selected");
+}
+
+function setWizMode(m){
+  wizMode = m;
+  document.getElementById("wModeHtml").classList.toggle("active", m==="html");
+  document.getElementById("wModeManual").classList.toggle("active", m==="manual");
+  document.getElementById("wSecHtml").style.display   = m==="html" ? "block" : "none";
+  document.getElementById("wSecManual").style.display = m==="manual" ? "block" : "none";
+}
+
+function wizUpdateUI(){
+  for(let i=1;i<=3;i++){
+    const s=document.getElementById("ws"+i);
+    s.className="wiz-step"+(i===wizStep?" active":i<wizStep?" done":"");
   }
+  document.getElementById("wizTitle").textContent = WIZ_TITLES[wizStep-1];
+  document.getElementById("wizSub").textContent   = WIZ_SUBS[wizStep-1];
+  document.getElementById("wizStepLabel").textContent = wizStep+" / 3";
+  for(let i=1;i<=3;i++) document.getElementById("wp"+i).classList.toggle("active",i===wizStep);
+  const back=document.getElementById("wizBtnBack");
+  const next=document.getElementById("wizBtnNext");
+  const pub =document.getElementById("wizBtnPublish");
+  back.style.visibility = wizStep>1 ? "visible":"hidden";
+  if(wizStep===3){ next.style.display="none"; pub.style.display="flex"; }
+  else { next.style.display="flex"; pub.style.display="none"; }
+  const isTradeOnly = wizCat==="trade"||wizCat==="tradeinvites";
+  const mt=document.getElementById("wizModeToggle");
+  if(mt) mt.style.display = isTradeOnly?"none":"grid";
+  if(isTradeOnly && wizMode==="html") setWizMode("manual");
+}
+
+function wizNext(){
+  if(wizStep===1){
+    if(!wizCat){ toast("⚠ Choisis une catégorie",true); return; }
+    if(wizBlocks.length===0) initBlocks();
+  }
+  if(wizStep===2){
+    // Sync titre from block 1
+    const block1Titre = (wizBlocks[0]?.titre||"").trim();
+    if(!block1Titre){ toast("⚠ Remplis le titre dans le Bloc 1",true); return; }
+    document.getElementById("wTitre").value = block1Titre;
+    // Use subtitle as description for the card
+    const subtitle = (wizBlocks[0]?.subtitle||"").trim();
+    document.getElementById("wDesc").value = subtitle || block1Titre;
+    // Validate date
+    const date = document.getElementById("wDate").value;
+    if(!date){ toast("⚠ La date est obligatoire",true); return; }
+    if(wizMode==="html" && !wizPendingHTML){ toast("⚠ Sélectionne un fichier HTML",true); return; }
+    // Build preview
+    wizBuildPreview();
+  }
+  wizStep++;
+  wizUpdateUI();
+}
+
+function wizBack(){
+  wizStep = Math.max(1,wizStep-1);
+  wizUpdateUI();
+}
+
+// ── BUILD PREVIEW & COMPILE ──────────────────────────────────────────────────
+function compileBlocksForTrade(){
+  // For trade categories: first para block = block 1
+  const paraBlocks = wizBlocks.filter(b=>b.type==="para");
+  if(paraBlocks.length===0) return null;
+  const first = paraBlocks[0];
+  return {
+    text: first.text||"",
+    images: first.image ? [first.image.dataUrl] : [],
+    image: first.image?.dataUrl||null
+  };
+}
+
+function wizBuildPreview(){
+  const titre  = (wizBlocks[0]?.titre||document.getElementById("wTitre").value||"").trim();
+  const desc   = (wizBlocks[0]?.subtitle||titre||"").trim();
+  const date   = document.getElementById("wDate").value;
+  const time   = document.getElementById("wTime").value;
+  const paire  = document.getElementById("wPaire").value.trim();
+  const acc    = CAT_COLORS[wizCat]||"#00e5a0";
+  const catLbl = CAT_LABEL[wizCat]||wizCat;
+  const timeStr = time ? ` · ${time}` : "";
+  const fdate  = date ? new Date(date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})+timeStr : "";
+
+  let bodyHTML = "";
+  if(wizMode==="html"&&wizPendingHTML){
+    bodyHTML = wizPendingHTML;
+  } else {
+    const by = sessionStorage.getItem("smf_username")||"Admin";
+    bodyHTML = generateArticleTemplate(titre,desc,catLbl,acc,fdate,paire,wizBlocks,by);
+  }
+  const fr=document.getElementById("wizPreviewFrame");
+  try{ fr.srcdoc = bodyHTML; } catch(e){ fr.src="about:blank"; }
 }
 
 function openImport(){
   if(role!=="admin"){toast("⚠ Accès réservé à l'administrateur",true);return;}
-  document.getElementById("fDate").value=new Date().toISOString().slice(0,10);
-  document.getElementById("importOv").classList.add("open");
+  wizStep=1; wizCat=null; wizMode="manual";
+  wizPendingHTML=null; wizBlocks=[];
+  document.getElementById("wTitre").value="";
+  document.getElementById("wDesc").value="";
+  document.getElementById("wDate").value=new Date().toISOString().slice(0,10);
+  document.getElementById("wTime").value=new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  document.getElementById("wPaire").value="";
+  resetWizHtml();
+  document.querySelectorAll(".cat-card").forEach(c=>c.classList.remove("selected"));
+  setWizMode("manual");
+  wizUpdateUI();
+  document.getElementById("wizOv").classList.add("open");
   document.body.style.overflow="hidden";
-  // trade est sélectionné par défaut → cacher HTML
-  updateModeForCat("trade");
 }
 
 function closeImport(){
-  document.getElementById("importOv").classList.remove("open");
+  document.getElementById("wizOv").classList.remove("open");
   document.body.style.overflow="";
-  resetHtml(); pendingImages=[]; renderImgPreviews();
-  document.getElementById("fTitre").value="";
-  document.getElementById("fDesc").value="";
-  document.getElementById("fContent").value="";
-  document.getElementById("fPaire").value="";
-  document.getElementById("cT").checked=true;
-  // Réafficher le bouton HTML au reset
-  document.getElementById("modeHtml").style.display="none";
-  document.getElementById("modeManual").style.borderLeft="none";
-  setMode("manual");
 }
 
-// ── GUEST TRADE SUBMIT ────────────────────────────────────────────────────────
+function onWizHtmlFile(file){
+  if(!file)return;
+  if(!file.name.match(/\.html?$/i)){toast("⚠ Sélectionne un fichier .html",true);return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    wizPendingHTML=e.target.result;
+    const doc=new DOMParser().parseFromString(wizPendingHTML,"text/html");
+    const detected=(doc.querySelector("title")?.textContent.trim())||(doc.querySelector("h1")?.textContent.trim())||"";
+    if(detected&&!document.getElementById("wTitre").value) document.getElementById("wTitre").value=detected;
+    document.getElementById("wFileName").textContent=file.name;
+    document.getElementById("wFileSize").textContent=fmtSz(file.size)+" · HTML";
+    document.getElementById("wDropZone").style.display="none";
+    document.getElementById("wFilePrev").classList.add("on");
+  };
+  r.readAsText(file);
+}
+
+function resetWizHtml(){
+  wizPendingHTML=null;
+  const fi=document.getElementById("wFileInput"); if(fi) fi.value="";
+  const dz=document.getElementById("wDropZone"); if(dz) dz.style.display="block";
+  const fp=document.getElementById("wFilePrev"); if(fp) fp.classList.remove("on");
+}
+
+async function wizPublish(){
+  if(role!=="admin"){toast("⚠ Accès réservé",true);return;}
+  const titre = (wizBlocks[0]?.titre||document.getElementById("wTitre").value||"").trim();
+  const desc  = (wizBlocks[0]?.subtitle||titre||"").trim();
+  const date  = document.getElementById("wDate").value;
+  const time  = document.getElementById("wTime").value;
+  const paire = document.getElementById("wPaire").value.trim();
+  const adminUsername = sessionStorage.getItem("smf_username")||"Admin";
+  const timeStr = time ? ` · ${time}` : "";
+  const fdate = date ? new Date(date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})+timeStr : "";
+  let newArt;
+
+  if(wizMode==="html"&&wizPendingHTML){
+    newArt={type:"html",titre,desc,date,time,cat:wizCat,paire,html:wizPendingHTML,
+            fileName:document.getElementById("wFileName").textContent,submittedBy:adminUsername};
+  } else {
+    if(wizCat==="trade"||wizCat==="tradeinvites"){
+      const headerBlock = wizBlocks.find(b=>b.type==="header")||{};
+      const paraBlocks  = wizBlocks.filter(b=>b.type==="para");
+      const blocksData  = [];
+
+      // Bloc 0 : image principale du Bloc 1 (si présente)
+      if(headerBlock.image){
+        blocksData.push({
+          text: headerBlock.subtitle||"",
+          images: [headerBlock.image.dataUrl],
+          image: headerBlock.image.dataUrl,
+          date,
+          isInitial: true
+        });
+      }
+
+      // Blocs paragraphes
+      paraBlocks.forEach(b=>{
+        blocksData.push({
+          text: b.text||"",
+          images: b.image ? [b.image.dataUrl] : [],
+          image: b.image?.dataUrl||null,
+          date
+        });
+      });
+
+      if(blocksData.length===0) blocksData.push({text:"",images:[],image:null,date});
+      newArt={type:"manual",titre,desc,date,time,cat:wizCat,paire,blocks:blocksData,submittedBy:adminUsername};
+    } else {
+      const acc=CAT_COLORS[wizCat]||"#00e5a0";
+      const catLbl=CAT_LABEL[wizCat]||wizCat;
+      const generatedHTML=generateArticleTemplate(titre,desc,catLbl,acc,fdate,paire,wizBlocks,adminUsername);
+      newArt={type:"html",titre,desc,date,time,cat:wizCat,paire,html:generatedHTML,submittedBy:adminUsername};
+    }
+  }
+
+  const btn=document.getElementById("wizBtnPublish");
+  btn.disabled=true; btn.textContent="Publication…";
+  const id=await fbAdd(newArt);
+  btn.disabled=false; btn.textContent="✦ Publier l'article";
+  if(id){ closeImport(); toast("✓ Article publié — visible instantanément !"); }
+}
+
+// Legacy stubs
+function setMode(m){ setWizMode(m); }
+function onHtmlFile(f){ onWizHtmlFile(f); }
+function resetHtml(){ resetWizHtml(); }
+function onImagesSelected(files){}
+function submitImport(){ wizPublish(); }
+function updateModeForCat(cat){}
+
+// ── TEMPLATE DISPATCHER ───────────────────────────────────────────────────────
+function generateArticleTemplate(titre,desc,catLbl,acc,fdate,paire,blocks,author){
+  const headerBlock = blocks.find(b=>b.type==="header")||{subtitle:"",image:null};
+  const paraBlocks  = blocks.filter(b=>b.type==="para");
+  const by = author || sessionStorage.getItem("smf_username") || "Admin";
+  switch(wizCat){
+    case "hebdo":        return tplHebdo(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
+    case "weekahead":    return tplWeekAhead(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
+    case "mensuel":      return tplMonthly(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
+    case "banques":      return tplBankMeeting(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
+    case "trade":        return tplTrade(titre,desc,fdate,paire,paraBlocks.map(b=>({text:b.text,image:b.image?.dataUrl||null,images:b.image?[b.image.dataUrl]:[],date:""})),by);
+    case "tradeinvites": return tplTradeInvites(titre,desc,fdate,paire,paraBlocks.map(b=>({text:b.text,image:b.image?.dataUrl||null,images:b.image?[b.image.dataUrl]:[],date:""})),by);
+    default:             return tplDefault(titre,desc,fdate,paire,acc,catLbl,headerBlock,paraBlocks,by);
+  }
+}
+
+function fmtText(t){
+  if(!t||!t.trim()) return "";
+  return "<p>"+t.trim().replace(/\n{2,}/g,"</p><p>").replace(/\n/g,"<br>")+"</p>";
+}
+
+function hexToRgb(hex){
+  hex=hex.replace("#","");
+  if(hex.length===3) hex=hex.split("").map(c=>c+c).join("");
+  const n=parseInt(hex,16);
+  return [(n>>16)&255,(n>>8)&255,n&255].join(",");
+}
+
+// Renders paragraphs blocks: text then image underneath each block
+function renderParaHTML(paraBlocks){
+  return paraBlocks.map(b=>{
+    const txt = b.text ? `<div class="art-body">${fmtText(b.text)}</div>` : "";
+    const img = b.image ? `<figure class="art-fig"><img src="${b.image.dataUrl}" alt=""><figcaption>${b.image.name}</figcaption></figure>` : "";
+    if(!txt && !img) return "";
+    return `<div class="para-block">${txt}${img}</div>`;
+  }).join("");
+}
+
+// ── FONTS ─────────────────────────────────────────────────────────────────────
+const FONTS=`<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,400&display=swap" rel="stylesheet">`;
+
+// Shared para-block + art-fig CSS injected into each template
+const PARA_CSS=`
+.para-block{margin-bottom:2.5rem;}
+.para-block:last-child{margin-bottom:0;}
+.art-body{font-size:15px;line-height:1.9;color:#c9d1d9;margin-bottom:1rem;}
+.art-body p{margin-bottom:1.1rem;}
+.art-body strong{color:#fff;}
+.art-fig{border-radius:8px;overflow:hidden;border:1px solid #1c2430;margin-top:.75rem;}
+.art-fig img{width:100%;display:block;object-fit:cover;}
+.art-fig figcaption{font-family:'Space Mono',monospace;font-size:9px;color:#5a6578;padding:.4rem .9rem;background:#060a0f;letter-spacing:.06em;}
+`;
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE 1 — HEBDO  (or/amber · magazine premium · Playfair)
+// ════════════════════════════════════════════════════════════════════
+// ── SHARED TEMPLATE HELPERS ──────────────────────────────────────────────────
+function mkChip(label,by,fdate,paire){
+  const p=[label];
+  if(by&&by!=="Admin"&&by!=="SMF"&&by!=="KGB") p.push(by);
+  if(fdate) p.push(fdate);
+  if(paire) p.push(paire);
+  return p.join(" · ");
+}
+function mkCoverImg(hb,padding="4rem"){
+  if(!hb.image) return "";
+  return `<div class="cover-img-wrap" style="padding:0 ${padding}"><img src="${hb.image.dataUrl}" alt="" class="cover-img"></div>`;
+}
+function mkParaBlocks(paraBlocks,acc){
+  return paraBlocks.map(b=>{
+    const txt = b.text ? `<div class="art-body">${fmtText(b.text)}</div>` : "";
+    const img = b.image ? `<figure class="art-fig"><img src="${b.image.dataUrl}" alt=""><figcaption>${b.image.name}</figcaption></figure>` : "";
+    if(!txt&&!img) return "";
+    return `<div class="para-block" style="--acc:${acc}">${txt}${img}</div>`;
+  }).join("");
+}
+
+// Shared CSS injected into every template
+function sharedCSS(acc,gridOpacity="0.02"){
+  return `
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#02040a;color:#d0dae8;font-family:'Syne',sans-serif;min-height:100vh;
+  background-image:linear-gradient(rgba(${hexToRgb(acc)},${gridOpacity}) 1px,transparent 1px),linear-gradient(90deg,rgba(${hexToRgb(acc)},${gridOpacity}) 1px,transparent 1px);
+  background-size:36px 36px;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);}
+/* TOPBAR */
+.topbar{background:rgba(2,4,10,.96);border-bottom:1px solid rgba(${hexToRgb(acc)},.15);padding:.8rem 2.5rem;
+  display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);}
+.tb-left{display:flex;align-items:center;gap:.8rem;}
+.tb-hex{width:28px;height:28px;background:${acc};clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:7px;font-weight:700;color:#000;
+  box-shadow:0 0 10px rgba(${hexToRgb(acc)},.4);animation:hexP 3s ease-in-out infinite;}
+@keyframes hexP{0%,100%{box-shadow:0 0 8px rgba(${hexToRgb(acc)},.35);}50%{box-shadow:0 0 20px rgba(${hexToRgb(acc)},.7);}}
+.tb-brand{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;color:#5a6578;}
+.tb-brand em{color:${acc};font-style:normal;}
+.tb-chip{font-family:'Space Mono',monospace;font-size:8.5px;color:${acc};
+  background:rgba(${hexToRgb(acc)},.07);border:1px solid rgba(${hexToRgb(acc)},.25);
+  padding:4px 14px;border-radius:20px;letter-spacing:.09em;white-space:nowrap;max-width:55vw;overflow:hidden;text-overflow:ellipsis;
+  animation:chipG 4s ease-in-out infinite;}
+@keyframes chipG{0%,100%{border-color:rgba(${hexToRgb(acc)},.2);}50%{border-color:rgba(${hexToRgb(acc)},.6);box-shadow:0 0 12px rgba(${hexToRgb(acc)},.1);}}
+/* HERO */
+.hero{padding:3.5rem 4rem 2.5rem;max-width:980px;margin:0 auto;position:relative;z-index:1;}
+.hero::before{content:'';position:absolute;top:1.75rem;left:2.5rem;width:28px;height:28px;
+  border-top:2px solid rgba(${hexToRgb(acc)},.45);border-left:2px solid rgba(${hexToRgb(acc)},.45);pointer-events:none;}
+.hero::after{content:'';position:absolute;top:1.75rem;right:2.5rem;width:28px;height:28px;
+  border-top:2px solid rgba(${hexToRgb(acc)},.45);border-right:2px solid rgba(${hexToRgb(acc)},.45);pointer-events:none;}
+h1{font-size:clamp(1.6rem,3.8vw,2.5rem);font-weight:800;color:${acc};line-height:1.2;margin-bottom:1.1rem;letter-spacing:.01em;
+  animation:titleR .9s cubic-bezier(.22,1,.36,1) both;text-shadow:0 0 30px rgba(${hexToRgb(acc)},.2);}
+@keyframes titleR{from{opacity:0;filter:blur(8px);transform:translateY(12px);}to{opacity:1;filter:none;transform:none;}}
+.hero-desc{font-size:15px;color:rgba(208,218,232,.6);line-height:1.8;max-width:680px;
+  animation:fadeU .8s .15s cubic-bezier(.22,1,.36,1) both;}
+@keyframes fadeU{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+/* COVER IMG */
+.cover-img-wrap{max-width:980px;margin:2rem auto 0;animation:fadeU .8s .25s both;}
+.cover-img{width:100%;border-radius:10px;border:1px solid rgba(${hexToRgb(acc)},.15);max-height:420px;object-fit:cover;display:block;box-shadow:0 4px 40px rgba(${hexToRgb(acc)},.07);}
+/* DIVIDER */
+.divider{max-width:980px;margin:2.5rem auto 0;padding:0 4rem;display:flex;align-items:center;gap:1rem;animation:fadeU .6s .3s both;}
+.div-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(${hexToRgb(acc)},.6),rgba(${hexToRgb(acc)},0));}
+.div-line.r{background:linear-gradient(90deg,rgba(${hexToRgb(acc)},0),rgba(${hexToRgb(acc)},.6));}
+.div-dot{width:6px;height:6px;background:${acc};border-radius:50%;box-shadow:0 0 8px rgba(${hexToRgb(acc)},.8);animation:dotP 2s ease-in-out infinite;}
+@keyframes dotP{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:.6;}}
+/* CONTENT */
+.content{max-width:980px;margin:0 auto;padding:2rem 4rem 4rem;position:relative;z-index:1;}
+/* PARA BLOCKS with bars */
+.para-block{position:relative;padding:1.25rem 1.5rem;margin-bottom:1.5rem;}
+.para-block:last-child{margin-bottom:0;}
+.para-block::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:2px;
+  background:linear-gradient(180deg,${acc} 0%,rgba(${hexToRgb(acc)},.45) 70%,rgba(${hexToRgb(acc)},.05) 100%);}
+.para-block::after{content:'';position:absolute;right:0;top:0;bottom:0;width:3px;border-radius:2px;
+  background:linear-gradient(180deg,${acc} 0%,rgba(${hexToRgb(acc)},.45) 70%,rgba(${hexToRgb(acc)},.05) 100%);}
+.art-body{font-size:15px;line-height:1.9;color:#c9d1d9;margin-bottom:.75rem;}
+.art-body p{margin-bottom:1.1rem;}
+.art-body strong{color:#fff;}
+.art-fig{border-radius:8px;overflow:hidden;border:1px solid rgba(${hexToRgb(acc)},.12);margin-top:.75rem;}
+.art-fig img{width:100%;display:block;object-fit:cover;}
+.art-fig figcaption{font-family:'Space Mono',monospace;font-size:9px;color:#5a6578;padding:.4rem .9rem;background:#060a0f;}
+/* FOOTER */
+.footer{border-top:1px solid rgba(${hexToRgb(acc)},.08);padding:1rem 4rem;display:flex;justify-content:space-between;align-items:center;max-width:980px;margin:0 auto;position:relative;z-index:1;}
+.footer span{font-family:'Space Mono',monospace;font-size:9px;color:#323d4d;letter-spacing:.12em;}
+.footer em{color:${acc};font-style:normal;}
+.footer-pulse{width:6px;height:6px;border-radius:50%;background:${acc};animation:dotP 2s ease-in-out infinite;box-shadow:0 0 6px rgba(${hexToRgb(acc)},.6);}
+`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE 1 — HEBDO  (or · Playfair · lettre capitale)
+// ════════════════════════════════════════════════════════════════════
+function tplHebdo(titre,desc,fdate,paire,hb,paraBlocks,by){
+  const acc="#f7b731";
+  let weekNum="—";
+  try{const d=new Date(document.getElementById("wDate").value);const j=new Date(d.getFullYear(),0,1);weekNum=Math.ceil(((d-j)/86400000+j.getDay()+1)/7);}catch(e){}
+  const subtitle = hb.subtitle||(desc||"");
+  const chip = mkChip("HEBDO",by,fdate,paire);
+  const coverImg = mkCoverImg(hb);
+  const blocks = mkParaBlocks(paraBlocks,acc);
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+${sharedCSS(acc,"0.025")}
+/* Hebdo spécifique */
+h1{font-family:'Playfair Display',serif !important;font-size:clamp(2rem,4.5vw,3rem) !important;letter-spacing:-.01em !important;}
+/* Grande initiale sur 1er paragraphe */
+.para-block:first-child .art-body p:first-child::first-letter{
+  font-family:'Playfair Display',serif;font-size:3.2em;font-weight:700;color:${acc};
+  float:left;line-height:.82;margin:.04em .14em 0 0;text-shadow:0 0 20px rgba(247,183,49,.35);}
+/* Topbar gold border */
+.topbar{border-bottom:3px solid ${acc} !important;}
+.week-badge{font-family:'Space Mono',monospace;font-size:9px;color:${acc};background:rgba(247,183,49,.07);border:1px solid rgba(247,183,49,.2);padding:3px 10px;border-radius:3px;letter-spacing:.12em;margin-left:.75rem;}
+</style></head><body>
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-hex">SMF</div>
+    <div class="tb-brand"><em>S·M·F</em> RESEARCH</div>
+    <div class="week-badge">S${weekNum}</div>
+  </div>
+  <div class="tb-chip">${chip}</div>
+</div>
+<div class="hero">
+  <h1>${titre}</h1>
+  ${subtitle?`<p class="hero-desc">${subtitle}</p>`:""}
+</div>
+${coverImg}
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line r"></div></div>
+<div class="content">${blocks}</div>
+<div class="footer">
+  <span><em>S·M·F</em> · Analyse Hebdomadaire</span>
+  <div style="display:flex;align-items:center;gap:.5rem;"><div class="footer-pulse"></div><span>${fdate}</span></div>
+</div>
+</body></html>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE 3 — MONTHLY RECAP  (cyan · watermark · rapport mensuel)
+// ════════════════════════════════════════════════════════════════════
+function tplMonthly(titre,desc,fdate,paire,hb,paraBlocks,by){
+  const acc="#00ffff";
+  const subtitle = hb.subtitle||(desc||"");
+  const chip = mkChip("MONTHLY RECAP",by,fdate,paire);
+  const coverImg = mkCoverImg(hb);
+  const blocks = mkParaBlocks(paraBlocks,acc);
+  const monthLabel = fdate?fdate.split(" ").filter(w=>isNaN(w)&&w.length>3).join(" "):"";
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+${sharedCSS(acc,"0.02")}
+/* Monthly spécifique — watermark */
+body::before{content:'${monthLabel.toUpperCase()||"MONTHLY"}';position:fixed;right:-2rem;bottom:2rem;
+  font-family:'Space Mono',monospace;font-size:8rem;font-weight:700;
+  color:rgba(0,255,255,.022);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;z-index:0;line-height:1;}
+h1{font-family:'Space Mono',monospace !important;letter-spacing:.03em !important;}
+</style></head><body>
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-hex">SMF</div>
+    <div class="tb-brand"><em>S·M·F</em> RESEARCH</div>
+  </div>
+  <div class="tb-chip">${chip}</div>
+</div>
+<div class="hero">
+  <h1>${titre}</h1>
+  ${subtitle?`<p class="hero-desc">${subtitle}</p>`:""}
+</div>
+${coverImg}
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line r"></div></div>
+<div class="content">${blocks}</div>
+<div class="footer">
+  <span><em>S·M·F</em> · Monthly Recap</span>
+  <div style="display:flex;align-items:center;gap:.5rem;"><div class="footer-pulse"></div><span>${fdate}</span></div>
+</div>
+</body></html>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE 4 — BANK MEETING  (émeraude · lignes de scan · institutionnel)
+// ════════════════════════════════════════════════════════════════════
+function tplBankMeeting(titre,desc,fdate,paire,hb,paraBlocks,by){
+  const acc="#00e5a0";
+  const subtitle = hb.subtitle||(desc||"");
+  const chip = mkChip("BANK MEETING",by,fdate,paire);
+  const coverImg = mkCoverImg(hb);
+  const blocks = mkParaBlocks(paraBlocks,acc);
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+${sharedCSS(acc,"0.02")}
+/* Bank Meeting spécifique */
+h1{font-family:'Syne',sans-serif !important;font-weight:800 !important;}
+/* Barre de classification */
+.class-bar{background:rgba(0,229,160,.05);border-bottom:1px solid rgba(0,229,160,.1);
+  padding:.35rem 2.5rem;display:flex;justify-content:space-between;}
+.class-txt{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;color:rgba(0,229,160,.45);text-transform:uppercase;}
+/* Ligne décorative sous le titre */
+.h1-accent{width:56px;height:3px;background:${acc};border-radius:2px;margin:.75rem 0 1rem;animation:widen .8s .4s cubic-bezier(.22,1,.36,1) both;}
+@keyframes widen{from{width:0}to{width:56px}}
+</style></head><body>
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-hex">SMF</div>
+    <div class="tb-brand"><em>S·M·F</em> RESEARCH</div>
+  </div>
+  <div class="tb-chip">${chip}</div>
+</div>
+<div class="class-bar">
+  <span class="class-txt">Rapport institutionnel · Usage interne</span>
+  <span class="class-txt">${paire||"Banques Centrales"}</span>
+</div>
+<div class="hero">
+  <h1>${titre}</h1>
+  <div class="h1-accent"></div>
+  ${subtitle?`<p class="hero-desc">${subtitle}</p>`:""}
+</div>
+${coverImg}
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line r"></div></div>
+<div class="content">${blocks}</div>
+<div class="footer">
+  <span><em>S·M·F</em> · Bank Meeting Note</span>
+  <div style="display:flex;align-items:center;gap:.5rem;"><div class="footer-pulse"></div><span>${fdate}</span></div>
+</div>
+</body></html>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE 5 — TRADE ADMIN  (rouge · terminal trading)
+// ════════════════════════════════════════════════════════════════════
+function tplTrade(titre,desc,fdate,paire,blocks,by){
+  const acc="#ff4d6d";
+  const coverBlock = blocks.find(b=>b.isInitial)||blocks[0]||{};
+  const coverImg = coverBlock.image?`<div class="cover-img-wrap" style="padding:0 4rem"><img src="${coverBlock.image}" alt="" class="cover-img"></div>`:"";
+  const tradeBlocks = blocks.map((b,i)=>{
+    const isFirst = i===0;
+    const bDate = b.date?new Date(b.date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}):"";
+    const sep = isFirst
+      ? `<div class="blk-sep first"><span>PUBLICATION INITIALE</span><span class="sep-date">${bDate}</span></div>`
+      : `<div class="blk-sep"><span>MISE À JOUR ${i+1}${b.addedBy?" · "+b.addedBy:""}</span><span class="sep-date">${bDate}</span></div>`;
+    if(b.isInitial&&!b.text&&!b.image) return "";
+    const txt = b.text?`<div class="art-body">${b.text.replace(/\n/g,"<br>")}</div>`:"";
+    // Pour le 1er bloc : ne pas ré-afficher l'image déjà montrée en cover
+    const imgSrcs = isFirst ? [] : (Array.isArray(b.images)&&b.images.length?b.images:(b.image?[b.image]:[]));
+    const imgs = imgSrcs.map(src=>`<figure class="art-fig"><img src="${src}" alt=""></figure>`).join("");
+    if(!txt&&!imgs&&isFirst) return sep;
+    return `<div class="para-block">${sep}${txt}${imgs}</div>`;
+  }).join("");
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+${sharedCSS(acc,"0.02")}
+h1{font-family:'Space Mono',monospace !important;font-size:clamp(1.4rem,3.2vw,2.2rem) !important;letter-spacing:.02em !important;}
+.blk-sep{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem;
+  font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,77,109,.6);letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:.9rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,77,109,.12);}
+.blk-sep.first{color:rgba(255,77,109,.85);}
+.sep-date{color:rgba(208,218,232,.35);letter-spacing:.06em;text-transform:none;}
+/* Blocks count badge */
+.blk-count{font-family:'Space Mono',monospace;font-size:8px;color:${acc};background:rgba(255,77,109,.08);
+  border:1px solid rgba(255,77,109,.2);padding:2px 10px;border-radius:12px;margin-left:.6rem;letter-spacing:.1em;}
+</style></head><body>
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-hex">SMF</div>
+    <div class="tb-brand"><em>S·M·F</em> RESEARCH</div>
+  </div>
+  <div class="tb-chip">TRADES ADMINS · ${by||"Admin"} · ${fdate}</div>
+</div>
+<div class="hero">
+  <h1>${titre}</h1>
+  ${desc?`<p class="hero-desc">${desc}</p>`:""}
+  ${paire?`<div style="font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,77,109,.6);letter-spacing:.12em;margin-top:.5rem;">📊 ${paire}</div>`:""}
+</div>
+${coverImg}
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line r"></div></div>
+<div class="content">${tradeBlocks}</div>
+<div class="footer">
+  <span><em>S·M·F</em> · Trades Admins</span>
+  <div style="display:flex;align-items:center;gap:.5rem;"><div class="footer-pulse"></div><span>${fdate}</span></div>
+</div>
+</body></html>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE 6 — TRADE INVITÉS  (violet · communauté)
+// ════════════════════════════════════════════════════════════════════
+function tplTradeInvites(titre,desc,fdate,paire,blocks,by){
+  const acc="#7c3aed";
+  const coverBlock = blocks.find(b=>b.isInitial)||blocks[0]||{};
+  const coverImg = coverBlock.image?`<div class="cover-img-wrap" style="padding:0 4rem"><img src="${coverBlock.image}" alt="" class="cover-img"></div>`:"";
+  const tradeBlocks = blocks.map((b,i)=>{
+    const isFirst = i===0;
+    const bDate = b.date?new Date(b.date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}):"";
+    const sep = isFirst
+      ? `<div class="blk-sep first"><span>PUBLICATION INITIALE</span><span class="sep-date">${bDate}</span></div>`
+      : `<div class="blk-sep"><span>MISE À JOUR ${i+1}${b.addedBy?" · "+b.addedBy:""}</span><span class="sep-date">${bDate}</span></div>`;
+    if(b.isInitial&&!b.text&&!b.image) return "";
+    const txt = b.text?`<div class="art-body">${b.text.replace(/\n/g,"<br>")}</div>`:"";
+    // Pour le 1er bloc : ne pas ré-afficher l'image déjà montrée en cover
+    const imgSrcs = isFirst ? [] : (Array.isArray(b.images)&&b.images.length?b.images:(b.image?[b.image]:[]));
+    const imgs = imgSrcs.map(src=>`<figure class="art-fig"><img src="${src}" alt=""></figure>`).join("");
+    if(!txt&&!imgs&&isFirst) return sep;
+    return `<div class="para-block">${sep}${txt}${imgs}</div>`;
+  }).join("");
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+${sharedCSS(acc,"0.018")}
+h1{font-family:'Syne',sans-serif !important;font-weight:800 !important;}
+.blk-sep{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem;
+  font-family:'Space Mono',monospace;font-size:9px;color:rgba(124,58,237,.6);letter-spacing:.15em;text-transform:uppercase;
+  margin-bottom:.9rem;padding-bottom:.5rem;border-bottom:1px solid rgba(124,58,237,.12);}
+.blk-sep.first{color:rgba(124,58,237,.9);}
+.sep-date{color:rgba(208,218,232,.35);letter-spacing:.06em;text-transform:none;}
+.submitted-by{font-family:'Space Mono',monospace;font-size:10px;color:rgba(124,58,237,.7);
+  margin-top:.4rem;letter-spacing:.06em;}
+</style></head><body>
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-hex">SMF</div>
+    <div class="tb-brand"><em>S·M·F</em> RESEARCH</div>
+  </div>
+  <div class="tb-chip">TRADES INVITÉS · ${by||"Invité"} · ${fdate}</div>
+</div>
+<div class="hero">
+  <h1>${titre}</h1>
+  ${desc?`<p class="hero-desc">${desc}</p>`:""}
+  ${by?`<div class="submitted-by">✍ Soumis par ${by}</div>`:""}
+  ${paire?`<div style="font-family:'Space Mono',monospace;font-size:10px;color:rgba(124,58,237,.6);letter-spacing:.12em;margin-top:.4rem;">📊 ${paire}</div>`:""}
+</div>
+${coverImg}
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line r"></div></div>
+<div class="content">${tradeBlocks}</div>
+<div class="footer">
+  <span><em>S·M·F</em> · Trades Invités</span>
+  <div style="display:flex;align-items:center;gap:.5rem;"><div class="footer-pulse"></div><span>${fdate}</span></div>
+</div>
+</body></html>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE DEFAULT  (fallback générique)
+// ════════════════════════════════════════════════════════════════════
+function tplDefault(titre,desc,fdate,paire,acc,catLbl,hb,paraBlocks,by){
+  const subtitle = hb.subtitle||(desc||"");
+  const chip = mkChip(catLbl.toUpperCase(),by,fdate,paire);
+  const coverImg = mkCoverImg(hb);
+  const blocks = mkParaBlocks(paraBlocks,acc);
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>${sharedCSS(acc)}</style></head><body>
+<div class="topbar">
+  <div class="tb-left"><div class="tb-hex">SMF</div><div class="tb-brand"><em>S·M·F</em> RESEARCH</div></div>
+  <div class="tb-chip">${chip}</div>
+</div>
+<div class="hero">
+  <h1>${titre}</h1>
+  ${subtitle?`<p class="hero-desc">${subtitle}</p>`:""}
+</div>
+${coverImg}
+<div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line r"></div></div>
+<div class="content">${blocks}</div>
+<div class="footer">
+  <span><em>S·M·F</em> · Smart Finance Research</span>
+  <div style="display:flex;align-items:center;gap:.5rem;"><div class="footer-pulse"></div><span>${fdate}</span></div>
+</div>
+</body></html>`;
+}
+function tplWeekAhead(titre,desc,fdate,paire,hb,paraBlocks,by){
+  const subtitle  = hb.subtitle||(desc||"");
+  const coverImg  = hb.image ? `<div class="cover-img-wrap"><img src="${hb.image.dataUrl}" alt="" class="cover-img"></div>` : "";
+  // Chip topbar: WEEK AHEAD · author · date · heure
+  const chipParts = ["WEEK AHEAD"];
+  if(by && by !== "Admin") chipParts.push(by);
+  if(fdate) chipParts.push(fdate);
+  if(paire) chipParts.push(paire);
+  const chip = chipParts.join(" · ");
+
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* ── BODY & GRID BG ── */
+body{
+  background:#02040a;color:#d0dae8;font-family:'Syne',sans-serif;min-height:100vh;
+  background-image:
+    linear-gradient(rgba(0,229,160,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,229,160,.022) 1px,transparent 1px);
+  background-size:36px 36px;
+}
+
+/* ── SCAN LINE overlay ── */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,transparent 2px,
+    rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px
+  );
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:rgba(2,4,10,.96);border-bottom:1px solid rgba(0,229,160,.12);
+  padding:.8rem 2rem;display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(14px);
+}
+.tb-left{display:flex;align-items:center;gap:.8rem;}
+.tb-hex{
+  width:28px;height:28px;background:#00e5a0;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;font-size:7px;font-weight:700;color:#000;
+  box-shadow:0 0 10px rgba(0,229,160,.4);
+  animation:hexPulse 3s ease-in-out infinite;
+}
+@keyframes hexPulse{0%,100%{box-shadow:0 0 8px rgba(0,229,160,.35);}50%{box-shadow:0 0 20px rgba(0,229,160,.7),0 0 40px rgba(0,229,160,.2);}}
+.tb-brand{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;color:#5a6578;}
+.tb-brand em{color:#00e5a0;font-style:normal;}
+.tb-chip{
+  font-family:'Space Mono',monospace;font-size:8.5px;color:#00e5a0;
+  background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.25);
+  padding:4px 12px;border-radius:20px;letter-spacing:.09em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55vw;
+  animation:chipGlow 4s ease-in-out infinite;
+}
+@keyframes chipGlow{0%,100%{border-color:rgba(0,229,160,.2);}50%{border-color:rgba(0,229,160,.55);box-shadow:0 0 12px rgba(0,229,160,.12);}}
+
+/* ── HERO ── */
+.hero{
+  padding:3.5rem 4rem 2.5rem;max-width:980px;margin:0 auto;
+  position:relative;z-index:1;
+}
+/* Crochet haut-gauche — écarté du titre */
+.hero::before{
+  content:'';position:absolute;
+  top:1.75rem;left:2.5rem;
+  width:28px;height:28px;
+  border-top:2px solid rgba(0,229,160,.45);
+  border-left:2px solid rgba(0,229,160,.45);
+  pointer-events:none;
+}
+/* Crochet haut-droit — miroir */
+.hero::after{
+  content:'';position:absolute;
+  top:1.75rem;right:2.5rem;
+  width:28px;height:28px;
+  border-top:2px solid rgba(0,229,160,.45);
+  border-right:2px solid rgba(0,229,160,.45);
+  pointer-events:none;
+}
+h1{
+  font-family:'Space Mono',monospace;
+  font-size:clamp(1.6rem,3.8vw,2.5rem);
+  font-weight:700;color:#00e5a0;
+  line-height:1.2;margin-bottom:1.25rem;
+  letter-spacing:.02em;
+  animation:titleReveal .9s cubic-bezier(.22,1,.36,1) both;
+  text-shadow:0 0 30px rgba(0,229,160,.25);
+}
+@keyframes titleReveal{
+  from{opacity:0;filter:blur(8px);transform:translateY(12px);}
+  to{opacity:1;filter:none;transform:none;}
+}
+.hero-desc{
+  font-size:15px;color:rgba(208,218,232,.6);line-height:1.8;
+  max-width:660px;
+  animation:fadeUp .8s .15s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+/* ── COVER IMAGE ── */
+.cover-img-wrap{
+  max-width:980px;margin:2rem auto 0;
+  padding:0 4rem;
+  animation:fadeUp .8s .25s cubic-bezier(.22,1,.36,1) both;
+}
+.cover-img{
+  width:100%;border-radius:10px;
+  border:1px solid rgba(0,229,160,.15);
+  max-height:400px;object-fit:cover;display:block;
+  box-shadow:0 4px 40px rgba(0,229,160,.08);
+}
+
+/* ── DIVIDER ── */
+.divider{
+  max-width:980px;margin:2.5rem auto 0;padding:0 4rem;
+  display:flex;align-items:center;gap:1rem;
+  animation:fadeUp .6s .3s both;
+}
+.div-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(0,229,160,.5),rgba(0,229,160,0));}
+.div-line.r{background:linear-gradient(90deg,rgba(0,229,160,0),rgba(0,229,160,.5));}
+.div-dot{
+  width:6px;height:6px;background:#00e5a0;border-radius:50%;
+  box-shadow:0 0 8px rgba(0,229,160,.8);
+  animation:dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:.6;}}
+
+/* ── CONTENT ── */
+.content{
+  max-width:980px;margin:0 auto;
+  padding:2rem 4rem 4rem;
+  position:relative;z-index:1;
+}
+.content-inner{
+  padding:0 1.25rem;
+}
+${PARA_CSS}
+/* Barre verte gauche + droite sur chaque bloc individuellement */
+.para-block{
+  position:relative;
+  padding:1.25rem 1.5rem;
+  margin-bottom:1.5rem;
+}
+.para-block:last-child{ margin-bottom:0; }
+/* Barre gauche du bloc */
+.para-block::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  background:linear-gradient(
+    180deg,
+    #00e5a0 0%,
+    rgba(0,229,160,.5) 70%,
+    rgba(0,229,160,.1) 100%
+  );
+  border-radius:2px;
+}
+/* Barre droite du bloc */
+.para-block::after{
+  content:'';
+  position:absolute;
+  right:0;top:0;bottom:0;
+  width:3px;
+  background:linear-gradient(
+    180deg,
+    #00e5a0 0%,
+    rgba(0,229,160,.5) 70%,
+    rgba(0,229,160,.1) 100%
+  );
+  border-radius:2px;
+}
+
+/* ── FOOTER ── */
+.footer{
+  border-top:1px solid rgba(0,229,160,.08);
+  padding:1rem 4rem;display:flex;justify-content:space-between;align-items:center;
+  max-width:980px;margin:0 auto;position:relative;z-index:1;
+}
+.footer span{font-family:'Space Mono',monospace;font-size:9px;color:#323d4d;letter-spacing:.12em;}
+.footer em{color:#00e5a0;font-style:normal;}
+.footer-pulse{
+  width:6px;height:6px;border-radius:50%;background:#00e5a0;
+  animation:dotPulse 2s ease-in-out infinite;
+  box-shadow:0 0 6px rgba(0,229,160,.6);
+}
+</style></head><body>
+
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-hex">SMF</div>
+    <div class="tb-brand"><em>S·M·F</em> RESEARCH</div>
+  </div>
+  <div class="tb-chip">${chip}</div>
+</div>
+
+<div class="hero">
+  <h1>${titre}</h1>
+  ${subtitle?`<p class="hero-desc">${subtitle}</p>`:""}
+</div>
+
+${coverImg}
+
+<div class="divider">
+  <div class="div-line"></div>
+  <div class="div-dot"></div>
+  <div class="div-line r"></div>
+</div>
+
+<div class="content">
+  <div class="content-inner">${renderParaHTML(paraBlocks)}</div>
+</div>
+
+<div class="footer">
+  <span><em>S·M·F</em> · Smart Finance Research</span>
+  <div style="display:flex;align-items:center;gap:.5rem;">
+    <div class="footer-pulse"></div>
+    <span>${fdate}</span>
+  </div>
+</div>
+
+</body></html>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE 3 — MONTHLY RECAP  (cyan · watermark · rapport mensuel)
+// ════════════════════════════════════════════════════════════════════
+function tplMonthly(titre,desc,fdate,paire,hb,paraBlocks){
+  const month = fdate?fdate.split(" ").filter(w=>w.length>3).slice(-2).join(" "):"";
+  const coverImg = hb.image ? `<div style="max-width:860px;margin:0 auto;padding:0 2rem 2rem;"><img src="${hb.image.dataUrl}" alt="" style="width:100%;border-radius:10px;border:1px solid #1c2430;max-height:400px;object-fit:cover;display:block;"></div>` : "";
+  const subtitle = hb.subtitle||(desc||"");
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#02040a;color:#d0dae8;font-family:'Syne',sans-serif;min-height:100vh;}
+.cover{background:#060a0f;border-bottom:1px solid #131820;padding:3rem 2rem 2rem;position:relative;overflow:hidden;}
+.cover::before{content:'MONTHLY';position:absolute;right:-1rem;top:50%;transform:translateY(-50%);font-family:'Space Mono',monospace;font-size:6rem;font-weight:700;color:rgba(0,255,255,.025);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;}
+.cover-inner{max-width:860px;margin:0 auto;position:relative;}
+.cover-tag{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#0ff;margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem;}
+.cover-tag::before{content:'';display:inline-block;width:24px;height:2px;background:#0ff;}
+.cover-month{font-family:'Space Mono',monospace;font-size:clamp(1.4rem,3.5vw,2.3rem);font-weight:700;color:#fff;letter-spacing:.04em;margin-bottom:.5rem;}
+.cover-month em{color:#0ff;font-style:normal;}
+.cover-sub{font-size:14px;color:rgba(208,218,232,.55);line-height:1.5;margin-bottom:1.5rem;max-width:620px;}
+.cover-meta{display:inline-flex;align-items:center;gap:.6rem;background:rgba(0,255,255,.06);border:1px solid rgba(0,255,255,.15);border-radius:4px;padding:.5rem 1rem;font-family:'Space Mono',monospace;font-size:10px;color:#0ff;letter-spacing:.08em;}
+.content{max-width:860px;margin:0 auto;padding:2.5rem 2rem 3rem;}
+.section-label{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#0ff;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;}
+.section-label::after{content:'';flex:1;height:1px;background:rgba(0,255,255,.12);}
+${PARA_CSS}
+.footer{background:#060a0f;border-top:1px solid #131820;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;}
+.footer span{font-family:'Space Mono',monospace;font-size:9px;color:#323d4d;letter-spacing:.15em;}
+.footer em{color:#0ff;font-style:normal;}
+.footer-stamp{font-family:'Space Mono',monospace;font-size:8px;color:rgba(0,255,255,.2);border:1px solid rgba(0,255,255,.08);padding:2px 8px;border-radius:2px;}
+</style></head><body>
+<div class="cover"><div class="cover-inner">
+  <div class="cover-tag">Monthly Recap · S·M·F Research</div>
+  <div class="cover-month"><em>${month||fdate}</em></div>
+  ${subtitle?`<p class="cover-sub">${subtitle}</p>`:""}
+  <div class="cover-meta">${fdate?`📅 ${fdate}`:""} ${paire?`&nbsp;·&nbsp; 📊 ${paire}`:""}</div>
+</div></div>
+${coverImg}
+<div class="content">
+  <div class="section-label">Bilan du mois</div>
+  ${renderParaHTML(paraBlocks)}
+</div>
+<div class="footer"><span><em>S·M·F</em> · Smart Finance Research</span><span class="footer-stamp">CONFIDENTIEL</span></div>
+</body></html>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE 4 — BANK MEETING  (vert émeraude · rapport institutionnel)
+// ════════════════════════════════════════════════════════════════════
+function tplBankMeeting(titre,desc,fdate,paire,hb,paraBlocks){
+  const coverImg = hb.image ? `<div style="max-width:860px;margin:0 auto;padding:0 2rem 1.5rem;"><img src="${hb.image.dataUrl}" alt="" style="width:100%;border-radius:8px;border:1px solid #1c2430;max-height:380px;object-fit:cover;display:block;"></div>` : "";
+  const subtitle = hb.subtitle||(desc||"");
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#02040a;color:#d0dae8;font-family:'Syne',sans-serif;min-height:100vh;}
+.header{background:#060a0f;border-bottom:1px solid #131820;padding:.9rem 2rem;display:flex;justify-content:space-between;align-items:center;}
+.header-left{display:flex;align-items:center;gap:1rem;}
+.header-brand{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.15em;color:#5a6578;}
+.header-brand em{color:#00e5a0;font-style:normal;}
+.dv{width:1px;height:16px;background:#1c2430;}
+.header-type{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#00e5a0;}
+.header-date{font-family:'Space Mono',monospace;font-size:9px;color:#5a6578;}
+.class-bar{background:rgba(0,229,160,.05);border-bottom:1px solid rgba(0,229,160,.1);padding:.3rem 2rem;display:flex;justify-content:space-between;}
+.class-text{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.22em;color:rgba(0,229,160,.5);text-transform:uppercase;}
+.cover{max-width:860px;margin:0 auto;padding:3rem 2rem 2rem;}
+.doc-ref{font-family:'Space Mono',monospace;font-size:9px;color:#5a6578;letter-spacing:.15em;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;}
+.doc-ref::before{content:'■';color:#00e5a0;font-size:8px;}
+h1{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,3.8vw,2.3rem);font-weight:800;color:#fff;line-height:1.22;margin-bottom:1rem;}
+.h1-line{width:48px;height:3px;background:#00e5a0;border-radius:2px;margin-bottom:1.5rem;}
+.hero-desc{font-size:14.5px;color:rgba(208,218,232,.65);line-height:1.75;max-width:640px;margin-bottom:2rem;padding:.75rem 1rem;background:#060a0f;border-left:3px solid #00e5a0;border-radius:0 6px 6px 0;}
+.meta-tbl{display:grid;grid-template-columns:repeat(3,auto);gap:.4rem 2rem;padding:1rem 1.25rem;background:#060a0f;border:1px solid #131820;border-radius:6px;width:fit-content;}
+.mt-k{font-family:'Space Mono',monospace;font-size:9px;color:#5a6578;letter-spacing:.1em;text-transform:uppercase;}
+.mt-v{font-family:'Space Mono',monospace;font-size:10px;color:#d0dae8;}
+.s-rule{max-width:860px;margin:2.5rem auto 0;padding:0 2rem;display:flex;align-items:center;gap:1rem;}
+.s-rule-line{flex:1;height:1px;background:#131820;}
+.s-rule-label{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:#00e5a0;white-space:nowrap;}
+.content{max-width:860px;margin:0 auto;padding:1.75rem 2rem 3rem;}
+${PARA_CSS}
+.footer{background:#060a0f;border-top:1px solid #131820;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;}
+.footer span{font-family:'Space Mono',monospace;font-size:9px;color:#323d4d;letter-spacing:.15em;}
+.footer em{color:#00e5a0;font-style:normal;}
+.footer-conf{font-family:'Space Mono',monospace;font-size:8px;color:rgba(0,229,160,.2);border:1px solid rgba(0,229,160,.08);padding:2px 8px;border-radius:2px;}
+</style></head><body>
+<div class="header"><div class="header-left"><div class="header-brand"><em>S·M·F</em> RESEARCH</div><div class="dv"></div><div class="header-type">Bank Meeting Note</div></div><div class="header-date">${fdate}</div></div>
+<div class="class-bar"><div class="class-text">Rapport institutionnel · Usage interne</div><div class="class-text">${paire||"Banques Centrales"}</div></div>
+<div class="cover">
+  <div class="doc-ref">BANK MEETING · S-M-F RESEARCH · ${fdate||"—"}</div>
+  <h1>${titre}</h1>
+  <div class="h1-line"></div>
+  ${subtitle?`<div class="hero-desc">${subtitle}</div>`:""}
+  <div class="meta-tbl">
+    <span class="mt-k">Date</span><span class="mt-k">Instrument</span><span class="mt-k">Type</span>
+    <span class="mt-v">${fdate||"—"}</span><span class="mt-v">${paire||"—"}</span><span class="mt-v">Bank Meeting</span>
+  </div>
+</div>
+${coverImg}
+<div class="s-rule"><div class="s-rule-line"></div><div class="s-rule-label">Note d'analyse</div><div class="s-rule-line"></div></div>
+<div class="content">${renderParaHTML(paraBlocks)}</div>
+<div class="footer"><span><em>S·M·F</em> · Smart Finance Research · ${fdate}</span><span class="footer-conf">CONFIDENTIEL</span></div>
+</body></html>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// TEMPLATE DEFAULT  (fallback générique)
+// ════════════════════════════════════════════════════════════════════
+function tplDefault(titre,desc,fdate,paire,acc,catLbl,hb,paraBlocks){
+  const r=hexToRgb(acc);
+  const coverImg = hb.image ? `<img src="${hb.image.dataUrl}" alt="" style="width:100%;border-radius:8px;border:1px solid #1c2430;max-height:380px;object-fit:cover;display:block;margin:1.5rem 0;">` : "";
+  const subtitle = hb.subtitle||(desc||"");
+  return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#02040a;color:#d0dae8;font-family:'Syne',sans-serif;min-height:100vh;padding:3rem 1.5rem 4rem;}
+.wrap{max-width:780px;margin:0 auto;}
+.badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(${r},.1);border:1px solid rgba(${r},.3);color:${acc};font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;padding:5px 14px;border-radius:3px;margin-bottom:1.5rem;}
+h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:#fff;line-height:1.2;margin-bottom:1rem;}
+.desc{font-size:1rem;color:rgba(208,218,232,.65);line-height:1.7;border-left:3px solid ${acc};padding-left:1.2rem;margin-bottom:1.5rem;}
+.meta{display:flex;gap:1.5rem;font-family:'Space Mono',monospace;font-size:10px;color:#5a6578;letter-spacing:.08em;border-top:1px solid #131820;border-bottom:1px solid #131820;padding:.7rem 0;margin-bottom:2rem;}
+${PARA_CSS}
+.footer{margin-top:3rem;padding-top:1rem;border-top:1px solid #131820;display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;color:#323d4d;}
+.footer em{color:${acc};font-style:normal;}
+</style></head><body>
+<div class="wrap">
+  <div class="badge">${catLbl}</div>
+  <h1>${titre}</h1>
+  ${subtitle?`<p class="desc">${subtitle}</p>`:""}
+  ${coverImg}
+  <div class="meta">${fdate?`<span>📅 ${fdate}</span>`:""} ${paire?`<span>📊 ${paire}</span>`:""}</div>
+  ${renderParaHTML(paraBlocks)}
+  <div class="footer"><span><em>S·M·F</em> · Smart Finance Research</span><span>${fdate}</span></div>
+</div>
+</body></html>`;
+}
 let guestMode="text", guestPendingImages=[], guestPendingPdf=null;
 
 function openGuestSubmit(){
@@ -1963,14 +3248,18 @@ async function submitAddBlock(){
 }
 
 // ── DRAG & DROP ───────────────────────────────────────────────────────────────
-const dz=document.getElementById("dropZone");
-dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag");});
-dz.addEventListener("dragleave",()=>dz.classList.remove("drag"));
-dz.addEventListener("drop",e=>{e.preventDefault();dz.classList.remove("drag");const f=e.dataTransfer.files[0];if(f)onHtmlFile(f);});
-const id2=document.getElementById("imgDrop");
-id2.addEventListener("dragover",e=>{e.preventDefault();id2.classList.add("drag");});
-id2.addEventListener("dragleave",()=>id2.classList.remove("drag"));
-id2.addEventListener("drop",e=>{e.preventDefault();id2.classList.remove("drag");onImagesSelected(e.dataTransfer.files);});
+const dz=document.getElementById("wDropZone");
+if(dz){
+  dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag");});
+  dz.addEventListener("dragleave",()=>dz.classList.remove("drag"));
+  dz.addEventListener("drop",e=>{e.preventDefault();dz.classList.remove("drag");const f=e.dataTransfer.files[0];if(f)onWizHtmlFile(f);});
+}
+const id2=document.getElementById("wImgDrop");
+if(id2){
+  id2.addEventListener("dragover",e=>{e.preventDefault();id2.classList.add("drag");});
+  id2.addEventListener("dragleave",()=>id2.classList.remove("drag"));
+  id2.addEventListener("drop",e=>{e.preventDefault();id2.classList.remove("drag");onWizImages(e.dataTransfer.files);});
+}
 // Guest image drop
 const gid=document.getElementById("gImgDrop");
 if(gid){
