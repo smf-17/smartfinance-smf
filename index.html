@@ -84,6 +84,25 @@
   .pm-role.admin{color:var(--accent);}
   .pm-role.guest{color:var(--warn);}
   .pm-hint{font-family:var(--mono);font-size:9px;color:var(--dimmed);margin-top:-2px;}
+  /* BIO */
+  .pm-bio-wrap{width:100%;margin-top:.6rem;position:relative;}
+  .pm-bio{
+    width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border2);
+    color:var(--text);font-family:var(--mono);font-size:10px;line-height:1.5;
+    padding:7px 9px;border-radius:6px;resize:none;height:56px;
+    outline:none;transition:border-color .2s;
+    placeholder:color:var(--dimmed);
+  }
+  .pm-bio::placeholder{color:var(--dimmed);}
+  .pm-bio:focus{border-color:var(--accent);}
+  .pm-bio-save{
+    display:none;width:100%;margin-top:4px;
+    background:var(--accent);border:none;color:#000;
+    font-family:var(--mono);font-size:9px;font-weight:700;
+    padding:5px;border-radius:4px;cursor:pointer;
+    letter-spacing:.08em;transition:opacity .15s;
+  }
+  .pm-bio-save:hover{opacity:.85;}
   .pm-actions{padding:.5rem;}
   .pm-btn{
     width:100%;background:transparent;border:none;cursor:pointer;
@@ -406,12 +425,36 @@
   .card-title{font-size:14px;font-weight:700;color:var(--text);line-height:1.35;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
   .card-desc{font-size:11.5px;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1;}
   .card-footer{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;border-top:1px solid var(--border);margin-top:.5rem;gap:.5rem;}
-  .card-author{display:flex;align-items:center;gap:.4rem;font-family:var(--mono);font-size:9px;color:var(--muted);min-width:0;}
+  .card-author{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:9px;color:var(--muted);min-width:0;}
   .card-author-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;background:var(--accent);}
   .card-author-dot.hebdo{background:var(--warn);}
   .card-author-dot.trade{background:var(--trade);}
   .card-author-dot.tradeinvites{background:#0005ff;}
   .card-author-dot.mensuel{background:var(--accent2);}
+  /* ── CARD AVATAR MINI ── */
+  .card-av{
+    width:22px;height:22px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:8px;font-weight:700;
+    border:1px solid var(--border2);background:var(--surface2);
+    overflow:hidden;
+  }
+  .card-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  /* ── HEADER ONLINE BADGE ── */
+  .profile-name-wrap{display:flex;align-items:center;gap:.45rem;}
+  .profile-username{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.07em;}
+  .profile-username.admin{color:var(--accent);}
+  .profile-username.guest{color:var(--warn);}
+  .online-badge{
+    width:8px;height:8px;border-radius:50%;
+    background:#00f70a;flex-shrink:0;
+    box-shadow:0 0 0 0 rgba(0,247,10,.6);
+    animation:onlinePulse 1.8s ease-in-out infinite;
+  }
+  @keyframes onlinePulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(0,247,10,.7);}
+    50%    {box-shadow:0 0 0 5px rgba(0,247,10,.0);}
+  }
   /* ── EDIT TAGS ── */
   .btn-edit-tag{background:transparent;border:1px solid var(--border2);color:var(--muted);font-size:10px;cursor:pointer;padding:2px 6px;border-radius:3px;transition:all .15s;line-height:1;font-family:var(--mono);}
   .btn-edit-tag:hover{border-color:var(--accent);color:var(--accent);}
@@ -1573,7 +1616,7 @@ async function pushSettings(){
 // ── State ────────────────────────────────────────────────────────────────────
 let role        = sessionStorage.getItem("smf_role") || null;
 let currentUser = JSON.parse(sessionStorage.getItem("smf_user")||"null");
-let arts        = [];
+let arts        = JSON.parse(localStorage.getItem("smf_hub_v4") || "[]");
 let filt="tous", sq="";
 let mode="html";
 let pendingHTML=null, pendingImages=[];
@@ -1644,6 +1687,16 @@ async function doLogin(){
   if(ADMINS.some(a => a.user === u && a.pass === p)){
     role="admin"; sessionStorage.setItem("smf_role","admin");
     sessionStorage.setItem("smf_username", u);
+    // Charger la photo/bio admin depuis Firestore si elle existe
+    try{
+      const profilesDoc = await db.collection("config").doc("profiles").get();
+      if(profilesDoc.exists){
+        // La clé est directement le username (SMF, KGB…)
+        const pd = profilesDoc.data()[u] || {};
+        if(pd.photoURL) sessionStorage.setItem("smf_photo", pd.photoURL);
+        if(pd.bio)      sessionStorage.setItem("smf_bio",   pd.bio);
+      }
+    }catch(ex){ console.warn("Chargement profil admin:", ex); }
     document.getElementById("gateScreen").style.display="none";
     renderHeaderActions(); startRealtimeSync();
     toast("✓ Bienvenue Admin !");
@@ -1673,7 +1726,18 @@ async function doLogin(){
     await db.collection("users").doc(userDoc.id).update({online:true, lastSeen: firebase.firestore.FieldValue.serverTimestamp()});
 
     role="guest"; sessionStorage.setItem("smf_role","guest");
-    currentUser={id:userDoc.id, username:userData.username, email:userData.email, prenom:userData.prenom||'', nom:userData.nom||'', photoURL:userData.photoURL||null};
+    currentUser={id:userDoc.id, username:userData.username, email:userData.email, prenom:userData.prenom||'', nom:userData.nom||'', photoURL:userData.photoURL||null, bio:''};
+    // Lire photo/bio depuis config/profiles (stockage centralisé)
+    try{
+      const profilesDoc = await db.collection("config").doc("profiles").get();
+      if(profilesDoc.exists){
+        const pd = profilesDoc.data()["guest_" + userDoc.id] || {};
+        if(pd.photoURL){ currentUser.photoURL = pd.photoURL; sessionStorage.setItem("smf_photo", pd.photoURL); }
+        if(pd.bio)     { currentUser.bio = pd.bio;           sessionStorage.setItem("smf_bio",   pd.bio); }
+      }
+    }catch(ex){ console.warn("Chargement profil guest:", ex); }
+    // Fallback : bio stockée directement sur le doc user (ancienne version)
+    if(!currentUser.bio && userData.bio){ currentUser.bio = userData.bio; sessionStorage.setItem("smf_bio", userData.bio); }
     sessionStorage.setItem("smf_user", JSON.stringify(currentUser));
     document.getElementById("gateScreen").style.display="none";
     renderHeaderActions(); startRealtimeSync();
@@ -1774,20 +1838,25 @@ function getProfilePhoto(){
   return sessionStorage.getItem("smf_photo") || null;
 }
 
-function buildAvatar(initials, color, isGuest){
+function buildAvatar(initials, color, isGuest, displayName){
   const photo = getProfilePhoto();
   const colorStyle = isGuest ? `color:var(--warn);` : `color:var(--accent);`;
   const avatarClass = isGuest ? "profile-avatar guest-av" : "profile-avatar";
+  const roleClass = isGuest ? "guest" : "admin";
   const inner = photo
     ? `<img src="${photo}" alt="photo">`
     : `<span class="av-initials" style="${colorStyle}">${initials}</span>`;
   return `
-    <div class="profile-wrap" id="profileWrap">
+    <div class="profile-wrap" id="profileWrap" style="display:flex;align-items:center;gap:.55rem;">
+      <div class="profile-name-wrap">
+        <div class="online-badge"></div>
+        <span class="profile-username ${roleClass}">${displayName}</span>
+      </div>
       <div class="${avatarClass}" onclick="toggleProfileMenu(event)" title="Mon profil">
         ${inner}
         <div class="profile-online-dot"></div>
       </div>
-      <div class="profile-menu" id="profileMenu">
+      <div class="profile-menu" id="profileMenu" onclick="event.stopPropagation()">
         ${buildProfileMenuContent(initials, isGuest)}
       </div>
     </div>`;
@@ -1819,6 +1888,10 @@ function buildProfileMenuContent(initials, isGuest){
       <div class="pm-name">${name}</div>
       <div class="pm-role ${roleClass}">● ${roleLabel}</div>
       <div class="pm-hint">Cliquer sur la photo pour changer</div>
+      <div class="pm-bio-wrap">
+        <textarea class="pm-bio" id="pmBioField" placeholder="Votre bio..." oninput="onBioInput()" rows="2">${sessionStorage.getItem('smf_bio')||''}</textarea>
+        <button class="pm-bio-save" id="pmBioSaveBtn" onclick="saveBio()">✓ SAUVEGARDER LA BIO</button>
+      </div>
     </div>
     <div class="pm-actions">
       ${gestionBtn}
@@ -1837,27 +1910,108 @@ function closeProfileMenu(){
   const menu = document.getElementById("profileMenu");
   if(menu) menu.classList.remove("open");
 }
-document.addEventListener("click", ()=>closeProfileMenu());
+document.addEventListener("click", (e)=>{
+  // Ferme le menu seulement si le clic est EN DEHORS du profileWrap
+  const wrap = document.getElementById("profileWrap");
+  if(wrap && wrap.contains(e.target)) return;
+  closeProfileMenu();
+});
+
+/* ── BIO ─────────────────────────────────────────────── */
+function onBioInput(){
+  const btn = document.getElementById("pmBioSaveBtn");
+  if(btn) btn.style.display = "block";
+}
+async function saveBio(){
+  const field = document.getElementById("pmBioField");
+  const btn   = document.getElementById("pmBioSaveBtn");
+  if(!field) return;
+  const bio = field.value.trim();
+  btn.disabled = true; btn.textContent = "Sauvegarde...";
+  sessionStorage.setItem("smf_bio", bio);
+  try{
+    if(role==="guest" && currentUser){
+      // Guests : écriture dans leur propre doc users (droits déjà accordés)
+      await db.collection("users").doc(currentUser.id).update({bio});
+      currentUser.bio = bio;
+      sessionStorage.setItem("smf_user", JSON.stringify(currentUser));
+    } else if(role==="admin"){
+      // Admins : écriture dans config/profiles (même collection que les settings)
+      const adminUsername = sessionStorage.getItem("smf_username") || "ADMIN";
+      await db.collection("config").doc("profiles").set(
+        { [adminUsername]: { bio } }, { merge: true }
+      );
+    }
+    btn.textContent = "✓ BIO SAUVEGARDÉE !";
+    setTimeout(()=>{ btn.style.display="none"; btn.disabled=false; btn.textContent="✓ SAUVEGARDER LA BIO"; }, 1800);
+    toast("✓ Bio mise à jour !");
+  }catch(ex){
+    console.error("saveBio error:", ex);
+    btn.textContent = "✕ Erreur — réessayer";
+    btn.disabled = false;
+    toast("✕ " + (ex.message || "Erreur sauvegarde bio"), true);
+  }
+}
+
+/* ── COMPRESSION PHOTO (canvas, max 150×150, JPEG 0.72) ── */
+function compressPhoto(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = ev => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const MAX = 150;
+        let w = img.width, h = img.height;
+        if(w > h){ h = Math.round(h * MAX / w); w = MAX; }
+        else      { w = Math.round(w * MAX / h); h = MAX; }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL("image/jpeg", 0.72));
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 async function onProfilePhotoChange(e){
   const file = e.target.files[0];
   if(!file) return;
-  if(file.size > 2*1024*1024){ toast("⚠ Image trop lourde (max 2 Mo)", true); return; }
-  const reader = new FileReader();
-  reader.onload = async function(ev){
-    const dataUrl = ev.target.result;
+  if(file.size > 5*1024*1024){ toast("⚠ Image trop lourde (max 5 Mo)", true); return; }
+  try{
+    // Compression avant tout (garde bien sous 100 Ko pour Firestore)
+    const dataUrl = await compressPhoto(file);
     // Sauvegarde locale
     sessionStorage.setItem("smf_photo", dataUrl);
-    // Si guest → sauvegarder dans Firestore
     if(role==="guest" && currentUser){
-      try{ await db.collection("users").doc(currentUser.id).update({photoURL: dataUrl}); }catch(ex){}
+      // Guests : écriture dans leur propre doc users (droits déjà accordés)
+      try{ await db.collection("users").doc(currentUser.id).update({photoURL: dataUrl}); }catch(ex){ console.warn("Photo guest:", ex); }
       currentUser.photoURL = dataUrl;
       sessionStorage.setItem("smf_user", JSON.stringify(currentUser));
+    } else if(role==="admin"){
+      // Admins : écriture dans config/profiles (même collection que les settings)
+      const adminUsername = sessionStorage.getItem("smf_username") || "ADMIN";
+      try{
+        await db.collection("config").doc("profiles").set(
+          { [adminUsername]: { photoURL: dataUrl } }, { merge: true }
+        );
+      }catch(ex){ console.warn("Photo admin:", ex); }
     }
+    // Cache local pour les cartes
+    const myName = role==="guest" && currentUser
+      ? (((currentUser.prenom||"")+" "+(currentUser.nom||"")).trim() || currentUser.username)
+      : sessionStorage.getItem("smf_username") || "";
+    if(myName) userPhotoCache[myName] = dataUrl;
     toast("✓ Photo de profil mise à jour !");
     renderHeaderActions();
-  };
-  reader.readAsDataURL(file);
+    renderGrid();
+  }catch(ex){
+    console.error("Photo change error:", ex);
+    toast("✕ Erreur photo: " + (ex.message||ex), true);
+  }
 }
 
 function renderHeaderActions(){
@@ -1869,7 +2023,7 @@ function renderHeaderActions(){
     const gestionBtn = username==="SMF" ? "" : `<button class="btn-export" onclick="openAdminPanel()">⚙ Gestion</button>`;
     div.innerHTML=`
       ${gestionBtn}
-      ${buildAvatar(initials, "var(--accent)", false)}`;
+      ${buildAvatar(initials, "var(--accent)", false, username)}`;
     if(fab) fab.style.display="flex";
   } else if(role==="guest"){
     const displayName = currentUser
@@ -1878,7 +2032,7 @@ function renderHeaderActions(){
     const initials = getInitials(displayName);
     div.innerHTML=`
       <button class="btn-add-header" onclick="openGuestSubmit()" style="background:#0005ff;">📤 Soumettre un Trade</button>
-      ${buildAvatar(initials, "var(--warn)", true)}`;
+      ${buildAvatar(initials, "var(--warn)", true, displayName)}`;
     if(fab) fab.style.display="none";
   } else {
     div.innerHTML="";
@@ -2133,9 +2287,29 @@ function closeAdminPanel(){
   document.body.style.overflow="";
 }
 
+// ── USER PHOTO CACHE ──────────────────────────────────────────────────────────
+// username → photoURL (pour afficher les avatars sur les cartes)
+let userPhotoCache = {};
+
+async function loadUserPhotoCache(){
+  try{
+    const snap = await db.collection("users").get();
+    snap.docs.forEach(d=>{
+      const u = d.data();
+      if(u.username && u.photoURL) userPhotoCache[u.username] = u.photoURL;
+      if(u.prenom || u.nom){
+        const fullName = ((u.prenom||"")+" "+(u.nom||"")).trim();
+        if(fullName && u.photoURL) userPhotoCache[fullName] = u.photoURL;
+      }
+    });
+  }catch(e){}
+}
+
 // ── FIRESTORE ARTICLES ────────────────────────────────────────────────────────
 function startRealtimeSync(){
   if(unsubscribe) unsubscribe();
+  // Lance le cache photos en arrière-plan sans bloquer l'affichage
+  loadUserPhotoCache().then(()=>render());
   unsubscribe = db.collection("articles").orderBy("date","desc")
     .onSnapshot(snap=>{
       arts=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -2233,6 +2407,50 @@ function filtered(){
   return l;
 }
 
+// Construit le mini avatar pour une carte article
+function buildCardAvatar(authorName, cat){
+  // Chercher photo dans le cache
+  const photo = userPhotoCache[authorName] || null;
+  // Si c'est l'utilisateur connecté, utiliser sa propre photo
+  const myPhoto = getProfilePhoto();
+  const isMe = (role==="guest" && currentUser && (
+    authorName === ((currentUser.prenom||"")+" "+(currentUser.nom||"")).trim() ||
+    authorName === currentUser.username
+  )) || (role==="admin" && authorName === sessionStorage.getItem("smf_username"));
+  const finalPhoto = isMe ? (myPhoto || photo) : photo;
+
+  const initials = getInitials(authorName || "SMF");
+  // Couleur selon catégorie
+  const catColors = {
+    hebdo:"#f7b731", weekahead:"#f7b731", mensuel:"#00ffff",
+    banques:"#00e5a0", trade:"#00f70a", tradeinvites:"#0005ff"
+  };
+  const col = catColors[cat] || "#00e5a0";
+
+  if(finalPhoto){
+    return `<div class="card-av"><img src="${finalPhoto}" alt="${initials}"></div>`;
+  }
+  return `<div class="card-av" style="color:${col};border-color:${col}22;">${initials}</div>`;
+}
+
+// Construit le mini avatar pour une carte article
+function buildCardAvatar(authorName, cat){
+  const myPhoto = getProfilePhoto();
+  const isMe = (role==="guest" && currentUser && (
+    authorName === ((currentUser.prenom||"")+" "+(currentUser.nom||"")).trim() ||
+    authorName === currentUser.username
+  )) || (role==="admin" && authorName === sessionStorage.getItem("smf_username"));
+  const cachedPhoto = userPhotoCache[authorName] || null;
+  const finalPhoto = isMe ? (myPhoto || cachedPhoto) : cachedPhoto;
+  const initials = getInitials(authorName || "SMF");
+  const catColors = {hebdo:"#f7b731",weekahead:"#f7b731",mensuel:"#00ffff",banques:"#00e5a0",trade:"#00f70a",tradeinvites:"#0005ff"};
+  const col = catColors[cat] || "#00e5a0";
+  if(finalPhoto){
+    return `<div class="card-av"><img src="${finalPhoto}" alt="${initials}"></div>`;
+  }
+  return `<div class="card-av" style="color:${col};border-color:${col}22;">${initials}</div>`;
+}
+
 function renderGrid(){
   const g=document.getElementById("articlesGrid");
   const l=filtered();
@@ -2286,7 +2504,7 @@ function renderGrid(){
       </div>
       <div class="card-footer">
         <div class="card-author">
-          <div class="card-author-dot ${primaryCat}"></div>
+          ${buildCardAvatar(authorName, primaryCat)}
           <span class="card-author-name">${authorName||"S·M·F"}</span>
           ${blocksBadge}
         </div>
@@ -3715,6 +3933,33 @@ const QUOTES=[
 (async()=>{
   await loadSettings();
   if(role){
+    // Restaurer photo/bio si absent de la session
+    const needsPhoto = !sessionStorage.getItem("smf_photo");
+    const needsBio   = !sessionStorage.getItem("smf_bio");
+    if(needsPhoto || needsBio){
+      try{
+        if(role==="admin"){
+          // Admin → config/profiles avec username comme clé
+          const adminUsername = sessionStorage.getItem("smf_username") || "";
+          if(adminUsername){
+            const profilesDoc = await db.collection("config").doc("profiles").get();
+            if(profilesDoc.exists){
+              const pd = profilesDoc.data()[adminUsername] || {};
+              if(pd.photoURL && needsPhoto) sessionStorage.setItem("smf_photo", pd.photoURL);
+              if(pd.bio      && needsBio)   sessionStorage.setItem("smf_bio",   pd.bio);
+            }
+          }
+        } else if(role==="guest" && currentUser){
+          // Guest → leur propre doc users
+          const userDoc = await db.collection("users").doc(currentUser.id).get();
+          if(userDoc.exists){
+            const ud = userDoc.data();
+            if(ud.photoURL && needsPhoto) sessionStorage.setItem("smf_photo", ud.photoURL);
+            if(ud.bio      && needsBio)   sessionStorage.setItem("smf_bio",   ud.bio);
+          }
+        }
+      }catch(ex){ console.warn("Restore profil:", ex); }
+    }
     document.getElementById("gateScreen").style.display="none";
     renderHeaderActions();
     startRealtimeSync();
