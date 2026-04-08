@@ -1766,12 +1766,13 @@ const CAT_LABEL = {hebdo:"Hebdo",weekahead:"Week Ahead",mensuel:"Monthly Recap",
 
 // ── Firebase ─────────────────────────────────────────────────────────────────
 const firebaseConfig = {
-  apiKey:"AIzaSyCne4G3T-dLYyNu31RRi-HNFTXjASnPVNE",
-  authDomain:"fir-m-f.firebaseapp.com",
-  projectId:"fir-m-f",
-  storageBucket:"fir-m-f.firebasestorage.app",
-  messagingSenderId:"567813195919",
-  appId:"1:567813195919:web:cf9192d273d8f59010c8fa"
+  apiKey: "AIzaSyBcW7RTYM2-2st8RkDPPHSTpJqIZRgmhX0",
+  authDomain: "smf-room-01-site-article-fonda.firebaseapp.com",
+  projectId: "smf-room-01-site-article-fonda",
+  storageBucket: "smf-room-01-site-article-fonda.firebasestorage.app",
+  messagingSenderId: "272181383364",
+  appId: "1:272181383364:web:285aa8b8990509302db991",
+  measurementId: "G-8Y9PT11TTQ"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
@@ -1862,7 +1863,9 @@ function toast(msg,err=false){
 
 // ── IMAGE COMPRESSION ─────────────────────────────────────────────────────────
 // Compresse toute image en JPEG max 900px, qualité 0.72 → ~80-150 Ko typique
-function compressImage(dataUrl, maxPx=900, quality=0.72){
+// Compression minimale — qualité quasi originale, max 1600px, qualité 0.88
+// Nécessaire pour rester sous la limite Firestore de 1Mo par document
+function compressImage(dataUrl, maxPx=1600, quality=0.88){
   return new Promise(resolve=>{
     const img=new Image();
     img.onload=()=>{
@@ -1876,7 +1879,7 @@ function compressImage(dataUrl, maxPx=900, quality=0.72){
       c.getContext("2d").drawImage(img,0,0,w,h);
       resolve(c.toDataURL("image/jpeg",quality));
     };
-    img.onerror=()=>resolve(dataUrl); // fallback sans compression
+    img.onerror=()=>resolve(dataUrl);
     img.src=dataUrl;
   });
 }
@@ -1899,90 +1902,94 @@ async function doLogin(){
   const u = document.getElementById("lUser").value.trim();
   const p = document.getElementById("lPass").value.trim();
   const errEl = document.getElementById("loginErr");
+  const btn   = document.querySelector(".btn-submit");
   errEl.style.display="none";
-  // Reset style (peut avoir été coloré en vert après inscription)
   errEl.style.color="var(--red)";
   errEl.style.background="rgba(255,77,109,.1)";
   errEl.style.border="1px solid rgba(255,77,109,.2)";
 
-  await loadSettings();
+  if(btn){ btn.disabled=true; btn.textContent="Connexion…"; }
 
-  // Admin
-  const ADMINS = [
-    { user: "SMF",  pass: "77" },
-    { user: "KGB",  pass: "77" },
-  ];
-  if(ADMINS.some(a => a.user === u && a.pass === p)){
-    role="admin"; sessionStorage.setItem("smf_role","admin");
-    sessionStorage.setItem("smf_username", u);
-    // Charger la photo/bio admin depuis Firestore si elle existe
-    try{
-      const profilesDoc = await db.collection("config").doc("profiles").get();
-      if(profilesDoc.exists){
-        // La clé est directement le username (SMF, KGB…)
+  try{
+    const ADMINS = [{user:"SMF",pass:"77"},{user:"KGB",pass:"77"}];
+    if(ADMINS.some(a => a.user===u && a.pass===p)){
+      // settings + profil en parallele
+      const [, profilesDoc] = await Promise.all([
+        loadSettings(),
+        db.collection("config").doc("profiles").get().catch(()=>null)
+      ]);
+      role="admin";
+      sessionStorage.setItem("smf_role","admin");
+      sessionStorage.setItem("smf_username", u);
+      if(profilesDoc && profilesDoc.exists){
         const pd = profilesDoc.data()[u] || {};
         if(pd.photoURL) sessionStorage.setItem("smf_photo", pd.photoURL);
         if(pd.bio)      sessionStorage.setItem("smf_bio",   pd.bio);
       }
-    }catch(ex){ console.warn("Chargement profil admin:", ex); }
-    document.getElementById("gateScreen").style.display="none";
-    renderHeaderActions(); startRealtimeSync();
-    toast("✓ Bienvenue Admin !");
-    return;
-  }
+      document.getElementById("gateScreen").style.display="none";
+      renderHeaderActions(); startRealtimeSync();
+      toast("✓ Bienvenue Admin !");
+      return;
+    }
 
-  // Invité par email ou username
-  const isEmail = u.includes("@");
-  const field   = isEmail ? "email" : "username";
-  const value   = u.toLowerCase();
-  try{
-    const snap = await db.collection("users").where(field,"==",value).limit(1).get();
+    // Invite : settings + doc user en parallele
+    const isEmail = u.includes("@");
+    const field   = isEmail ? "email" : "username";
+    const value   = u.toLowerCase();
+
+    const [, snap] = await Promise.all([
+      loadSettings(),
+      db.collection("users").where(field,"==",value).limit(1).get()
+    ]);
+
     if(snap.empty){ errEl.textContent="✕ "+(isEmail?"Email":"Username")+" introuvable"; errEl.style.display="block"; return; }
     const userDoc  = snap.docs[0];
     const userData = userDoc.data();
-    // Vérifier expiration d'accès
+
     if(userData.accessExpiry && !userData.banned && !userData.paused){
-      const expiry = new Date(userData.accessExpiry);
-      if(Date.now() > expiry.getTime()){
-        await db.collection("users").doc(userDoc.id).update({paused:true, online:false});
-        errEl.textContent="✕ Votre période d'accès a expiré — contactez l'administrateur";
+      if(Date.now() > new Date(userData.accessExpiry).getTime()){
+        db.collection("users").doc(userDoc.id).update({paused:true, online:false});
+        errEl.textContent="✕ Votre période d\'accès a expiré — contactez l\'administrateur";
         errEl.style.display="block"; return;
       }
     }
-    if(userData.banned){ errEl.textContent="✕ Compte suspendu par l'administrateur"; errEl.style.display="block"; return; }
-    if(userData.paused){ errEl.textContent="✕ Votre accès est temporairement suspendu — contactez l'administrateur"; errEl.style.display="block"; return; }
-    if(userData.status !== "approved"){ errEl.textContent="✕ Compte en attente de validation — contactez l'admin"; errEl.style.display="block"; return; }
-    if((userData.password||"").trim() !== p){ errEl.textContent="✕ Mot de passe incorrect"; errEl.style.display="block"; return; }
+    if(userData.banned)              { errEl.textContent="✕ Compte suspendu par l\'administrateur"; errEl.style.display="block"; return; }
+    if(userData.paused)              { errEl.textContent="✕ Accès temporairement suspendu — contactez l\'administrateur"; errEl.style.display="block"; return; }
+    if(userData.status!=="approved") { errEl.textContent="✕ Compte en attente de validation — contactez l\'admin"; errEl.style.display="block"; return; }
+    if((userData.password||"").trim()!==p){ errEl.textContent="✕ Mot de passe incorrect"; errEl.style.display="block"; return; }
 
-    // Vérifier limite connectés
-    const activeSnap = await db.collection("users").where("online","==",true).get();
+    // limite connectes + profil en parallele
+    const [activeSnap, profilesDoc] = await Promise.all([
+      db.collection("users").where("online","==",true).get(),
+      db.collection("config").doc("profiles").get().catch(()=>null)
+    ]);
+
     if(activeSnap.size >= SETTINGS.maxGuests && !userData.online){
-      errEl.textContent="✕ Nombre maximum d'invités atteint ("+SETTINGS.maxGuests+")"; errEl.style.display="block"; return;
+      errEl.textContent="✕ Nombre maximum d\'invités atteint ("+SETTINGS.maxGuests+")"; errEl.style.display="block"; return;
     }
 
-    // Marquer online
-    await db.collection("users").doc(userDoc.id).update({online:true, lastSeen: firebase.firestore.FieldValue.serverTimestamp()});
+    // fire & forget : n'attend pas pour afficher le hub
+    db.collection("users").doc(userDoc.id).update({online:true, lastSeen: firebase.firestore.FieldValue.serverTimestamp()});
 
     role="guest"; sessionStorage.setItem("smf_role","guest");
-    currentUser={id:userDoc.id, username:userData.username, email:userData.email, prenom:userData.prenom||'', nom:userData.nom||'', photoURL:userData.photoURL||null, bio:''};
-    // Lire photo/bio depuis config/profiles (stockage centralisé)
-    try{
-      const profilesDoc = await db.collection("config").doc("profiles").get();
-      if(profilesDoc.exists){
-        const pd = profilesDoc.data()["guest_" + userDoc.id] || {};
-        if(pd.photoURL){ currentUser.photoURL = pd.photoURL; sessionStorage.setItem("smf_photo", pd.photoURL); }
-        if(pd.bio)     { currentUser.bio = pd.bio;           sessionStorage.setItem("smf_bio",   pd.bio); }
-      }
-    }catch(ex){ console.warn("Chargement profil guest:", ex); }
-    // Fallback : bio stockée directement sur le doc user (ancienne version)
-    if(!currentUser.bio && userData.bio){ currentUser.bio = userData.bio; sessionStorage.setItem("smf_bio", userData.bio); }
+    currentUser={id:userDoc.id, username:userData.username, email:userData.email, prenom:userData.prenom||"", nom:userData.nom||"", photoURL:userData.photoURL||null, bio:""};
+    if(profilesDoc && profilesDoc.exists){
+      const pd = profilesDoc.data()["guest_"+userDoc.id] || {};
+      if(pd.photoURL){ currentUser.photoURL=pd.photoURL; sessionStorage.setItem("smf_photo",pd.photoURL); }
+      if(pd.bio)     { currentUser.bio=pd.bio;           sessionStorage.setItem("smf_bio",pd.bio); }
+    }
+    if(!currentUser.bio && userData.bio){ currentUser.bio=userData.bio; sessionStorage.setItem("smf_bio",userData.bio); }
     sessionStorage.setItem("smf_user", JSON.stringify(currentUser));
     document.getElementById("gateScreen").style.display="none";
     renderHeaderActions(); startRealtimeSync();
     toast("✓ Bienvenue "+userData.prenom+" !");
-  }catch(e){ errEl.textContent="✕ Erreur: "+e.message; errEl.style.display="block"; }
-}
 
+  }catch(e){
+    errEl.textContent="✕ Erreur: "+e.message; errEl.style.display="block";
+  }finally{
+    if(btn){ btn.disabled=false; btn.textContent="→ Accéder au Hub"; }
+  }
+}
 
 // ── PAYS + INDICATIF ──────────────────────────────────────────────
 const COUNTRIES = [
@@ -3201,21 +3208,90 @@ function forcedLogout(msg){
   renderHeaderActions(); render();
 }
 
-async function fbAdd(art){
-  try{ const ref=await db.collection("articles").add(art); return ref.id; }
-  catch(e){ toast("⚠ Erreur Firebase: "+e.message,true); return null; }
+// ── Firebase CRUD helpers ────────────────────────────────────────────────────
+// Architecture : articles/{id} = métadonnées légères (pas d'images)
+//                articles_html/{id} = HTML complet avec images base64 intégrées
+// → chaque doc reste sous 1Mo, images en qualité originale
+
+function artMeta(art){
+  // Extraire une miniature très compressée (120px) pour la carte
+  const full = {...art};
+  const htmlContent = full.html || "";
+  delete full.html; // ne pas stocker le HTML dans les métadonnées
+
+  // Miniature légère pour la carte (extraite du HTML ou des blocks)
+  let thumbB64 = null;
+  if(htmlContent){
+    const m = htmlContent.match(/<img[^>]+src="(data:image[^"]+)"/);
+    if(m) thumbB64 = m[1];
+  }
+  if(!thumbB64 && Array.isArray(full.blocks)){
+    thumbB64 = full.blocks[0]?.images?.[0] || full.blocks[0]?.image || null;
+  }
+  // Compresser la miniature à 120px pour la carte
+  if(thumbB64 && thumbB64.startsWith("data:")){
+    // On garde la miniature — compressImage() est async donc on la stocke telle quelle
+    // Elle sera déjà compressée car passée par compressImage() à l'upload
+    full.thumb = thumbB64;
+  }
+  return { meta: full, html: htmlContent };
 }
 
+async function fbAdd(art){
+  try{
+    const ref = db.collection("articles").doc();
+    const { meta, html } = artMeta(art);
+    // Écrire métadonnées + HTML en parallèle
+    await Promise.all([
+      ref.set(meta),
+      html ? db.collection("articles_html").doc(ref.id).set({html}) : Promise.resolve()
+    ]);
+    return ref.id;
+  }
+  catch(e){
+    console.error("fbAdd error:", e);
+    toast("⚠ Erreur publication: "+e.message, true);
+    return null;
+  }
+}
 
 async function fbUpdate(id, data){
-  try{ await db.collection("articles").doc(id).update(data); return true; }
-  catch(e){ toast("⚠ Erreur mise à jour: "+e.message,true); return false; }
+  try{
+    const { meta, html } = artMeta(data);
+    const ops = [db.collection("articles").doc(id).update(meta)];
+    if(html) ops.push(db.collection("articles_html").doc(id).set({html}));
+    await Promise.all(ops);
+    return true;
+  }
+  catch(e){
+    console.error("fbUpdate error:", e);
+    toast("⚠ Erreur mise à jour: "+e.message, true);
+    return false;
+  }
 }
 
 async function fbDel(id){
-  try{ await db.collection("articles").doc(id).delete(); }
-  catch(e){ toast("⚠ Erreur suppression",true); }
+  try{
+    await Promise.all([
+      db.collection("articles").doc(id).delete(),
+      db.collection("articles_html").doc(id).delete().catch(()=>{})
+    ]);
+  }
+  catch(e){
+    console.error("fbDel error:", e);
+    toast("⚠ Erreur suppression: "+e.message, true);
+  }
 }
+
+// Charge le HTML complet depuis articles_html (appelé à l'ouverture d'un article)
+async function fbGetHtml(id){
+  try{
+    const snap = await db.collection("articles_html").doc(id).get();
+    if(snap.exists) return snap.data().html || null;
+  }catch(e){ console.error("fbGetHtml:", e); }
+  return null;
+}
+
 
 // ── STATS & GRID ──────────────────────────────────────────────────────────────
 // ── MULTI-TAGS HELPER ─────────────────────────────────────────────────────────
@@ -3329,8 +3405,9 @@ function renderGrid(){
     // Thumbnail
     let thumbSrc=null;
     if(isBlocks){ thumbSrc=(a.blocks[0].images&&a.blocks[0].images[0])||a.blocks[0].image||null; }
+    else if(a.thumb){ thumbSrc=a.thumb; } // miniature stockée dans métadonnées (nouvelle archi)
     else if(a.images&&a.images.length){ thumbSrc=a.images[0]; }
-    else if(a.type==="html"&&a.html){
+    else if(a.type==="html"&&a.html){ // fallback anciens articles
       const m=a.html.match(/<img[^>]+src="(data:image[^"]+)"/);
       if(m) thumbSrc=m[1];
     }
@@ -3510,10 +3587,11 @@ function tryRegenArticle(a){
 }
 
 // ── OPEN ARTICLE ──────────────────────────────────────────────────────────────
-function openArt(id){
+async function openArt(id){
   const a=arts.find(x=>x.id===id); if(!a)return;
   const primaryCat=artCats(a)[0];
   let html="";
+
   if(a.type==="pdf"){
     const byteStr=atob(a.pdfData.split(",")[1]);
     const ab=new ArrayBuffer(byteStr.length);
@@ -3522,7 +3600,10 @@ function openArt(id){
     const blob=new Blob([ab],{type:"application/pdf"});
     window.open(URL.createObjectURL(blob),"_blank");
     return;
-  } else if(Array.isArray(a.blocks)&&a.blocks.length>0){
+  }
+
+  if(Array.isArray(a.blocks)&&a.blocks.length>0){
+    // Articles type "trade" / "tradeinvites" — blocs stockés directement
     const fdate=fmtD(a.date,a.time||"");
     const by=a.submittedBy||"Admin";
     if(primaryCat==="tradeinvites"){
@@ -3530,42 +3611,29 @@ function openArt(id){
     } else {
       html=tplTrade(a.titre,a.desc||"",fdate,a.paire||"",a.blocks,by);
     }
-  } else if(a.type==="html"&&Array.isArray(a.artBlocks)&&a.artBlocks.length>0){
-    const fdate=fmtD(a.date,a.time||"");
-    const by=a.submittedBy||"Admin";
-    const acc=CAT_COLORS[primaryCat]||"#00e5a0";
-    const catLbl=CAT_LABEL[primaryCat]||primaryCat;
-    const oldWizCat=wizCat; wizCat=primaryCat;
-    html=generateArticleTemplate(a.titre,a.desc||"",catLbl,acc,fdate,a.paire||"",a.artBlocks,by);
-    wizCat=oldWizCat;
-  } else if(a.type==="html"){
-    const migratedBlocks=tryRegenArticle(a);
-    if(migratedBlocks){
-      const fdate=fmtD(a.date,a.time||"");
-      const by=a.submittedBy||"Admin";
-      const acc=CAT_COLORS[primaryCat]||"#00e5a0";
-      const catLbl=CAT_LABEL[primaryCat]||primaryCat;
-      const oldWizCat=wizCat; wizCat=primaryCat;
-      html=generateArticleTemplate(a.titre,a.desc||"",catLbl,acc,fdate,a.paire||"",
-        [{type:"header",subtitle:a.desc||"",image:null},...migratedBlocks],by);
-      wizCat=oldWizCat;
-    } else {
-      html=a.html;
-    }
   } else {
-    const fdate=fmtD(a.date,a.time||"");
-    const by=a.submittedBy||"Admin";
-    const acc=CAT_COLORS[primaryCat]||"#00e5a0";
-    const catLbl=CAT_LABEL[primaryCat]||primaryCat;
-    const hb={subtitle:a.desc||"",image:null};
-    const paraBlocks=a.content
-      ?[{type:"para",text:a.content,image:null}]
-      :(a.images||[]).map((src,i)=>({type:"para",text:"",image:{dataUrl:src,name:"image-"+(i+1)}}));
-    const oldWizCat=wizCat; wizCat=primaryCat;
-    html=generateArticleTemplate(a.titre,a.desc||"",catLbl,acc,fdate,a.paire||"",
-      [{type:"header",titre:a.titre,subtitle:a.desc||"",image:null},...paraBlocks],by);
-    wizCat=oldWizCat;
+    // Articles type "html" — HTML stocké dans articles_html/{id}
+    // 1. Essayer articles_html (nouvelle architecture)
+    html = await fbGetHtml(id);
+    // 2. Fallback : html dans le doc article lui-même (anciens articles)
+    if(!html) html = a.html || "";
+    // 3. Fallback ultime : régénérer depuis les blocs si présents
+    if(!html && a.type==="html"){
+      const migratedBlocks=tryRegenArticle(a);
+      if(migratedBlocks){
+        const fdate=fmtD(a.date,a.time||"");
+        const by=a.submittedBy||"Admin";
+        const acc=CAT_COLORS[primaryCat]||"#00e5a0";
+        const catLbl=CAT_LABEL[primaryCat]||primaryCat;
+        const oldWizCat=wizCat; wizCat=primaryCat;
+        html=generateArticleTemplate(a.titre,a.desc||"",catLbl,acc,fdate,a.paire||"",
+          [{type:"header",subtitle:a.desc||"",image:null},...migratedBlocks],by);
+        wizCat=oldWizCat;
+      }
+    }
   }
+
+  if(!html){ toast("⚠ Contenu introuvable",true); return; }
   const blob=new Blob([html],{type:"text/html"});
   window.open(URL.createObjectURL(blob),"_blank");
 }
@@ -3945,8 +4013,9 @@ async function wizPublish(){
       const catLbl=CAT_LABEL[wizCat]||wizCat;
       const generatedHTML=generateArticleTemplate(titre,desc,catLbl,acc,fdate,paire,wizBlocks,adminUsername);
       // On stocke aussi les blocs pour pouvoir régénérer avec le dernier template à l'ouverture
+      // On stocke uniquement le HTML final — artBlocks non stockés pour rester sous 1Mo Firestore
       newArt={type:"html",titre,desc,date,time,cat:wizCat,paire,html:generatedHTML,
-              artBlocks:wizBlocks,submittedBy:authorName,
+              submittedBy:authorName,
               ...(isGuestPublish ? {submittedById:authorId, submittedByUsername:authorUsername} : {})};
     }
   }
