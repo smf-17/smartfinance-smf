@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S-M-F · Research Hub</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"></noscript>
+<script>window._emailJsLoaded=false;function _loadEmailJs(){if(window._emailJsLoaded)return;window._emailJsLoaded=true;var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';s.onload=function(){if(window.EMAILJS_KEY)emailjs.init(window.EMAILJS_KEY);};document.head.appendChild(s);}</script>
 <style>
   :root{
     --bg:#02040a;--surface:#060a0f;--surface2:#0b1018;
@@ -787,7 +790,7 @@
     width:100%;max-width:640px;background:var(--surface);
     border:1px solid var(--border2);border-radius:16px;
     overflow:hidden;animation:up .28s cubic-bezier(.34,1.56,.64,1);
-    display:flex;flex-direction:column;max-height:96vh;
+    display:flex;flex-direction:column;max-height:96vh;height:96vh;
   }
   @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 
@@ -809,7 +812,7 @@
   }
   .wiz-step-add:hover{background:rgba(0,229,160,.08);color:var(--accent);}
   /* MODAL wide mode */
-  .wiz-modal.wide{max-width:1080px;}
+  .wiz-modal.wide{max-width:1280px;height:96vh;}
   /* BODY split mode */
   .wiz-body.split{padding:0;overflow:hidden;display:flex;height:100%;}
   .wiz-step .sn{
@@ -1097,24 +1100,6 @@
           <div class="cat-card" data-cat="other" style="--cc:#f7b731" onclick="selectCat('other',this)">
             <span class="cc-ico">📐</span><span class="cc-lbl">Other</span><span class="cc-dot"></span>
           </div>
-          <div class="cat-card" data-cat="hebdo" style="--cc:#f7b731" onclick="selectCat('hebdo',this)">
-            <span class="cc-ico">📅</span><span class="cc-lbl">Hebdo</span><span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="mensuel" style="--cc:#0ff" onclick="selectCat('mensuel',this)">
-            <span class="cc-ico">📊</span><span class="cc-lbl">Mensuel</span><span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="banques" style="--cc:#00e5a0" onclick="selectCat('banques',this)">
-            <span class="cc-ico">🏦</span><span class="cc-lbl">Banques</span><span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="trade" style="--cc:#00f70a" onclick="selectCat('trade',this)">
-            <span class="cc-ico">📈</span><span class="cc-lbl">Trade</span><span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="tradeinvites" style="--cc:#0005ff" onclick="selectCat('tradeinvites',this)">
-            <span class="cc-ico">🔗</span><span class="cc-lbl">Trade Inv.</span><span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="tradeideas" style="--cc:#f7b731" onclick="selectCat('tradeideas',this)">
-            <span class="cc-ico">💡</span><span class="cc-lbl">Ideas</span><span class="cc-dot"></span>
-          </div>
         </div>
       </div>
 
@@ -1178,16 +1163,16 @@
       </div>
 
       <!-- ── STEP 3+ : Bloc actif + Aperçu en direct ── -->
-      <div class="wiz-panel" id="wp3" style="padding:0;height:100%;">
-        <div style="display:flex;height:100%;min-height:400px;">
+      <div class="wiz-panel" id="wp3" style="padding:0;height:100%;flex-direction:column;flex:1;min-height:0;">
+        <div style="display:flex;flex:1;min-height:0;height:100%;">
 
           <!-- Éditeur du bloc courant -->
-          <div id="wSecManual" style="flex:1;overflow-y:auto;padding:1.25rem;min-width:0;">
+          <div id="wSecManual" style="flex:1;overflow-y:auto;padding:1.25rem;min-width:0;min-height:0;min-width:320px;">
             <div class="wb-list" id="wbList"></div>
           </div>
 
           <!-- Aperçu en direct (droite) -->
-          <div style="width:330px;flex-shrink:0;border-left:1px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;">
+          <div style="flex:2;min-width:0;border-left:1px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;">
             <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1rem;border-bottom:1px solid var(--border);">
               📋 Aperçu en direct
             </div>
@@ -1993,11 +1978,7 @@
 
 <!-- ====== ARTICLE READER OVERLAY ====== -->
 <div class="art-reader-ov" id="artReaderOv">
-  <div class="art-reader-bar">
-    <button class="art-reader-back" onclick="closeArtReader()">← Retour</button>
-    <span class="art-reader-title" id="artReaderTitle"></span>
-    <button class="art-reader-newtab" id="artReaderNewTab" onclick="openArtNewTab()">↗ Nouvel onglet</button>
-  </div>
+  <span id="artReaderTitle" style="display:none"></span>
   <iframe class="art-reader-frame" id="artReaderFrame" sandbox="allow-scripts allow-same-origin allow-popups allow-downloads"></iframe>
 </div>
 
@@ -2005,6 +1986,7 @@
 // ── HASH ROUTING ──────────────────────────────────────────────────────────────
 let _artReaderBlobUrl = null;
 let _currentArtId = null;
+let _artReaderHtml = null;
 
 function pushHash(params){
   const parts = Object.entries(params).map(([k,v])=>`${k}=${encodeURIComponent(v)}`);
@@ -2124,6 +2106,7 @@ async function _openArtInReader(id, pushToHistory = true){
   // Révoquer l'ancien blob
   if(_artReaderBlobUrl){ URL.revokeObjectURL(_artReaderBlobUrl); _artReaderBlobUrl = null; }
 
+  _artReaderHtml = html; // Conserver le HTML brut pour ouverture rapide en nouvel onglet
   const blob = new Blob([html], {type:"text/html"});
   _artReaderBlobUrl = URL.createObjectURL(blob);
 
@@ -2146,9 +2129,16 @@ async function _openArtInReader(id, pushToHistory = true){
 }
 
 function openArtNewTab(){
-  // Utiliser l'URL permanente (hash) plutôt que le blob temporaire
-  if(_currentArtId) window.open(getArticleUrl(_currentArtId), "_blank");
-  else if(_artReaderBlobUrl) window.open(_artReaderBlobUrl, "_blank");
+  // Ouvrir directement depuis le HTML déjà en mémoire → aussi rapide que le reader inline
+  if(_artReaderHtml){
+    const blob = new Blob([_artReaderHtml], {type:"text/html"});
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  } else if(_currentArtId){
+    window.open(getArticleUrl(_currentArtId), "_blank");
+  } else if(_artReaderBlobUrl){
+    window.open(_artReaderBlobUrl, "_blank");
+  }
 }
 
 function getArticleUrl(id){
@@ -2200,7 +2190,7 @@ const SK = "smf_hub_v4";
 const EMAILJS_SERVICE  = "service_t71wi0l";
 const EMAILJS_TEMPLATE = "template_oly2fn8";
 const EMAILJS_KEY      = "lVp_Fv1oO6w_s70KW";
-emailjs.init(EMAILJS_KEY);
+window.EMAILJS_KEY = EMAILJS_KEY; // EmailJS chargé à la demande via _loadEmailJs()
 
 // ── Auth Email Verification State ────────────────────────────────────────────
 let pendingAuthUser = null;   // Firebase Auth user en attente de vérification
@@ -3144,6 +3134,7 @@ async function onProfilePhotoChange(e){
     const dataUrl = await compressPhoto(file);
     // Sauvegarde locale
     sessionStorage.setItem("smf_photo", dataUrl);
+    sessionStorage.removeItem(PHOTO_CACHE_KEY); // ✅ Invalider le cache photos
     if(role==="guest" && currentUser){
       // Guests : écriture dans leur propre doc users (droits déjà accordés)
       try{ await db.collection("users").doc(currentUser.id).update({photoURL: dataUrl}); }catch(ex){ console.warn("Photo guest:", ex); }
@@ -4014,7 +4005,19 @@ function closeAdminPanel(){
 // username → photoURL (pour afficher les avatars sur les cartes)
 let userPhotoCache = {};
 
+// ── Clé sessionStorage pour le cache photos ──────────────────────────────────
+const PHOTO_CACHE_KEY = "smf_photo_cache_v1";
+
 async function loadUserPhotoCache(){
+  // ✅ Si déjà en sessionStorage, on évite les appels Firestore
+  try{
+    const cached = sessionStorage.getItem(PHOTO_CACHE_KEY);
+    if(cached){
+      userPhotoCache = JSON.parse(cached);
+      return;
+    }
+  }catch(e){}
+
   try{
     // Guests — collection users
     const snap = await db.collection("users").get();
@@ -4033,13 +4036,15 @@ async function loadUserPhotoCache(){
     if(profilesDoc.exists){
       const data = profilesDoc.data();
       Object.entries(data).forEach(([key, val])=>{
-        // Ignorer les clés "guest_XXXXX" (ce sont des guests)
         if(!key.startsWith("guest_") && val && val.photoURL){
           userPhotoCache[key] = val.photoURL;
         }
       });
     }
   }catch(e){}
+
+  // Sauvegarder en sessionStorage pour éviter les rechargements
+  try{ sessionStorage.setItem(PHOTO_CACHE_KEY, JSON.stringify(userPhotoCache)); }catch(e){}
 }
 
 // ── FIRESTORE ARTICLES ────────────────────────────────────────────────────────
@@ -4051,22 +4056,31 @@ function startRealtimeSync(){
   if(unsubscribe) unsubscribe();
   _lastArtDoc = null;
   _allLoaded  = false;
-  arts = [];
 
   const _hashArticle = parseHash().article || null;
   let   _hashHandled = false;
 
-  // Lancer le render immédiatement + charger les photos en parallèle (non-bloquant)
+  // ✅ Affichage immédiat depuis localStorage si on a des données en cache
+  const cached = localStorage.getItem(SK);
+  if(cached){
+    try{
+      arts = JSON.parse(cached);
+      if(!_hashArticle) render();
+    }catch(e){ arts=[]; }
+  } else {
+    arts = [];
+  }
+
+  // Lancer les photos en parallèle (non-bloquant)
   if(!_hashArticle){
-    render(); // render immédiat sans attendre les photos
-    loadUserPhotoCache().then(()=>renderGrid()); // mise à jour avatars quand prêt
+    loadUserPhotoCache().then(()=>renderGrid());
   }
 
   // Si un lien direct vers un article est demandé, ne pas afficher la grille pendant le chargement
   if(_hashArticle){
     document.getElementById("articlesGrid").style.visibility="hidden";
     document.getElementById("articlesGrid").style.opacity="0";
-    loadUserPhotoCache(); // en arrière-plan
+    loadUserPhotoCache();
   }
 
   // Charger uniquement les ART_PAGE_SIZE premiers articles + écouter les nouveaux
@@ -4079,7 +4093,6 @@ function startRealtimeSync(){
       save();
       if(_hashArticle && !_hashHandled){
         _hashHandled = true;
-        loadUserPhotoCache();
         applyHash();
       } else {
         render();
@@ -4437,7 +4450,7 @@ function renderGrid(){
           ${(role==="admin"&&sessionStorage.getItem("smf_username")==="KGB")?`<button class="btn-edit-art" onclick="openEditArt(event,'${a.id}')" title="Modifier l'article">✏ Modifier</button>`:""}
           ${role==="admin"?`<button class="btn-del" onclick="delArt(event,'${a.id}')" title="Supprimer">🗑</button>`:""}
           ${isMyPost(a)?`<button class="btn-del" onclick="delOwnArt(event,'${a.id}')" title="Supprimer" style="color:var(--red);">🗑</button>`:""}
-          <button class="btn-permalink" onclick="copyArticleLink(event,'${a.id}')" title="Copier le lien permanent">🔗</button><span class="card-open">↗ Lire</span>
+          <span class="card-open">↗ Lire</span>
         </div>
       </div>
     </div>`;
@@ -4462,6 +4475,13 @@ function isMyPost(a){
 }
 
 function render(){ renderFilterBar(); renderStats(); renderGrid(); }
+
+// ✅ Debounce : évite de re-render à chaque frappe clavier
+let _renderDebounceTimer = null;
+function renderDebounced(delay=80){
+  clearTimeout(_renderDebounceTimer);
+  _renderDebounceTimer = setTimeout(()=>render(), delay);
+}
 
 // ── EDIT TAGS ─────────────────────────────────────────────────────────────────
 let _etTargetId = null;
@@ -4586,15 +4606,88 @@ function tryRegenArticle(a){
 
 // ── OPEN ARTICLE ──────────────────────────────────────────────────────────────
 async function openArt(id){
-  await _openArtInReader(id, true);
+  const a = arts.find(x => x.id === id);
+  if(!a){ toast("⚠ Article introuvable", true); return; }
+  const primaryCat = artCats(a)[0];
+  let html = "";
+
+  if(a.type === "pdf"){
+    const byteStr = atob(a.pdfData.split(",")[1]);
+    const ab = new ArrayBuffer(byteStr.length);
+    const ia = new Uint8Array(ab);
+    for(let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+    const blob = new Blob([ab], {type:"application/pdf"});
+    window.open(URL.createObjectURL(blob), "_blank");
+    return;
+  }
+
+  // ✅ Cache hit : HTML déjà prêt (pré-généré au hover)
+  if(_htmlCache.has(id)){
+    html = _htmlCache.get(id);
+  } else if(Array.isArray(a.blocks) && a.blocks.length > 0){
+    const fdate = fmtD(a.date, a.time || "");
+    const by = a.submittedBy || "Admin";
+    if(primaryCat === "tradeinvites"){
+      html = tplTradeInvites(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
+    } else if(primaryCat === "trade"){
+      html = tplTrade(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
+    } else {
+      const acc    = CAT_COLORS[primaryCat] || "#00e5a0";
+      const catLbl = CAT_LABEL[primaryCat] || primaryCat;
+      const oldWizCat = wizCat; wizCat = primaryCat;
+      html = generateArticleTemplate(a.titre, a.desc||"", catLbl, acc, fdate, a.paire||"", a.blocks, by);
+      wizCat = oldWizCat;
+    }
+    if(html) _htmlCache.set(id, html);
+  } else {
+    html = await fbGetHtml(id);
+    if(!html) html = a.html || "";
+    if(!html && a.type === "html"){
+      const mb = tryRegenArticle(a);
+      if(mb){
+        const fdate = fmtD(a.date, a.time||"");
+        const by = a.submittedBy || "Admin";
+        const acc = CAT_COLORS[primaryCat] || "#00e5a0";
+        const catLbl = CAT_LABEL[primaryCat] || primaryCat;
+        const oldWizCat = wizCat; wizCat = primaryCat;
+        html = generateArticleTemplate(a.titre, a.desc||"", catLbl, acc, fdate, a.paire||"",
+          [{type:"header",subtitle:a.desc||"",image:null}, ...mb], by);
+        wizCat = oldWizCat;
+      }
+    }
+    if(html) _htmlCache.set(id, html);
+  }
+
+  if(!html){ toast("⚠ Contenu introuvable", true); return; }
+
+  const blob = new Blob([html], {type:"text/html"});
+  window.open(URL.createObjectURL(blob), "_blank");
 }
 
 // Précharge le HTML d'un article en cache dès que l'utilisateur survole la carte
 function prefetchArt(id){
   const a = arts.find(x=>x.id===id);
   if(!a || _htmlCache.has(id)) return;
-  // Uniquement les articles sans blocs (ceux qui nécessitent une requête Firestore)
-  if(!Array.isArray(a.blocks) || a.blocks.length===0){
+  if(Array.isArray(a.blocks) && a.blocks.length > 0){
+    // Articles avec blocs : pré-générer le HTML immédiatement (CPU local, pas de réseau)
+    const primaryCat = artCats(a)[0];
+    const fdate = fmtD(a.date, a.time||"");
+    const by = a.submittedBy || "Admin";
+    let html = "";
+    try{
+      if(primaryCat === "tradeinvites") html = tplTradeInvites(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
+      else if(primaryCat === "trade")  html = tplTrade(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
+      else {
+        const acc = CAT_COLORS[primaryCat]||"#00e5a0";
+        const catLbl = CAT_LABEL[primaryCat]||primaryCat;
+        const old = wizCat; wizCat = primaryCat;
+        html = generateArticleTemplate(a.titre, a.desc||"", catLbl, acc, fdate, a.paire||"", a.blocks, by);
+        wizCat = old;
+      }
+      if(html) _htmlCache.set(id, html);
+    }catch(e){}
+  } else {
+    // Articles sans blocs : précharger depuis Firestore (réseau)
     fbGetHtml(id); // fire-and-forget
   }
 }
@@ -4903,11 +4996,15 @@ function wizUpdateUI(){
   document.getElementById("wp1").classList.toggle("active", wizStep===1);
   document.getElementById("wp2").classList.toggle("active", wizStep===2);
   document.getElementById("wp3").classList.toggle("active", inBlocks);
+  // wp3 a besoin de display:flex pour son layout interne (pas display:block du .active)
+  document.getElementById("wp3").style.display = inBlocks ? "flex" : "";
 
   // wiz-body: mode split seulement en blocs
   document.getElementById("wizBody").style.padding  = inBlocks ? "0" : "";
-  document.getElementById("wizBody").style.overflow = inBlocks ? "hidden" : "";
-  document.getElementById("wizBody").style.display  = inBlocks ? "block" : "";
+  document.getElementById("wizBody").style.overflow = inBlocks ? "" : "";
+  document.getElementById("wizBody").style.display  = inBlocks ? "flex" : "";
+  document.getElementById("wizBody").style.flex     = inBlocks ? "1" : "";
+  document.getElementById("wizBody").style.minHeight= inBlocks ? "0" : "";
 
   // Modal large en mode blocs
   document.getElementById("wizModal").classList.toggle("wide", inBlocks);
@@ -6076,7 +6173,7 @@ if(abd){
 }
 // ── FILTERS ───────────────────────────────────────────────────────────────────
 // Les boutons de filtre sont créés dynamiquement par renderFilterBar() — pas d'init ici
-document.getElementById("searchInput").addEventListener("input",e=>{sq=e.target.value;renderGrid();});
+document.getElementById("searchInput").addEventListener("input",e=>{sq=e.target.value;renderDebounced(120);});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeArtReader();closeImport();closeAdminPanel();closeAuthorProfile();closeWsContinue();}});
 
 // ── VIEW MODE ─────────────────────────────────────────────────────────────────
