@@ -375,15 +375,10 @@
   .filter-label{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-right:.5rem;}
   .filter-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;padding:5px 14px;border-radius:3px;cursor:pointer;transition:all .15s;}
   .filter-btn:hover,.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
-  .filter-btn[data-cat="hebdo"].active{background:var(--warn);border-color:var(--warn);}
-  .filter-btn[data-cat="tradeideas"].active{background:#f7b731;border-color:#f7b731;color:#000;}
-  .filter-btn[data-cat="wa"].active{background:#f7b731;border-color:#f7b731;color:#000;}
+  .filter-btn[data-cat="ws"].active{background:#f7b731;border-color:#f7b731;color:#000;}
+  .filter-btn[data-cat="wr"].active{background:#f7b731;border-color:#f7b731;color:#000;}
   .filter-btn[data-cat="mr"].active{background:#f7b731;border-color:#f7b731;color:#000;}
-  .filter-btn[data-cat="bm"].active{background:#f7b731;border-color:#f7b731;color:#000;}
-  .filter-btn[data-cat="tan"].active{background:#f7b731;border-color:#f7b731;color:#000;}
-  .filter-btn[data-cat="mensuel"].active{background:var(--accent2);border-color:var(--accent2);}
-  .filter-btn[data-cat="trade"].active{background:var(--trade);border-color:var(--trade);color:#000;}
-  .filter-btn[data-cat="tradeinvites"].active{background:#0005ff;border-color:#0005ff;color:#fff;}
+  .filter-btn[data-cat="other"].active{background:#f7b731;border-color:#f7b731;color:#000;}
   .search-wrap{position:relative;margin-left:auto;margin-right:.5rem;}
   .search-wrap input{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:6px 12px 6px 30px;border-radius:4px;width:200px;outline:none;transition:border-color .2s,width .3s;}
   .search-wrap input:focus{border-color:var(--accent);width:260px;}
@@ -400,17 +395,10 @@
   .article-card:hover{background:var(--surface2);border-color:var(--accent);transform:translateY(-1px);}
   /* Barre top selon catégorie */
   .article-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
-  .article-card[data-cat="hebdo"]::before{background:var(--warn);}
-  .article-card[data-cat="weekahead"]::before{background:#f7b731;}
-  .article-card[data-cat="mensuel"]::before{background:var(--accent2);}
-  .article-card[data-cat="trade"]::before{background:var(--trade);}
-  .article-card[data-cat="tradeinvites"]::before{background:#0005ff;}
-  .article-card[data-cat="banques"]::before{background:var(--accent);}
-  .article-card[data-cat="tradeideas"]::before{background:#f7b731;}
-  .article-card[data-cat="wa"]::before{background:#f7b731;}
+  .article-card[data-cat="ws"]::before{background:#f7b731;}
+  .article-card[data-cat="wr"]::before{background:#f7b731;}
   .article-card[data-cat="mr"]::before{background:#f7b731;}
-  .article-card[data-cat="bm"]::before{background:#f7b731;}
-  .article-card[data-cat="tan"]::before{background:#f7b731;}
+  .article-card[data-cat="other"]::before{background:#f7b731;}
 
   /* Corps horizontal */
   .card-body{display:flex;align-items:stretch;flex:1;padding-top:3px;}
@@ -433,7 +421,7 @@
   .cat-badge.mr{background:rgba(247,183,49,.15);color:#f7b731;}
   .cat-badge.bm{background:rgba(247,183,49,.15);color:#f7b731;}
   .cat-badge.tan{background:rgba(247,183,49,.15);color:#f7b731;}
-  .filter-btn[data-cat="weekahead"].active{background:#f7b731;border-color:#f7b731;color:#000;}
+
   .filter-btn[data-cat="ideetrade"].active{background:#ffa032;border-color:#ffa032;color:#000;}
   .pill.weekahead input:checked+label{background:rgba(247,183,49,.15);border-color:#f7b731;color:#f7b731;font-weight:700;}
   .card-date{font-family:var(--mono);font-size:9px;color:var(--dimmed);letter-spacing:.03em;white-space:nowrap;}
@@ -553,6 +541,17 @@
   /* Overlay édition tags */
   .edit-tags-ov{position:fixed;inset:0;background:rgba(2,4,10,.88);backdrop-filter:blur(16px);z-index:500;display:none;align-items:center;justify-content:center;padding:1.5rem;}
   .edit-tags-ov.open{display:flex;}
+
+  /* ── ARTICLE READER OVERLAY ── */
+  .art-reader-ov{position:fixed;inset:0;background:rgba(2,4,10,.96);backdrop-filter:blur(14px);z-index:600;display:none;flex-direction:column;}
+  .art-reader-ov.open{display:flex;}
+  .art-reader-bar{display:flex;align-items:center;gap:.75rem;padding:.6rem 1.2rem;background:rgba(6,10,15,.98);border-bottom:1px solid var(--border2);flex-shrink:0;}
+  .art-reader-back{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:700;padding:6px 14px;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .15s;white-space:nowrap;}
+  .art-reader-back:hover{border-color:var(--accent);color:var(--accent);}
+  .art-reader-title{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+  .art-reader-newtab{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:5px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+  .art-reader-newtab:hover{border-color:var(--accent);color:var(--accent);}
+  .art-reader-frame{flex:1;border:none;background:#02040a;}
   .edit-tags-modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:480px;padding:1.75rem;display:flex;flex-direction:column;gap:1.25rem;animation:up .25s cubic-bezier(.34,1.56,.64,1);}
   .edit-tags-title{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);letter-spacing:.06em;}
   .edit-tags-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;}
@@ -782,18 +781,31 @@
     width:100%;max-width:640px;background:var(--surface);
     border:1px solid var(--border2);border-radius:16px;
     overflow:hidden;animation:up .28s cubic-bezier(.34,1.56,.64,1);
-    display:flex;flex-direction:column;max-height:90vh;
+    display:flex;flex-direction:column;max-height:96vh;
   }
   @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 
   /* Step bar */
-  .wiz-steps{display:flex;align-items:stretch;background:var(--surface2);border-bottom:1px solid var(--border);}
+  .wiz-steps{display:flex;align-items:stretch;background:var(--surface2);border-bottom:1px solid var(--border);overflow-x:auto;}
   .wiz-step{
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:3px;padding:14px 8px;cursor:default;position:relative;
+    gap:3px;padding:9px 8px;cursor:default;position:relative;
     font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
     color:var(--dimmed);transition:color .2s;
   }
+  .wiz-step.blk{flex:0 0 58px;min-width:58px;padding:10px 4px;cursor:pointer;}
+  .wiz-step.blk:hover{color:var(--accent);}
+  .wiz-step.blk .sn{width:26px;height:26px;font-size:7px;letter-spacing:0;}
+  .wiz-step-add{
+    flex:0 0 42px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:20px;color:var(--muted);border-left:1px solid var(--border);
+    transition:background .15s,color .15s;
+  }
+  .wiz-step-add:hover{background:rgba(0,229,160,.08);color:var(--accent);}
+  /* MODAL wide mode */
+  .wiz-modal.wide{max-width:1080px;}
+  /* BODY split mode */
+  .wiz-body.split{padding:0;overflow:hidden;display:flex;height:100%;}
   .wiz-step .sn{
     width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);
     display:flex;align-items:center;justify-content:center;
@@ -811,14 +823,14 @@
   }
 
   /* Wiz head */
-  .wiz-head{padding:1.25rem 1.5rem .75rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+  .wiz-head{padding:.75rem 1.25rem .5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
   .wiz-title{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);letter-spacing:.06em;}
   .wiz-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.04em;}
   .btn-wiz-close{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:4px;cursor:pointer;transition:all .15s;}
   .btn-wiz-close:hover{border-color:var(--red);color:var(--red);}
 
   /* Wiz body */
-  .wiz-body{padding:1.5rem;overflow-y:auto;flex:1;}
+  .wiz-body{padding:.75rem 1.25rem;overflow-y:auto;flex:1;}
   .wiz-panel{display:none;}
   .wiz-panel.active{display:block;}
 
@@ -854,8 +866,8 @@
   /* Content area */
   .wiz-textarea{
     width:100%;background:var(--surface2);border:1px solid var(--border2);
-    color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.7;
-    padding:1rem;border-radius:8px;resize:vertical;min-height:160px;
+    color:var(--text);font-family:var(--sans);font-size:12px;line-height:1.5;
+    padding:.5rem .65rem;border-radius:8px;resize:vertical;min-height:60px;
     outline:none;transition:border-color .2s;
   }
   .wiz-textarea:focus{border-color:var(--accent);}
@@ -864,8 +876,8 @@
   /* Image upload zone */
   .wiz-img-drop{
     background:var(--surface2);border:1.5px dashed var(--border2);border-radius:8px;
-    padding:1.25rem;text-align:center;cursor:pointer;transition:border-color .18s;
-    position:relative;margin-top:.75rem;
+    padding:.4rem;text-align:center;cursor:pointer;transition:border-color .18s;
+    position:relative;margin-top:.3rem;
   }
   .wiz-img-drop:hover,.wiz-img-drop.drag{border-color:var(--accent);}
   .wiz-img-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
@@ -873,12 +885,12 @@
   .wiz-img-drop .wid-sub{font-family:var(--mono);font-size:9px;color:var(--dimmed);margin-top:3px;}
 
   /* Wiz fields */
-  .wiz-field{margin-bottom:1rem;}
-  .wiz-field label{display:block;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.4rem;}
+  .wiz-field{margin-bottom:.5rem;}
+  .wiz-field label{display:block;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.25rem;}
   .wiz-input{
     width:100%;background:var(--surface2);border:1px solid var(--border2);
-    color:var(--text);font-family:var(--mono);font-size:13px;
-    padding:9px 12px;border-radius:6px;outline:none;transition:border-color .2s;
+    color:var(--text);font-family:var(--mono);font-size:12px;
+    padding:6px 10px;border-radius:6px;outline:none;transition:border-color .2s;
   }
   .wiz-input:focus{border-color:var(--accent);}
   .wiz-input::placeholder{color:var(--dimmed);}
@@ -894,7 +906,7 @@
 
   /* Wiz footer */
   .wiz-footer{
-    padding:1rem 1.5rem;border-top:1px solid var(--border);
+    padding:.65rem 1.25rem;border-top:1px solid var(--border);
     display:flex;align-items:center;justify-content:space-between;gap:.75rem;
     background:var(--surface2);
   }
@@ -918,18 +930,19 @@
   .btn-wiz-publish:disabled{opacity:.4;cursor:not-allowed;}
 
   /* ─── BLOCK EDITOR ─── */
-  .wb-list{display:flex;flex-direction:column;gap:.9rem;}
+  .wb-list{display:flex;flex-direction:column;gap:.5rem;}
   .wb{background:var(--surface2);border:1px solid var(--border2);border-radius:10px;overflow:hidden;transition:border-color .2s;}
   .wb:hover{border-color:rgba(0,229,160,.3);}
-  .wb-head{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border);}
+  .wb-head{display:flex;align-items:center;justify-content:space-between;padding:.45rem .85rem;background:rgba(0,0,0,.25);border-bottom:1px solid var(--border);}
   .wb-num{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);}
   .wb-num.is-header{color:var(--warn);}
   .wb-actions{display:flex;gap:.35rem;}
   .wb-btn{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:3px;cursor:pointer;transition:all .15s;line-height:1;}
   .wb-btn.del:hover{border-color:var(--red);color:var(--red);}
   .wb-btn.mv:hover{border-color:var(--accent);color:var(--accent);}
-  .wb-body{padding:1rem;display:flex;flex-direction:column;gap:.85rem;}
-  .wb-img-zone{border:1.5px dashed var(--border2);border-radius:7px;position:relative;cursor:pointer;transition:border-color .18s;text-align:center;padding:.85rem;}
+  .wb-body{padding:.65rem .85rem;display:flex;flex-direction:column;gap:.5rem;}
+  .wb-img-zone{border:1.5px dashed var(--border2);border-radius:7px;position:relative;cursor:pointer;transition:border-color .18s;text-align:center;padding:.35rem;}
+  .wb-img-zone .iz-sub{display:none;}
   .wb-img-zone:hover{border-color:var(--accent);}
   .wb-img-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
   .wb-img-zone .iz-txt{font-family:var(--mono);font-size:10px;color:var(--muted);}
@@ -937,8 +950,24 @@
   .wb-img-prev{position:relative;margin-top:.5rem;display:inline-block;}
   .wb-img-prev img{max-height:110px;max-width:100%;border-radius:6px;border:1px solid var(--border2);display:block;}
   .wb-img-prev .rm-img{position:absolute;top:-7px;right:-7px;background:var(--red);border:none;color:#fff;border-radius:50%;width:18px;height:18px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-  .btn-add-para{width:100%;background:transparent;border:1.5px dashed var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:700;padding:.75rem;border-radius:8px;cursor:pointer;transition:all .18s;letter-spacing:.08em;margin-top:.25rem;}
+  .btn-add-para{width:100%;background:transparent;border:1.5px dashed var(--border2);color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:700;padding:.5rem;border-radius:8px;cursor:pointer;transition:all .18s;letter-spacing:.08em;margin-top:.15rem;}
   .btn-add-para:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,.04);}
+  /* ─── ELEMENT LIST ─── */
+  .wb-elem{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:.4rem;}
+  .wb-elem:last-child{margin-bottom:0;}
+  .wb-elem-head{display:flex;align-items:center;justify-content:space-between;padding:.28rem .6rem;background:rgba(0,0,0,.22);}
+  .wb-elem-type{font-family:var(--mono);font-size:8.5px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:.35rem;}
+  .wb-elem-type.is-img{color:var(--warn);}
+  .wb-elem-acts{display:flex;gap:.22rem;}
+  .wb-elem-btn{background:transparent;border:1px solid var(--border2);color:var(--dimmed);font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:3px;cursor:pointer;transition:all .15s;line-height:1;}
+  .wb-elem-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .wb-elem-btn.del:hover{border-color:var(--red);color:var(--red);}
+  .wb-elem-body{padding:.4rem .6rem .45rem;}
+  /* Add row */
+  .wb-add-row{display:flex;gap:.4rem;margin-top:.45rem;}
+  .wb-add-btn{flex:1;background:transparent;border:1.5px dashed var(--border2);color:var(--muted);font-family:var(--mono);font-size:10px;font-weight:700;padding:.38rem .5rem;border-radius:6px;cursor:pointer;transition:all .18s;letter-spacing:.05em;display:flex;align-items:center;justify-content:center;gap:.3rem;}
+  .wb-add-btn.txt:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,.04);}
+  .wb-add-btn.img:hover{border-color:var(--warn);color:var(--warn);background:rgba(247,183,49,.04);}
 </style>
 
   <!-- Firebase compat (global SDK) -->
@@ -996,20 +1025,9 @@
 
 <div class="container">
 
-  <div class="filters">
+  <div class="filters" id="filterRow">
     <span class="filter-label">Filtre :</span>
-    <button class="filter-btn active" data-cat="tous">All <span class="fcount" id="fc-tous"></span></button>
-    <button class="filter-btn" data-cat="hebdo">Hebdo <span class="fcount" id="fc-hebdo"></span></button>
-    <button class="filter-btn" data-cat="weekahead">Week Ahead <span class="fcount" id="fc-weekahead"></span></button>
-    <button class="filter-btn" data-cat="mensuel">Monthly Recap <span class="fcount" id="fc-mensuel"></span></button>
-    <button class="filter-btn" data-cat="banques">Bank Meeting <span class="fcount" id="fc-banques"></span></button>
-    <button class="filter-btn" data-cat="trade">Trades Admins <span class="fcount" id="fc-trade"></span></button>
-    <button class="filter-btn" data-cat="tradeinvites">Trades Invites <span class="fcount" id="fc-tradeinvites"></span></button>
-    <button class="filter-btn" data-cat="tradeideas">Trade Ideas <span class="fcount" id="fc-tradeideas"></span></button>
-    <button class="filter-btn" data-cat="wa">WA <span class="fcount" id="fc-wa"></span></button>
-    <button class="filter-btn" data-cat="mr">MR <span class="fcount" id="fc-mr"></span></button>
-    <button class="filter-btn" data-cat="bm">BM <span class="fcount" id="fc-bm"></span></button>
-    <button class="filter-btn" data-cat="tan">TAn <span class="fcount" id="fc-tan"></span></button>
+    <!-- Les boutons de filtre sont injectés dynamiquement par renderFilterBar() -->
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
       <input type="text" id="searchInput" placeholder="Rechercher...">
@@ -1037,92 +1055,67 @@
 
 <!-- ====== WIZARD MODAL ====== -->
 <div class="wiz-overlay" id="wizOv">
-  <div class="wiz-modal">
+  <div class="wiz-modal" id="wizModal">
 
-    <!-- Step bar -->
-    <div class="wiz-steps">
-      <div class="wiz-step active" id="ws1"><div class="sn"><span>1</span></div>Catégorie</div>
-      <div class="wiz-step" id="ws2"><div class="sn"><span>2</span></div>Contenu</div>
-      <div class="wiz-step" id="ws3"><div class="sn"><span>3</span></div>Aperçu</div>
+    <!-- Step bar (rendu dynamiquement par renderWizSteps) -->
+    <div class="wiz-steps" id="wizStepsBar">
+      <div class="wiz-step active"><div class="sn"><span>1</span></div>Catégorie</div>
+      <div class="wiz-step"><div class="sn"><span>2</span></div>Config</div>
+      <div class="wiz-step"><div class="sn"><span>3</span></div>Blocs</div>
     </div>
 
     <!-- Head -->
     <div class="wiz-head">
       <div>
         <div class="wiz-title" id="wizTitle">Choisir une catégorie</div>
-        <div class="wiz-sub" id="wizSub">Étape 1 sur 4</div>
+        <div class="wiz-sub" id="wizSub">Étape 1 sur 3</div>
       </div>
       <button class="btn-wiz-close" onclick="closeImport()">✕ Fermer</button>
     </div>
 
     <!-- Body -->
-    <div class="wiz-body">
+    <div class="wiz-body" id="wizBody">
 
       <!-- ── STEP 1 : Catégorie ── -->
       <div class="wiz-panel active" id="wp1">
         <div class="cat-grid">
-          <div class="cat-card" data-cat="tous" style="--cc:#00e5a0" onclick="selectCat('tous',this)">
-            <span class="cc-ico">🌐</span>
-            <span class="cc-lbl">All</span>
-            <span class="cc-dot"></span>
+          <div class="cat-card" data-cat="ws" style="--cc:#f7b731" onclick="selectCat('ws',this)">
+            <span class="cc-ico">💡</span><span class="cc-lbl">WS</span><span class="cc-dot"></span>
           </div>
-          <div class="cat-card" data-cat="hebdo" style="--cc:#f7b731" onclick="selectCat('hebdo',this)">
-            <span class="cc-ico">📈</span>
-            <span class="cc-lbl">Hebdo</span>
-            <span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="weekahead" style="--cc:#f7b731" onclick="selectCat('weekahead',this)">
-            <span class="cc-ico">🗓️</span>
-            <span class="cc-lbl">Week Ahead</span>
-            <span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="mensuel" style="--cc:#0ff" onclick="selectCat('mensuel',this)">
-            <span class="cc-ico">📊</span>
-            <span class="cc-lbl">Monthly Recap</span>
-            <span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="banques" style="--cc:#00e5a0" onclick="selectCat('banques',this)">
-            <span class="cc-ico">🏦</span>
-            <span class="cc-lbl">Bank Meeting</span>
-            <span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="trade" style="--cc:#00f70a" onclick="selectCat('trade',this)">
-            <span class="cc-ico">⚡</span>
-            <span class="cc-lbl">Trades Admins</span>
-            <span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="tradeideas" style="--cc:#f7b731" onclick="selectCat('tradeideas',this)">
-            <span class="cc-ico">💡</span>
-            <span class="cc-lbl">Trade Ideas</span>
-            <span class="cc-dot"></span>
-          </div>
-          <div class="cat-card" data-cat="wa" style="--cc:#f7b731" onclick="selectCat('wa',this)">
-            <span class="cc-ico">🔭</span>
-            <span class="cc-lbl">WA</span>
-            <span class="cc-dot"></span>
+          <div class="cat-card" data-cat="wr" style="--cc:#f7b731" onclick="selectCat('wr',this)">
+            <span class="cc-ico">🔭</span><span class="cc-lbl">WR</span><span class="cc-dot"></span>
           </div>
           <div class="cat-card" data-cat="mr" style="--cc:#f7b731" onclick="selectCat('mr',this)">
-            <span class="cc-ico">📋</span>
-            <span class="cc-lbl">MR</span>
-            <span class="cc-dot"></span>
+            <span class="cc-ico">📋</span><span class="cc-lbl">MR</span><span class="cc-dot"></span>
           </div>
-          <div class="cat-card" data-cat="bm" style="--cc:#f7b731" onclick="selectCat('bm',this)">
-            <span class="cc-ico">🏛️</span>
-            <span class="cc-lbl">BM</span>
-            <span class="cc-dot"></span>
+          <div class="cat-card" data-cat="other" style="--cc:#f7b731" onclick="selectCat('other',this)">
+            <span class="cc-ico">📐</span><span class="cc-lbl">Other</span><span class="cc-dot"></span>
           </div>
-          <div class="cat-card" data-cat="tan" style="--cc:#f7b731" onclick="selectCat('tan',this)">
-            <span class="cc-ico">📐</span>
-            <span class="cc-lbl">TAn</span>
-            <span class="cc-dot"></span>
+          <div class="cat-card" data-cat="hebdo" style="--cc:#f7b731" onclick="selectCat('hebdo',this)">
+            <span class="cc-ico">📅</span><span class="cc-lbl">Hebdo</span><span class="cc-dot"></span>
+          </div>
+          <div class="cat-card" data-cat="mensuel" style="--cc:#0ff" onclick="selectCat('mensuel',this)">
+            <span class="cc-ico">📊</span><span class="cc-lbl">Mensuel</span><span class="cc-dot"></span>
+          </div>
+          <div class="cat-card" data-cat="banques" style="--cc:#00e5a0" onclick="selectCat('banques',this)">
+            <span class="cc-ico">🏦</span><span class="cc-lbl">Banques</span><span class="cc-dot"></span>
+          </div>
+          <div class="cat-card" data-cat="trade" style="--cc:#00f70a" onclick="selectCat('trade',this)">
+            <span class="cc-ico">📈</span><span class="cc-lbl">Trade</span><span class="cc-dot"></span>
+          </div>
+          <div class="cat-card" data-cat="tradeinvites" style="--cc:#0005ff" onclick="selectCat('tradeinvites',this)">
+            <span class="cc-ico">🔗</span><span class="cc-lbl">Trade Inv.</span><span class="cc-dot"></span>
+          </div>
+          <div class="cat-card" data-cat="tradeideas" style="--cc:#f7b731" onclick="selectCat('tradeideas',this)">
+            <span class="cc-ico">💡</span><span class="cc-lbl">Ideas</span><span class="cc-dot"></span>
           </div>
         </div>
       </div>
 
-      <!-- ── STEP 2 : Contenu par blocs ── -->
+      <!-- ── STEP 2 : Config (Mode + Date/Heure/Paire) ── -->
       <div class="wiz-panel" id="wp2">
 
-        <!-- Mode toggle (caché pour trade) -->
+        <!-- Mode toggle -->
         <div class="mode-toggle" id="wizModeToggle">
           <button class="mode-tog-btn" id="wModeHtml" onclick="setWizMode('html')">
             <span class="mt-ico">🗂️</span>
@@ -1136,7 +1129,7 @@
           </button>
         </div>
 
-        <!-- HTML mode -->
+        <!-- HTML mode – drop zone -->
         <div id="wSecHtml" style="display:none;">
           <div class="drop-zone" id="wDropZone" style="cursor:pointer;">
             <input type="file" id="wFileInput" accept=".html,.htm" onchange="onWizHtmlFile(this.files[0])" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
@@ -1154,44 +1147,48 @@
           </div>
         </div>
 
-        <!-- Block editor mode -->
-        <div id="wSecManual">
-          <div class="wb-list" id="wbList">
-            <!-- Bloc 1 : En-tête (rendu par JS) -->
-          </div>
-          <button class="btn-add-para" onclick="addParaBlock()">＋ Ajouter un paragraphe</button>
-
-          <!-- Meta bar : date + heure + paire -->
-          <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
-            <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem;">Publication</div>
-            <div style="display:grid;grid-template-columns:1fr 120px 1fr;gap:.6rem;align-items:end;">
-              <div class="wiz-field" style="margin-bottom:0;">
-                <label>Date *</label>
-                <input class="wiz-input" type="date" id="wDate">
-              </div>
-              <div class="wiz-field" style="margin-bottom:0;">
-                <label>Heure</label>
-                <input class="wiz-input" type="time" id="wTime" placeholder="09:00">
-              </div>
-              <div class="wiz-field" style="margin-bottom:0;">
-                <label>Paire / Instrument</label>
-                <input class="wiz-input" type="text" id="wPaire" placeholder="EUR/USD, XAU/USD...">
-              </div>
+        <!-- Date + Heure + Paire -->
+        <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+          <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem;">📅 Publication</div>
+          <div style="display:grid;grid-template-columns:1fr 120px 1fr;gap:.6rem;align-items:end;">
+            <div class="wiz-field" style="margin-bottom:0;">
+              <label>Date *</label>
+              <input class="wiz-input" type="date" id="wDate">
+            </div>
+            <div class="wiz-field" style="margin-bottom:0;">
+              <label>Heure</label>
+              <input class="wiz-input" type="time" id="wTime" placeholder="09:00">
+            </div>
+            <div class="wiz-field" style="margin-bottom:0;">
+              <label>Paire / Instrument</label>
+              <input class="wiz-input" type="text" id="wPaire" placeholder="EUR/USD, XAU/USD...">
             </div>
           </div>
-          <!-- Champs cachés pour compatibilité -->
-          <input type="hidden" id="wTitre">
-          <input type="hidden" id="wDesc">
         </div>
 
+        <!-- Champs cachés -->
+        <input type="hidden" id="wTitre">
+        <input type="hidden" id="wDesc">
       </div>
 
-      <!-- ── STEP 3 : Aperçu ── -->
-      <div class="wiz-panel" id="wp3">
-        <div class="wiz-preview-frame">
-          <iframe id="wizPreviewFrame" sandbox="allow-same-origin"></iframe>
+      <!-- ── STEP 3+ : Bloc actif + Aperçu en direct ── -->
+      <div class="wiz-panel" id="wp3" style="padding:0;height:100%;">
+        <div style="display:flex;height:100%;min-height:400px;">
+
+          <!-- Éditeur du bloc courant -->
+          <div id="wSecManual" style="flex:1;overflow-y:auto;padding:1.25rem;min-width:0;">
+            <div class="wb-list" id="wbList"></div>
+          </div>
+
+          <!-- Aperçu en direct (droite) -->
+          <div style="width:330px;flex-shrink:0;border-left:1px solid var(--border);background:var(--surface2);display:flex;flex-direction:column;">
+            <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;padding:.6rem 1rem;border-bottom:1px solid var(--border);">
+              📋 Aperçu en direct
+            </div>
+            <iframe id="wizPreviewFrame" sandbox="allow-same-origin" style="width:100%;flex:1;border:none;"></iframe>
+          </div>
+
         </div>
-        <div class="wiz-preview-hint">📋 Aperçu de l'article tel qu'il sera affiché</div>
       </div>
 
     </div><!-- /wiz-body -->
@@ -1199,7 +1196,7 @@
     <!-- Footer -->
     <div class="wiz-footer">
       <button class="btn-wiz-back" id="wizBtnBack" onclick="wizBack()" style="visibility:hidden;">← Retour</button>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--dimmed);" id="wizStepLabel">1 / 4</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--dimmed);" id="wizStepLabel">1 / 3</div>
       <button class="btn-wiz-next" id="wizBtnNext" onclick="wizNext()">Suivant →</button>
       <button class="btn-wiz-publish" id="wizBtnPublish" style="display:none;" onclick="wizPublish()">✦ Publier l'article</button>
     </div>
@@ -1681,7 +1678,7 @@
     <!-- 🏷️ Gestion des Tags — KGB uniquement -->
     <div id="kgbTagPanel" style="display:none;background:#060a0f;border:1px solid #f7b731;border-radius:10px;padding:1.25rem;margin-top:1rem;">
       <div style="font-family:var(--mono);font-size:11px;color:#f7b731;letter-spacing:.15em;margin-bottom:.5rem;">🏷️ GESTION DES TAGS <span style="color:#5a6578;font-size:9px;font-weight:400;">(KGB uniquement)</span></div>
-      <div style="font-family:var(--mono);font-size:10px;color:#5a6578;margin-bottom:1rem;line-height:1.6;">Renommez ou supprimez des tags existants. La suppression <span style="color:#ff4d6d;">retire le tag de tous les articles</span> (action irréversible).</div>
+      <div style="font-family:var(--mono);font-size:10px;color:#5a6578;margin-bottom:1rem;line-height:1.6;">Glissez <span style="color:#f7b731;">⠿</span> pour réordonner · Renommez · Supprimez. La suppression <span style="color:#ff4d6d;">retire le tag de tous les articles</span> (irréversible).</div>
       <div id="tagManagerList" style="display:flex;flex-direction:column;gap:.5rem;max-height:360px;overflow-y:auto;"></div>
       <div style="display:flex;gap:.75rem;margin-top:1rem;align-items:center;flex-wrap:wrap;">
         <button onclick="saveTagLabels()" style="background:#f7b731;border:none;color:#000;font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 20px;border-radius:4px;cursor:pointer;">💾 Sauvegarder les noms</button>
@@ -1906,56 +1903,8 @@
       <div class="edit-tags-title">🏷️ Modifier les tags de l'article</div>
       <div class="edit-tags-sub" id="etArtTitle"></div>
     </div>
-    <div class="edit-tags-grid">
-      <div class="et-pill tous">
-        <input type="checkbox" id="et-tous" value="tous">
-        <label for="et-tous"><span class="ep-ico">🌐</span>All<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill hebdo">
-        <input type="checkbox" id="et-hebdo" value="hebdo">
-        <label for="et-hebdo"><span class="ep-ico">📅</span>Hebdo<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill weekahead">
-        <input type="checkbox" id="et-weekahead" value="weekahead">
-        <label for="et-weekahead"><span class="ep-ico">🔭</span>Week Ahead<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill mensuel">
-        <input type="checkbox" id="et-mensuel" value="mensuel">
-        <label for="et-mensuel"><span class="ep-ico">📊</span>Monthly<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill banques">
-        <input type="checkbox" id="et-banques" value="banques">
-        <label for="et-banques"><span class="ep-ico">🏦</span>Banques<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill trade">
-        <input type="checkbox" id="et-trade" value="trade">
-        <label for="et-trade"><span class="ep-ico">📈</span>Trades<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill tradeinvites">
-        <input type="checkbox" id="et-tradeinvites" value="tradeinvites">
-        <label for="et-tradeinvites"><span class="ep-ico">🤝</span>Invités<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill tradeideas">
-        <input type="checkbox" id="et-tradeideas" value="tradeideas">
-        <label for="et-tradeideas"><span class="ep-ico">💡</span>Trade Ideas<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill wa">
-        <input type="checkbox" id="et-wa" value="wa">
-        <label for="et-wa"><span class="ep-ico">🔭</span>WA<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill mr">
-        <input type="checkbox" id="et-mr" value="mr">
-        <label for="et-mr"><span class="ep-ico">📋</span>MR<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill bm">
-        <input type="checkbox" id="et-bm" value="bm">
-        <label for="et-bm"><span class="ep-ico">🏛️</span>BM<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-      <div class="et-pill tan">
-        <input type="checkbox" id="et-tan" value="tan">
-        <label for="et-tan"><span class="ep-ico">📐</span>TAn<span class="ep-primary">PRINCIPAL</span></label>
-      </div>
-    </div>
+    <!-- Injecté dynamiquement par openEditTags() -->
+    <div class="edit-tags-grid" id="etTagGrid"></div>
     <div class="edit-tags-hint">
       Le <strong style="color:var(--accent)">premier tag coché</strong> est le tag principal — il détermine la couleur et le template.<br>
       Les autres tags permettent à l'article d'apparaître dans plusieurs filtres.
@@ -1992,9 +1941,170 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- ====== ARTICLE READER OVERLAY ====== -->
+<div class="art-reader-ov" id="artReaderOv">
+  <div class="art-reader-bar">
+    <button class="art-reader-back" onclick="closeArtReader()">← Retour</button>
+    <span class="art-reader-title" id="artReaderTitle"></span>
+    <button class="art-reader-newtab" id="artReaderNewTab" onclick="openArtNewTab()">↗ Nouvel onglet</button>
+  </div>
+  <iframe class="art-reader-frame" id="artReaderFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+</div>
 
 <script>
+// ── HASH ROUTING ──────────────────────────────────────────────────────────────
+let _artReaderBlobUrl = null;
+
+function pushHash(params){
+  const parts = Object.entries(params).map(([k,v])=>`${k}=${encodeURIComponent(v)}`);
+  history.pushState(null, "", parts.length ? "#" + parts.join("&") : location.pathname + location.search);
+}
+
+function replaceHash(params){
+  const parts = Object.entries(params).map(([k,v])=>`${k}=${encodeURIComponent(v)}`);
+  history.replaceState(null, "", parts.length ? "#" + parts.join("&") : location.pathname + location.search);
+}
+
+function parseHash(){
+  const hash = location.hash.slice(1);
+  if(!hash) return {};
+  return Object.fromEntries(hash.split("&").map(p => {
+    const [k,...v] = p.split("=");
+    return [k, decodeURIComponent(v.join("="))];
+  }));
+}
+
+async function applyHash(){
+  if(!role) return; // non connecté → rien
+  const h = parseHash();
+
+  // Filtre
+  if(h.filtre && CAT_LABEL[h.filtre]){
+    filt = h.filtre;
+    render();
+    return;
+  }
+
+  // Article
+  if(h.article){
+    // Attendre que arts soit chargé (au cas où)
+    if(!arts.length){ setTimeout(applyHash, 400); return; }
+    await _openArtInReader(h.article, false); // false = ne pas re-pusher le hash
+    return;
+  }
+
+  // Hash vide → reset filtre
+  filt = "tous";
+  render();
+}
+
+// Intercepter le bouton Retour du navigateur
+window.addEventListener("popstate", ()=> {
+  const h = parseHash();
+  if(h.article){
+    // rien : le reader est déjà ouvert ou va s'ouvrir via applyHash
+    applyHash();
+  } else {
+    // Retour sans article → fermer le reader sans toucher l'historique
+    _closeArtReaderSilent();
+    if(h.filtre && CAT_LABEL[h.filtre]){
+      filt = h.filtre;
+    } else {
+      filt = "tous";
+    }
+    render();
+  }
+});
+
+// ── Ouvrir un article dans le reader ─────────────────────────────────────────
+async function _openArtInReader(id, pushToHistory = true){
+  const a = arts.find(x => x.id === id);
+  if(!a){ toast("⚠ Article introuvable", true); return; }
+  const primaryCat = artCats(a)[0];
+  let html = "";
+
+  if(a.type === "pdf"){
+    // PDF → ouvrir dans nouvel onglet (pas compatible iframe)
+    const byteStr = atob(a.pdfData.split(",")[1]);
+    const ab = new ArrayBuffer(byteStr.length);
+    const ia = new Uint8Array(ab);
+    for(let i = 0; i < byteStr.length; i++) ia[i] = byteStr.charCodeAt(i);
+    const blob = new Blob([ab], {type:"application/pdf"});
+    window.open(URL.createObjectURL(blob), "_blank");
+    return;
+  }
+
+  if(Array.isArray(a.blocks) && a.blocks.length > 0){
+    const fdate = fmtD(a.date, a.time || "");
+    const by = a.submittedBy || "Admin";
+    html = primaryCat === "tradeinvites"
+      ? tplTradeInvites(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by)
+      : tplTrade(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
+  } else {
+    html = await fbGetHtml(id);
+    if(!html) html = a.html || "";
+    if(!html && a.type === "html"){
+      const mb = tryRegenArticle(a);
+      if(mb){
+        const fdate = fmtD(a.date, a.time||"");
+        const by = a.submittedBy || "Admin";
+        const acc = CAT_COLORS[primaryCat] || "#00e5a0";
+        const catLbl = CAT_LABEL[primaryCat] || primaryCat;
+        const oldWizCat = wizCat; wizCat = primaryCat;
+        html = generateArticleTemplate(a.titre, a.desc||"", catLbl, acc, fdate, a.paire||"",
+          [{type:"header",subtitle:a.desc||"",image:null}, ...mb], by);
+        wizCat = oldWizCat;
+      }
+    }
+  }
+
+  if(!html){ toast("⚠ Contenu introuvable", true); return; }
+
+  // Révoquer l'ancien blob
+  if(_artReaderBlobUrl){ URL.revokeObjectURL(_artReaderBlobUrl); _artReaderBlobUrl = null; }
+
+  const blob = new Blob([html], {type:"text/html"});
+  _artReaderBlobUrl = URL.createObjectURL(blob);
+
+  const frame = document.getElementById("artReaderFrame");
+  const title = document.getElementById("artReaderTitle");
+  frame.src = _artReaderBlobUrl;
+  title.textContent = a.titre || "Article";
+
+  document.getElementById("artReaderOv").classList.add("open");
+  document.body.style.overflow = "hidden";
+
+  if(pushToHistory){
+    const hashParams = { article: id };
+    if(filt && filt !== "tous") hashParams.filtre = filt;
+    pushHash(hashParams);
+  }
+}
+
+function openArtNewTab(){
+  if(_artReaderBlobUrl) window.open(_artReaderBlobUrl, "_blank");
+}
+
+function closeArtReader(){
+  _closeArtReaderSilent();
+  // Retour au hash filtre (ou vide)
+  if(filt && filt !== "tous"){
+    replaceHash({ filtre: filt });
+  } else {
+    history.back();
+  }
+}
+
+function _closeArtReaderSilent(){
+  const ov = document.getElementById("artReaderOv");
+  if(!ov) return;
+  ov.classList.remove("open");
+  document.body.style.overflow = "";
+  const frame = document.getElementById("artReaderFrame");
+  frame.src = "about:blank";
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 const SK = "smf_hub_v4";
 
 // ── EmailJS ───────────────────────────────────────────────────────────────────
@@ -2092,7 +2202,7 @@ async function checkEmailVerified(){
     btn.disabled=false; btn.textContent="✓ J'ai confirmé mon e-mail";
   }
 }
-const CAT_LABEL = {hebdo:"Hebdo",weekahead:"Week Ahead",mensuel:"Monthly Recap",banques:"Bank Meeting",trade:"Trades Admins",tradeinvites:"Trades Invites",tradeideas:"Trade Ideas",wa:"WA",mr:"MR",bm:"BM",tan:"TAn",tous:"All"};
+const CAT_LABEL = {ws:"WS",wr:"WR",mr:"MR",other:"Other"};
 
 // ── Firebase ─────────────────────────────────────────────────────────────────
 const firebaseConfig = {
@@ -2114,27 +2224,18 @@ let SETTINGS = {
   guestPass : "smfhub2026",
   maxGuests : 10,
   defaultAccessDays: 30,
-  allowedCats: ["hebdo","weekahead","mensuel","banques","trade","tradeinvites","tradeideas","wa","mr","bm","tan"],
+  allowedCats: ["ws","wr","mr","other"],
   colors: {
-    hebdo:       "#f7b731",
-    weekahead:   "#f7b731",
-    mensuel:     "#00ffff",
-    banques:     "#00e5a0",
-    trade:       "#00f70a",
-    tradeinvites:"#0005ff",
-    tradeideas:  "#f7b731",
-    wa:          "#f7b731",
-    mr:          "#f7b731",
-    bm:          "#f7b731",
-    tan:         "#f7b731"
+    ws:    "#f7b731",
+    wr:    "#f7b731",
+    mr:    "#f7b731",
+    other: "#f7b731"
   }
 };
 
 // Couleurs par défaut (référence pour reset)
 const DEFAULT_COLORS = {
-  tous:"#00e5a0", hebdo:"#f7b731", weekahead:"#f7b731", mensuel:"#00ffff",
-  banques:"#00e5a0", trade:"#00f70a", tradeinvites:"#0005ff",
-  tradeideas:"#f7b731", wa:"#f7b731", mr:"#f7b731", bm:"#f7b731", tan:"#f7b731"
+  tous:"#00e5a0", ws:"#f7b731", wr:"#f7b731", mr:"#f7b731", other:"#f7b731"
 };
 
 // Injecte les couleurs dans les CSS variables du document
@@ -2145,45 +2246,30 @@ function applyColors(colors){
   if(!style){ style=document.createElement("style"); style.id="smf-color-vars"; document.head.appendChild(style); }
   style.textContent=`:root{
     --col-tous:${c.tous};
-    --col-hebdo:${c.hebdo};
-    --col-weekahead:${c.weekahead};
-    --col-mensuel:${c.mensuel};
-    --col-banques:${c.banques};
-    --col-trade:${c.trade};
-    --col-tradeinv:${c.tradeinvites};
-    --col-tradeideas:${c.tradeideas||"#f7b731"};
-    --col-wa:${c.wa||"#f7b731"};
+    --col-ws:${c.ws||"#f7b731"};
+    --col-wr:${c.wr||"#f7b731"};
     --col-mr:${c.mr||"#f7b731"};
-    --col-bm:${c.bm||"#f7b731"};
-    --col-tan:${c.tan||"#f7b731"};
-    --trade:${c.trade};
-    --tradeinv:${c.tradeinvites};
-    --weekahead:${c.weekahead};
+    --col-other:${c.other||"#f7b731"};
   }`;
   // Met à jour aussi CAT_COLORS (utilisé par les templates)
-  CAT_COLORS.tous        = c.tous;
-  CAT_COLORS.hebdo       = c.hebdo;
-  CAT_COLORS.weekahead   = c.weekahead;
-  CAT_COLORS.mensuel     = c.mensuel;
-  CAT_COLORS.banques     = c.banques;
-  CAT_COLORS.trade       = c.trade;
-  CAT_COLORS.tradeinvites= c.tradeinvites;
-  CAT_COLORS.tradeideas  = c.tradeideas||"#f7b731";
-  CAT_COLORS.wa          = c.wa||"#f7b731";
-  CAT_COLORS.mr          = c.mr||"#f7b731";
-  CAT_COLORS.bm          = c.bm||"#f7b731";
-  CAT_COLORS.tan         = c.tan||"#f7b731";
+  CAT_COLORS.tous  = c.tous;
+  CAT_COLORS.ws    = c.ws||"#f7b731";
+  CAT_COLORS.wr    = c.wr||"#f7b731";
+  CAT_COLORS.mr    = c.mr||"#f7b731";
+  CAT_COLORS.other = c.other||"#f7b731";
 }
 
 async function loadSettings(){
   try{
     const snap = await db.collection("config").doc("settings").get();
-    if(snap.exists) SETTINGS = {...SETTINGS,...snap.data()};
+    if(snap.exists){
+      const data = snap.data();
+      // On ignore tagLabels et allowedCats de Firestore — définis en dur dans le code
+      delete data.tagLabels;
+      delete data.allowedCats;
+      SETTINGS = {...SETTINGS,...data};
+    }
   }catch(e){console.warn("settings load",e);}
-  // Applique les noms de tags personnalisés
-  if(SETTINGS.tagLabels){
-    Object.keys(SETTINGS.tagLabels).forEach(k=>{ CAT_LABEL[k] = SETTINGS.tagLabels[k]; });
-  }
   // Applique les couleurs sauvegardées
   if(SETTINGS.colors) applyColors(SETTINGS.colors);
 }
@@ -3352,18 +3438,10 @@ async function savePasswords(){
 
 // ── COULEURS PAR TAG (KGB uniquement) ──────────────────────────────────────────
 const CAT_LABELS_COLORS = {
-  tous:        {label:"All",           ico:"🌐"},
-  hebdo:       {label:"Hebdo",         ico:"📅"},
-  weekahead:   {label:"Week Ahead",    ico:"🔭"},
-  mensuel:     {label:"Monthly",       ico:"📊"},
-  banques:     {label:"Bank Meeting",  ico:"🏦"},
-  trade:       {label:"Trades Admins", ico:"📈"},
-  tradeinvites:{label:"Trades Invités",ico:"🤝"},
-  tradeideas:  {label:"Trade Ideas",   ico:"💡"},
-  wa:          {label:"WA",            ico:"🔭"},
-  mr:          {label:"MR",            ico:"📋"},
-  bm:          {label:"BM",            ico:"🏛️"},
-  tan:         {label:"TAn",           ico:"📐"}
+  ws:    {label:"WS",    ico:"💡"},
+  wr:    {label:"WR",    ico:"🔭"},
+  mr:    {label:"MR",    ico:"📋"},
+  other: {label:"Other", ico:"📐"}
 };
 
 function renderColorPanel(){
@@ -3476,12 +3554,19 @@ async function saveCatAccess(){
 
 // ── TAG MANAGER (KGB uniquement) ─────────────────────────────────────────────
 
+// ── TAG MANAGER — drag & drop ─────────────────────────────────────────────────
+let _dragSrcKey = null;
+
 function renderTagManager(){
   const list = document.getElementById("tagManagerList");
   if(!list) return;
   const allCats = Object.keys(CAT_LABEL);
+
   list.innerHTML = allCats.map(k => `
-    <div style="display:flex;align-items:center;gap:.65rem;background:#0b1018;border:1px solid #1c2430;border-radius:6px;padding:.5rem .85rem;">
+    <div class="tm-row" draggable="true" data-key="${k}"
+      style="display:flex;align-items:center;gap:.65rem;background:#0b1018;border:1px solid #1c2430;border-radius:6px;padding:.5rem .85rem;cursor:grab;transition:opacity .15s,border-color .15s;">
+      <span class="tm-handle" title="Glisser pour réordonner"
+        style="font-size:14px;color:#323d4d;cursor:grab;flex-shrink:0;user-select:none;line-height:1;">⠿</span>
       <span style="font-family:var(--mono);font-size:9px;color:#5a6578;width:88px;letter-spacing:.1em;text-transform:uppercase;flex-shrink:0;">${k}</span>
       <input id="tl-${k}" value="${(CAT_LABEL[k]||k).replace(/"/g,'&quot;')}"
         style="flex:1;background:#060a0f;border:1px solid #1c2430;color:#d0dae8;font-family:var(--mono);font-size:12px;padding:5px 9px;border-radius:4px;outline:none;transition:border-color .2s;min-width:0;"
@@ -3489,14 +3574,65 @@ function renderTagManager(){
       <button data-tag="${k}" class="btn-del-tag"
         style="background:transparent;border:1px solid rgba(255,77,109,.3);color:#ff4d6d;font-family:var(--mono);font-size:9px;font-weight:700;padding:4px 10px;border-radius:3px;cursor:pointer;flex-shrink:0;white-space:nowrap;transition:all .15s;"
         onmouseover="this.style.background='rgba(255,77,109,.1)'" onmouseout="this.style.background='transparent'">
-        🗑 Suppr.
+        🗑
       </button>
     </div>
   `).join("");
 
-  // Attacher les listeners via délégation pour éviter pb d'échappement
+  // Supprimer
   list.querySelectorAll(".btn-del-tag").forEach(btn => {
     btn.addEventListener("click", () => deleteTagGlobal(btn.dataset.tag));
+  });
+
+  // Drag & drop
+  list.querySelectorAll(".tm-row").forEach(row => {
+    row.addEventListener("dragstart", e => {
+      _dragSrcKey = row.dataset.key;
+      row.style.opacity = ".4";
+      e.dataTransfer.effectAllowed = "move";
+    });
+    row.addEventListener("dragend", () => {
+      row.style.opacity = "1";
+      list.querySelectorAll(".tm-row").forEach(r => r.style.borderColor = "#1c2430");
+    });
+    row.addEventListener("dragover", e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      row.style.borderColor = "#f7b731";
+    });
+    row.addEventListener("dragleave", () => {
+      row.style.borderColor = "#1c2430";
+    });
+    row.addEventListener("drop", e => {
+      e.preventDefault();
+      row.style.borderColor = "#1c2430";
+      const destKey = row.dataset.key;
+      if(!_dragSrcKey || _dragSrcKey === destKey) return;
+
+      // Sauvegarder les labels en cours de saisie avant réordonnancement
+      list.querySelectorAll(".tm-row").forEach(r => {
+        const k = r.dataset.key;
+        const inp = document.getElementById("tl-"+k);
+        if(inp && inp.value.trim()) CAT_LABEL[k] = inp.value.trim();
+      });
+
+      // Reconstruire CAT_LABEL dans le nouvel ordre
+      const keys = Object.keys(CAT_LABEL);
+      const srcIdx  = keys.indexOf(_dragSrcKey);
+      const destIdx = keys.indexOf(destKey);
+      keys.splice(srcIdx, 1);
+      keys.splice(destIdx, 0, _dragSrcKey);
+
+      // Reconstruire l'objet dans le bon ordre
+      const newLabel = {};
+      keys.forEach(k => { newLabel[k] = CAT_LABEL[k]; });
+      Object.keys(CAT_LABEL).forEach(k => delete CAT_LABEL[k]);
+      Object.assign(CAT_LABEL, newLabel);
+
+      renderTagManager();       // Re-render avec le nouvel ordre
+      renderFilterBar();        // Mettre à jour la barre de filtres
+      _dragSrcKey = null;
+    });
   });
 }
 
@@ -3557,6 +3693,7 @@ async function deleteTagGlobal(tagKey){
     toast(`✓ Tag "${label}" supprimé — ${toUpdate.length} article(s) mis à jour`);
     renderTagManager();
     _refreshCatToggles();
+    renderFilterBar();
     render();
   } catch(e) {
     console.error("deleteTagGlobal:", e);
@@ -3958,22 +4095,59 @@ function artMatchesFilt(a, f){
   return cats.includes(f);
 }
 
+// ── FILTER BAR (dynamique) ────────────────────────────────────────────────────
+function renderFilterBar(){
+  const row = document.getElementById("filterRow");
+  if(!row) return;
+  // Supprimer les anciens boutons de filtre (pas le reste : search-wrap, view-toggle)
+  row.querySelectorAll(".filter-btn").forEach(b => b.remove());
+  const label = row.querySelector(".filter-label");
+
+  // "tous" en premier, puis le reste dans l'ordre de CAT_LABEL
+  const ordered = Object.keys(CAT_LABEL);
+
+  // Insérer les boutons dans l'ordre (après le label)
+  let insertRef = label ? label.nextSibling : row.firstChild;
+  ordered.forEach(k => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn" + (filt === k ? " active" : "");
+    btn.dataset.cat = k;
+    btn.innerHTML = `${CAT_LABEL[k] || k} <span class="fcount" id="fc-${k}"></span>`;
+    btn.addEventListener("click", () => {
+      row.querySelectorAll(".filter-btn").forEach(x => x.classList.remove("active"));
+      btn.classList.add("active");
+      filt = k;
+      if(k === "tous"){
+        replaceHash({});
+      } else {
+        replaceHash({ filtre: k });
+      }
+      renderGrid();
+    });
+    row.insertBefore(btn, insertRef);
+    insertRef = btn.nextSibling;
+  });
+}
+
 function renderStats(){
-  const counts={tous:0,hebdo:0,weekahead:0,mensuel:0,banques:0,trade:0,tradeinvites:0,tradeideas:0,wa:0,mr:0,bm:0,tan:0};
+  const allCats = Object.keys(CAT_LABEL);
+  const counts = {};
+  allCats.forEach(k => counts[k] = 0);
   arts.forEach(a=>{
     const cats = artCats(a);
     if(cats.includes("tous")){
-      // Un article "All" compte dans toutes les catégories
-      Object.keys(counts).forEach(k=>counts[k]++);
+      allCats.forEach(k => counts[k]++);
     } else {
-      cats.forEach(c=>{ if(counts[c]!==undefined) counts[c]++; });
+      cats.forEach(c=>{ if(counts[c] !== undefined) counts[c]++; });
     }
   });
-  const total=counts.tous||Object.entries(counts).filter(([k])=>k!=="tradeinvites"&&k!=="tous").reduce((s,[,v])=>s+v,0);
-  Object.keys(counts).forEach(k=>{
-    const el=document.getElementById("fc-"+k); if(el) el.textContent=counts[k]>0?"("+counts[k]+")":"";
+  const total = counts.tous || Object.entries(counts)
+    .filter(([k]) => k !== "tradeinvites" && k !== "tous")
+    .reduce((s, [, v]) => s + v, 0);
+  allCats.forEach(k=>{
+    const el = document.getElementById("fc-"+k); if(el) el.textContent = counts[k] > 0 ? "("+counts[k]+")" : "";
   });
-  const elTous=document.getElementById("fc-tous"); if(elTous) elTous.textContent=total>0?"("+total+")":"";
+  const elTous = document.getElementById("fc-tous"); if(elTous) elTous.textContent = total > 0 ? "("+total+")" : "";
 }
 
 function filtered(){
@@ -4123,12 +4297,15 @@ function isMyPost(a){
   return byId||byUsername;
 }
 
-function render(){ renderStats(); renderGrid(); }
+function render(){ renderFilterBar(); renderStats(); renderGrid(); }
 
 // ── EDIT TAGS ─────────────────────────────────────────────────────────────────
 let _etTargetId = null;
 // Mémorise l'ordre de sélection pour déterminer le tag principal
 let _etSelectionOrder = [];
+
+// Icônes par défaut pour les tags connus, fallback 🏷️
+const CAT_ICONS = {tous:"🌐",ws:"💡",wr:"🔭",mr:"📋",other:"📐"};
 
 function openEditTags(e, id){
   e.stopPropagation();
@@ -4136,16 +4313,23 @@ function openEditTags(e, id){
   const a = arts.find(x=>x.id===id); if(!a) return;
   _etTargetId = id;
   _etSelectionOrder = [...artCats(a)];
-  // Affiche le titre de l'article
   document.getElementById("etArtTitle").textContent = `"${a.titre}"`;
-  // Coche les tags actuels
-  const allCats = ["tous","hebdo","weekahead","mensuel","banques","trade","tradeinvites","tradeideas","wa","mr","bm","tan"];
-  allCats.forEach(c=>{
-    const cb = document.getElementById("et-"+c);
-    if(cb) cb.checked = _etSelectionOrder.includes(c);
-  });
-  // Mise à jour des labels PRINCIPAL à chaque changement
-  allCats.forEach(c=>{
+
+  // Construire les checkboxes dynamiquement depuis CAT_LABEL
+  const grid = document.getElementById("etTagGrid");
+  const allCats = Object.keys(CAT_LABEL);
+  grid.innerHTML = allCats.map(c => {
+    const ico  = CAT_ICONS[c] || "🏷️";
+    const lbl  = CAT_LABEL[c] || c;
+    const chk  = _etSelectionOrder.includes(c) ? "checked" : "";
+    return `<div class="et-pill ${c}">
+      <input type="checkbox" id="et-${c}" value="${c}" ${chk}>
+      <label for="et-${c}"><span class="ep-ico">${ico}</span>${lbl}<span class="ep-primary">PRINCIPAL</span></label>
+    </div>`;
+  }).join("");
+
+  // Attacher les listeners
+  allCats.forEach(c => {
     const cb = document.getElementById("et-"+c);
     if(cb) cb.addEventListener("change", syncEtPrimary);
   });
@@ -4155,15 +4339,11 @@ function openEditTags(e, id){
 }
 
 function syncEtPrimary(){
-  const allCats=["tous","hebdo","weekahead","mensuel","banques","trade","tradeinvites","tradeideas","wa","mr","bm","tan"];
-  // Recalcule l'ordre : garde ceux déjà cochés dans l'ordre mémorisé, ajoute les nouveaux
-  const checked = allCats.filter(c=> document.getElementById("et-"+c)?.checked);
-  // Préserve l'ordre : ceux déjà dans _etSelectionOrder d'abord, puis les nouveaux
+  const allCats = Object.keys(CAT_LABEL);
+  const checked = allCats.filter(c => document.getElementById("et-"+c)?.checked);
   const next = [..._etSelectionOrder.filter(c=>checked.includes(c)), ...checked.filter(c=>!_etSelectionOrder.includes(c))];
   _etSelectionOrder = next;
-  // Met à jour le label PRINCIPAL sur le premier coché
   allCats.forEach(c=>{
-    const lbl = document.querySelector(`#et-${c} ~ label .ep-primary, label[for='et-${c}'] .ep-primary`);
     const labelEl = document.querySelector(`label[for='et-${c}'] .ep-primary`);
     if(labelEl) labelEl.textContent = (_etSelectionOrder[0]===c) ? "★ PRINCIPAL" : "secondaire";
     if(labelEl) labelEl.style.opacity = checked.includes(c) ? "1" : "0";
@@ -4242,216 +4422,263 @@ function tryRegenArticle(a){
 
 // ── OPEN ARTICLE ──────────────────────────────────────────────────────────────
 async function openArt(id){
-  const a=arts.find(x=>x.id===id); if(!a)return;
-  const primaryCat=artCats(a)[0];
-  let html="";
-
-  if(a.type==="pdf"){
-    const byteStr=atob(a.pdfData.split(",")[1]);
-    const ab=new ArrayBuffer(byteStr.length);
-    const ia=new Uint8Array(ab);
-    for(let i=0;i<byteStr.length;i++) ia[i]=byteStr.charCodeAt(i);
-    const blob=new Blob([ab],{type:"application/pdf"});
-    window.open(URL.createObjectURL(blob),"_blank");
-    return;
-  }
-
-  if(Array.isArray(a.blocks)&&a.blocks.length>0){
-    // Articles type "trade" / "tradeinvites" — blocs stockés directement
-    const fdate=fmtD(a.date,a.time||"");
-    const by=a.submittedBy||"Admin";
-    if(primaryCat==="tradeinvites"){
-      html=tplTradeInvites(a.titre,a.desc||"",fdate,a.paire||"",a.blocks,by);
-    } else {
-      html=tplTrade(a.titre,a.desc||"",fdate,a.paire||"",a.blocks,by);
-    }
-  } else {
-    // Articles type "html" — HTML stocké dans articles_html/{id}
-    // 1. Essayer articles_html (nouvelle architecture)
-    html = await fbGetHtml(id);
-    // 2. Fallback : html dans le doc article lui-même (anciens articles)
-    if(!html) html = a.html || "";
-    // 3. Fallback ultime : régénérer depuis les blocs si présents
-    if(!html && a.type==="html"){
-      const migratedBlocks=tryRegenArticle(a);
-      if(migratedBlocks){
-        const fdate=fmtD(a.date,a.time||"");
-        const by=a.submittedBy||"Admin";
-        const acc=CAT_COLORS[primaryCat]||"#00e5a0";
-        const catLbl=CAT_LABEL[primaryCat]||primaryCat;
-        const oldWizCat=wizCat; wizCat=primaryCat;
-        html=generateArticleTemplate(a.titre,a.desc||"",catLbl,acc,fdate,a.paire||"",
-          [{type:"header",subtitle:a.desc||"",image:null},...migratedBlocks],by);
-        wizCat=oldWizCat;
-      }
-    }
-  }
-
-  if(!html){ toast("⚠ Contenu introuvable",true); return; }
-  const blob=new Blob([html],{type:"text/html"});
-  window.open(URL.createObjectURL(blob),"_blank");
+  await _openArtInReader(id, true);
 }
 
 // ── WIZARD STATE ─────────────────────────────────────────────────────────────
+// Steps: 1=Catégorie, 2=Config(mode+date), 3+=Blocs (step 3 = bloc 0, step 4 = bloc 1, ...)
 let wizStep = 1;
-let wizCat = null;
+let wizCat  = null;
 let wizMode = "manual";
 let wizPendingHTML = null;
+let wizBlocks = []; // [{type:'header',...}, {type:'para',...}, ...]
 
-// Block-based content
-// wizBlocks[0] = header block: { type:'header', subtitle:'', image:null }
-// wizBlocks[1..n] = para blocks: { type:'para', text:'', image:null }
-let wizBlocks = [];
-
-const WIZ_TITLES = ["Choisir une catégorie","Construire l'article","Aperçu & Publication"];
-const WIZ_SUBS   = ["Étape 1 sur 3","Étape 2 sur 3 · Titre · Blocs · Date","Étape 3 sur 3"];
 const CAT_COLORS = {hebdo:"#f7b731",weekahead:"#f7b731",mensuel:"#0ff",banques:"#00e5a0",trade:"#00f70a",tradeinvites:"#0005ff",tradeideas:"#f7b731",wa:"#f7b731",mr:"#f7b731",bm:"#f7b731",tan:"#f7b731"};
 
+// Helper: index du bloc courant (valide seulement si wizStep >= 3)
+function wizBlockIdx(){ return wizStep - 3; }
+
 // ── BLOCK EDITOR ─────────────────────────────────────────────────────────────
+
+// ── ELEMENT FUNCTIONS ─────────────────────────────────────────────────────────
+function _getElems(idx){ const b=wizBlocks[idx]; return b.type==="header" ? b.extras : b.elements; }
+
+function addElem(idx, type){
+  const arr = _getElems(idx);
+  if(!arr) return;
+  arr.push(type==="image" ? {type:"image", data:null} : {type:"text", value:""});
+  renderBlocks(); schedulePreview();
+}
+function removeElem(idx, ei){
+  const arr = _getElems(idx); if(!arr) return;
+  arr.splice(ei,1); renderBlocks(); schedulePreview();
+}
+function moveElem(idx, ei, dir){
+  const arr = _getElems(idx); if(!arr) return;
+  const t = ei+dir;
+  if(t<0||t>=arr.length) return;
+  [arr[ei],arr[t]]=[arr[t],arr[ei]]; renderBlocks(); schedulePreview();
+}
+function syncElemText(idx, ei, val){
+  const arr = _getElems(idx); if(!arr||!arr[ei]) return;
+  arr[ei].value = val; schedulePreview();
+}
+function onElemImg(idx, ei, files){
+  const file = files[0]; if(!file||!file.type.startsWith("image/")) return;
+  const r = new FileReader();
+  r.onload = async e => {
+    const compressed = await compressImage(e.target.result);
+    const arr = _getElems(idx);
+    if(arr&&arr[ei]) arr[ei].data = { name:file.name, dataUrl:compressed };
+    renderBlocks(); schedulePreview();
+  };
+  r.readAsDataURL(file);
+}
+function removeElemImg(idx, ei){
+  const arr = _getElems(idx); if(!arr||!arr[ei]) return;
+  arr[ei].data = null; renderBlocks(); schedulePreview();
+}
+
 function initBlocks(){
-  wizBlocks = [{ type:"header", titre:"", subtitle:"", image:null }];
-  renderBlocks();
+  wizBlocks = [{ type:"header", titre:"", subtitle:"", image:null, extras:[] }];
 }
 
 function addParaBlock(){
-  wizBlocks.push({ type:"para", title:"", text:"", text2:"", image:null });
-  renderBlocks();
-  // Scroll to new block
-  setTimeout(()=>{
-    const list=document.getElementById("wbList");
-    list.lastElementChild?.scrollIntoView({behavior:"smooth",block:"nearest"});
-  },60);
+  wizBlocks.push({ type:"para", title:"", elements:[{type:"text",value:""}] });
+  wizStep = wizBlocks.length + 2;
+  wizUpdateUI();
 }
 
 function removeParaBlock(idx){
-  if(idx===0) return; // cannot remove header
+  if(idx===0) return;
   wizBlocks.splice(idx,1);
-  renderBlocks();
+  if(wizBlockIdx() >= wizBlocks.length) wizStep = wizBlocks.length + 2;
+  wizUpdateUI();
 }
 
 function moveBlock(idx, dir){
   const target = idx + dir;
-  if(target < 1 || target >= wizBlocks.length) return; // block 0 = header, immovable
+  if(target < 1 || target >= wizBlocks.length) return;
   [wizBlocks[idx], wizBlocks[target]] = [wizBlocks[target], wizBlocks[idx]];
-  renderBlocks();
+  wizStep = target + 3;
+  wizUpdateUI();
 }
 
+// Keep for header cover image
 function onBlockImg(idx, files){
   const file = files[0]; if(!file||!file.type.startsWith("image/")) return;
   const r = new FileReader();
   r.onload = async e => {
     const compressed = await compressImage(e.target.result);
     wizBlocks[idx].image = { name: file.name, dataUrl: compressed };
-    renderBlocks();
+    renderBlocks(); schedulePreview();
   };
   r.readAsDataURL(file);
 }
+function removeBlockImg(idx){ wizBlocks[idx].image = null; renderBlocks(); schedulePreview(); }
 
-function removeBlockImg(idx){
-  wizBlocks[idx].image = null;
-  renderBlocks();
-}
-
-function syncBlockText(idx, val){
-  if(wizBlocks[idx]) wizBlocks[idx].text = val;
-}
-function syncBlockText2(idx, val){
-  if(wizBlocks[idx]) wizBlocks[idx].text2 = val;
-}
-function syncBlockParaTitle(idx, val){
-  if(wizBlocks[idx]) wizBlocks[idx].title = val;
-}
-function syncBlockSubtitle(val){
-  if(wizBlocks[0]) wizBlocks[0].subtitle = val;
-}
+function syncBlockParaTitle(idx, val)  { if(wizBlocks[idx]) wizBlocks[idx].title = val;    schedulePreview(); }
+function syncBlockSubtitle(val)        { if(wizBlocks[0])   wizBlocks[0].subtitle = val;   schedulePreview(); }
 function syncBlockTitre(val){
   if(wizBlocks[0]) wizBlocks[0].titre = val;
-  // Keep step-3 hidden field in sync
-  const f = document.getElementById("wTitre");
-  if(f) f.value = val;
+  const f=document.getElementById("wTitre"); if(f) f.value=val;
+  schedulePreview();
 }
 
+// Aperçu déboncé (évite de reconstruire à chaque frappe)
+let _previewTimer = null;
+function schedulePreview(){
+  clearTimeout(_previewTimer);
+  _previewTimer = setTimeout(wizBuildPreview, 400);
+}
+
+// ── ELEMENT HTML BUILDERS ─────────────────────────────────────────────────────
+function mkElemHTML(blockIdx, arr){
+  if(!arr||arr.length===0) return "";
+  return arr.map((el,ei)=>{
+    const isImg = el.type==="image";
+    const canUp = ei>0, canDn = ei<arr.length-1;
+    const head = `<div class="wb-elem-head">
+      <span class="wb-elem-type${isImg?' is-img':''}">${isImg?'🖼 Image':'📝 Texte'}</span>
+      <div class="wb-elem-acts">
+        ${canUp?`<button class="wb-elem-btn mv" onclick="moveElem(${blockIdx},${ei},-1)" title="Monter">↑</button>`:""}
+        ${canDn?`<button class="wb-elem-btn mv" onclick="moveElem(${blockIdx},${ei},1)"  title="Descendre">↓</button>`:""}
+        <button class="wb-elem-btn del" onclick="removeElem(${blockIdx},${ei})" title="Supprimer">✕</button>
+      </div>
+    </div>`;
+    const body = isImg
+      ? (el.data
+          ? `<div class="wb-img-prev"><img src="${el.data.dataUrl}" alt=""><button class="rm-img" onclick="removeElemImg(${blockIdx},${ei})">✕</button></div>`
+          : `<div class="wb-img-zone"><input type="file" accept="image/*" onchange="onElemImg(${blockIdx},${ei},this.files)"><div class="iz-txt">📸 Cliquer pour ajouter une image</div></div>`)
+      : `<textarea class="wiz-textarea" style="min-height:58px;" placeholder="Écris ton texte ici..."
+           oninput="syncElemText(${blockIdx},${ei},this.value)">${el.value||""}</textarea>`;
+    return `<div class="wb-elem">${head}<div class="wb-elem-body">${body}</div></div>`;
+  }).join("");
+}
+
+function mkAddRow(blockIdx){
+  return `<div class="wb-add-row">
+    <button class="wb-add-btn txt" onclick="addElem(${blockIdx},'text')">＋ Texte</button>
+    <button class="wb-add-btn img" onclick="addElem(${blockIdx},'image')">＋ Image</button>
+  </div>`;
+}
+
+// Render le bloc courant (wizBlocks[wizBlockIdx()])
 function renderBlocks(){
   const list = document.getElementById("wbList");
   if(!list) return;
-  list.innerHTML = wizBlocks.map((b, i) => {
-    const isHeader = b.type === "header";
-    const acc = CAT_COLORS[wizCat]||"#00e5a0";
-    const imgZone = b.image
-      ? `<div class="wb-img-prev">
-           <img src="${b.image.dataUrl}" alt="">
-           <button class="rm-img" onclick="removeBlockImg(${i})">✕</button>
-         </div>`
-      : `<div class="wb-img-zone">
-           <input type="file" accept="image/*" onchange="onBlockImg(${i},this.files)">
-           <div class="iz-txt">${isHeader?"🖼️ Image de couverture (optionnel)":"📸 Image (optionnel)"}</div>
-           <div class="iz-sub">JPG · PNG · WebP</div>
-         </div>`;
+  const i   = wizBlockIdx();
+  const b   = wizBlocks[i];
+  if(!b){ list.innerHTML=""; return; }
+  const isHeader = b.type === "header";
+  const acc = CAT_COLORS[wizCat]||"#00e5a0";
 
-    if(isHeader){
-      return `<div class="wb" id="wb-0">
-        <div class="wb-head">
-          <span class="wb-num is-header">BLOC 1 · EN-TÊTE DE L'ARTICLE</span>
+  // Migrate old para block format to elements array
+  if(!isHeader && !b.elements){
+    b.elements = [];
+    if(b.text)   b.elements.push({type:"text",  value:b.text});
+    if(b.image)  b.elements.push({type:"image", data:b.image});
+    if(b.text2)  b.elements.push({type:"text",  value:b.text2});
+    if(b.image2) b.elements.push({type:"image", data:b.image2});
+    if(b.elements.length===0) b.elements.push({type:"text",value:""});
+  }
+  // Migrate old header
+  if(isHeader && !b.extras) b.extras = [];
+
+  if(isHeader){
+    const coverZone = b.image
+      ? `<div class="wb-img-prev"><img src="${b.image.dataUrl}" alt=""><button class="rm-img" onclick="removeBlockImg(${i})">✕</button></div>`
+      : `<div class="wb-img-zone"><input type="file" accept="image/*" onchange="onBlockImg(${i},this.files)"><div class="iz-txt">🖼️ Image de couverture (optionnel)</div></div>`;
+    list.innerHTML = `<div class="wb">
+      <div class="wb-head"><span class="wb-num is-header" style="color:${acc};">BLOC 1 · EN-TÊTE DE L'ARTICLE</span></div>
+      <div class="wb-body">
+        <div class="wiz-field">
+          <label>Titre de l'article *</label>
+          <input class="wiz-input" type="text" placeholder="Ex : Analyse EUR/USD — Semaine du 30 mars"
+            oninput="syncBlockTitre(this.value)" value="${(b.titre||'').replace(/"/g,'&quot;')}">
         </div>
-        <div class="wb-body">
-          <div class="wiz-field" style="margin-bottom:0;">
-            <label>Titre de l'article *</label>
-            <input class="wiz-input" type="text"
-              placeholder="Ex : Analyse EUR/USD — Semaine du 30 mars"
-              oninput="syncBlockTitre(this.value)"
-              value="${(b.titre||'').replace(/"/g,'&quot;')}">
-          </div>
-          <div class="wiz-field" style="margin-bottom:0;">
-            <label>Sous-titre / Accroche</label>
-            <textarea class="wiz-textarea" style="min-height:65px;"
-              placeholder="Ex : Semaine marquée par la Fed hawkish. DXY consolide au-dessus de 104..."
-              oninput="syncBlockSubtitle(this.value)">${b.subtitle||""}</textarea>
-          </div>
-          <div class="wiz-field" style="margin-bottom:0;">
-            <label>Image principale</label>
-            ${imgZone}
-          </div>
+        <div class="wiz-field">
+          <label>Sous-titre / Accroche</label>
+          <textarea class="wiz-textarea" style="min-height:48px;"
+            placeholder="Ex : Semaine marquée par la Fed hawkish..."
+            oninput="syncBlockSubtitle(this.value)">${b.subtitle||""}</textarea>
         </div>
+        <div class="wiz-field" style="margin-bottom:0;">
+          <label>Image principale</label>${coverZone}
+        </div>
+        ${mkElemHTML(i, b.extras)}
+        ${mkAddRow(i)}
+      </div>
+    </div>`;
+  } else {
+    list.innerHTML = `<div class="wb">
+      <div class="wb-head">
+        <span class="wb-num">BLOC ${i+1} · PARAGRAPHE</span>
+        <div class="wb-actions">
+          ${i > 1 ? `<button class="wb-btn mv" onclick="moveBlock(${i},-1)" title="Monter">↑</button>` : ""}
+          ${i < wizBlocks.length-1 ? `<button class="wb-btn mv" onclick="moveBlock(${i},1)" title="Descendre">↓</button>` : ""}
+          <button class="wb-btn del" onclick="removeParaBlock(${i})" title="Supprimer ce bloc">✕</button>
+        </div>
+      </div>
+      <div class="wb-body">
+        <div class="wiz-field">
+          <label>Titre du bloc <span style="font-size:10px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+          <input class="wiz-input" type="text" maxlength="200"
+            placeholder="Ex: Sentiment de marché · Zone clé · Biais directionnel…"
+            oninput="syncBlockParaTitle(${i},this.value)" value="${(b.title||'').replace(/"/g,'&quot;')}">
+        </div>
+        ${mkElemHTML(i, b.elements)}
+        ${mkAddRow(i)}
+      </div>
+    </div>`;
+  }
+}
+
+// ── STEP BAR DYNAMIQUE ────────────────────────────────────────────────────────
+function renderWizSteps(){
+  const bar = document.getElementById("wizStepsBar");
+  if(!bar) return;
+  const inBlocks = wizStep >= 3 && wizBlocks.length > 0;
+  let html = "";
+
+  // Étape 1 – Catégorie
+  const s1 = wizStep===1?"active":wizStep>1?"done":"";
+  html += `<div class="wiz-step ${s1}"><div class="sn"><span>1</span></div>Catégorie</div>`;
+
+  // Étape 2 – Config
+  const s2 = wizStep===2?"active":wizStep>2?"done":"";
+  html += `<div class="wiz-step ${s2}"><div class="sn"><span>2</span></div>Config</div>`;
+
+  if(inBlocks){
+    // Une étape par bloc
+    wizBlocks.forEach((b, i) => {
+      const stepN = i + 3;
+      const done   = wizStep > stepN;
+      const active = wizStep === stepN;
+      const cls    = done?"done":active?"active":"";
+      const lbl    = i===0 ? "En-tête" : `Bloc ${i+1}`;
+      html += `<div class="wiz-step blk ${cls}" onclick="wizGoToBlock(${i})" title="${lbl}">
+        <div class="sn"><span>${i+1}</span></div>${lbl}
       </div>`;
-    } else {
-      const pIdx = i; // paragraph index in wizBlocks
-      return `<div class="wb" id="wb-${i}">
-        <div class="wb-head">
-          <span class="wb-num">PARAGRAPHE ${i}</span>
-          <div class="wb-actions">
-            ${i > 1 ? `<button class="wb-btn mv" onclick="moveBlock(${i},-1)" title="Monter">↑</button>` : ""}
-            ${i < wizBlocks.length-1 ? `<button class="wb-btn mv" onclick="moveBlock(${i},1)" title="Descendre">↓</button>` : ""}
-            <button class="wb-btn del" onclick="removeParaBlock(${i})" title="Supprimer">✕</button>
-          </div>
-        </div>
-        <div class="wb-body">
-          <div class="wiz-field" style="margin-bottom:.75rem;">
-            <label>Titre du paragraphe <span style="font-size:10px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
-            <input class="wiz-input" type="text" maxlength="200"
-              placeholder="Ex: Sentiment de marché · Zone clé · Biais directionnel…"
-              oninput="syncBlockParaTitle(${i},this.value)"
-              value="${(b.title||'').replace(/"/g,'&quot;')}">
-          </div>
-          <div class="wiz-field" style="margin-bottom:.75rem;">
-            <label>Paragraphe 1</label>
-            <textarea class="wiz-textarea" style="min-height:110px;"
-              placeholder="Écris ton analyse ici..."
-              oninput="syncBlockText(${i},this.value)">${b.text||""}</textarea>
-          </div>
-          <div class="wiz-field" style="margin-bottom:.75rem;">
-            <label>Image associée (optionnel)</label>
-            ${imgZone}
-          </div>
-          <div class="wiz-field" style="margin-bottom:0;">
-            <label>Paragraphe 2 <span style="font-size:10px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
-            <textarea class="wiz-textarea" style="min-height:110px;"
-              placeholder="Suite de l'analyse, contexte, conclusion..."
-              oninput="syncBlockText2(${i},this.value)">${b.text2||""}</textarea>
-          </div>
-        </div>
-      </div>`;
+    });
+    // Bouton "+" pour ajouter un bloc (si sur le dernier bloc, max 6)
+    const isLastBlk = wizStep === wizBlocks.length + 2;
+    if(isLastBlk && wizBlocks.length < 6){
+      html += `<div class="wiz-step-add" onclick="addParaBlock()" title="Ajouter un bloc">＋</div>`;
     }
-  }).join("");
+  } else {
+    // Placeholder blocs (pas encore dans les blocs)
+    const s3 = wizStep>2?"":"";
+    html += `<div class="wiz-step ${s3}"><div class="sn"><span>3+</span></div>Blocs</div>`;
+  }
+
+  bar.innerHTML = html;
+}
+
+function wizGoToBlock(idx){
+  if(idx < 0 || idx >= wizBlocks.length) return;
+  wizStep = idx + 3;
+  wizUpdateUI();
 }
 
 function selectCat(cat, el){
@@ -4464,82 +4691,112 @@ function setWizMode(m){
   wizMode = m;
   document.getElementById("wModeHtml").classList.toggle("active", m==="html");
   document.getElementById("wModeManual").classList.toggle("active", m==="manual");
-  document.getElementById("wSecHtml").style.display   = m==="html" ? "block" : "none";
-  document.getElementById("wSecManual").style.display = m==="manual" ? "block" : "none";
+  document.getElementById("wSecHtml").style.display   = m==="html"   ? "block":"none";
 }
 
 function wizUpdateUI(){
-  for(let i=1;i<=3;i++){
-    const s=document.getElementById("ws"+i);
-    s.className="wiz-step"+(i===wizStep?" active":i<wizStep?" done":"");
+  renderWizSteps();
+
+  const inBlocks = wizStep >= 3;
+  const blockIdx = wizBlockIdx();
+
+  // Titre / sous-titre dynamique
+  if(wizStep === 1){
+    document.getElementById("wizTitle").textContent = "Choisir une catégorie";
+    document.getElementById("wizSub").textContent   = "Étape 1 sur 3";
+  } else if(wizStep === 2){
+    document.getElementById("wizTitle").textContent = "Configuration de l'article";
+    document.getElementById("wizSub").textContent   = "Étape 2 sur 3 · Mode · Date · Heure · Paire";
+  } else {
+    const lbl = blockIdx===0 ? "En-tête de l'article" : `Bloc ${blockIdx+1} — Paragraphe`;
+    document.getElementById("wizTitle").textContent = lbl;
+    document.getElementById("wizSub").textContent   = `Étape 3 · Bloc ${blockIdx+1} / ${wizBlocks.length}`;
   }
-  document.getElementById("wizTitle").textContent = WIZ_TITLES[wizStep-1];
-  document.getElementById("wizSub").textContent   = WIZ_SUBS[wizStep-1];
-  document.getElementById("wizStepLabel").textContent = wizStep+" / 3";
-  for(let i=1;i<=3;i++) document.getElementById("wp"+i).classList.toggle("active",i===wizStep);
-  const back=document.getElementById("wizBtnBack");
-  const next=document.getElementById("wizBtnNext");
-  const pub =document.getElementById("wizBtnPublish");
-  back.style.visibility = wizStep>1 ? "visible":"hidden";
-  const guestLastStep = role==="guest" ? 3 : 3;
-  if(wizStep===guestLastStep){ next.style.display="none"; pub.style.display="flex"; pub.textContent = role==="guest" ? "📤 Soumettre" : "✦ Publier l'article"; }
-  else { next.style.display="flex"; pub.style.display="none"; }
+
+  // Compteur footer
+  document.getElementById("wizStepLabel").textContent = inBlocks
+    ? `Bloc ${blockIdx+1} / ${wizBlocks.length}`
+    : `${wizStep} / 3`;
+
+  // Panels
+  document.getElementById("wp1").classList.toggle("active", wizStep===1);
+  document.getElementById("wp2").classList.toggle("active", wizStep===2);
+  document.getElementById("wp3").classList.toggle("active", inBlocks);
+
+  // wiz-body: mode split seulement en blocs
+  document.getElementById("wizBody").style.padding  = inBlocks ? "0" : "";
+  document.getElementById("wizBody").style.overflow = inBlocks ? "hidden" : "";
+  document.getElementById("wizBody").style.display  = inBlocks ? "block" : "";
+
+  // Modal large en mode blocs
+  document.getElementById("wizModal").classList.toggle("wide", inBlocks);
+
+  // Boutons footer
+  const back = document.getElementById("wizBtnBack");
+  const next = document.getElementById("wizBtnNext");
+  const pub  = document.getElementById("wizBtnPublish");
+  back.style.visibility = wizStep > 1 ? "visible":"hidden";
+
+  if(inBlocks){
+    // En mode blocs : Retour + Publier, plus de "Suivant"
+    next.style.display = "none";
+    pub.style.display  = "flex";
+    pub.textContent    = role==="guest" ? "📤 Soumettre" : "✦ Publier l'article";
+  } else {
+    next.style.display = "flex";
+    pub.style.display  = "none";
+    next.textContent   = "Suivant →";
+  }
+
   const isTradeOnly = wizCat==="trade"||wizCat==="tradeinvites";
-  const mt=document.getElementById("wizModeToggle");
-  if(mt) mt.style.display = isTradeOnly?"none":"grid";
+  const mt = document.getElementById("wizModeToggle");
+  if(mt) mt.style.display = (isTradeOnly||wizStep!==2) ? "none":"grid";
   if(isTradeOnly && wizMode==="html") setWizMode("manual");
+
+  // Render le bloc courant + aperçu
+  if(inBlocks){
+    renderBlocks();
+    schedulePreview();
+  }
 }
 
 function wizNext(){
   if(wizStep===1){
     if(!wizCat){ toast("⚠ Choisis une catégorie",true); return; }
-    if(wizBlocks.length===0) initBlocks();
+    wizStep=2; wizUpdateUI(); return;
   }
   if(wizStep===2){
-    // Sync titre from block 1
-    const block1Titre = (wizBlocks[0]?.titre||"").trim();
-    if(!block1Titre){ toast("⚠ Remplis le titre dans le Bloc 1",true); return; }
-    document.getElementById("wTitre").value = block1Titre;
-    // Use subtitle as description for the card
-    const subtitle = (wizBlocks[0]?.subtitle||"").trim();
-    document.getElementById("wDesc").value = subtitle || block1Titre;
-    // Validate date
-    const date = document.getElementById("wDate").value;
+    const date=document.getElementById("wDate").value;
     if(!date){ toast("⚠ La date est obligatoire",true); return; }
-    if(wizMode==="html" && !wizPendingHTML){ toast("⚠ Sélectionne un fichier HTML",true); return; }
-    // Build preview
-    wizBuildPreview();
+    if(wizMode==="html"&&!wizPendingHTML){ toast("⚠ Sélectionne un fichier HTML",true); return; }
+    if(wizMode==="manual"&&wizBlocks.length===0) initBlocks();
+    wizStep=3; wizUpdateUI(); return;
   }
-  wizStep++;
-  wizUpdateUI();
 }
 
 function wizBack(){
-  wizStep = Math.max(1,wizStep-1);
-  wizUpdateUI();
+  if(wizStep > 3){ wizStep--; wizUpdateUI(); return; }
+  if(wizStep === 3){ wizStep=2; wizUpdateUI(); return; }
+  if(wizStep > 1){ wizStep--; wizUpdateUI(); }
 }
 
 // ── BUILD PREVIEW & COMPILE ──────────────────────────────────────────────────
 function compileBlocksForTrade(){
-  // For trade categories: first para block = block 1
   const paraBlocks = wizBlocks.filter(b=>b.type==="para");
   if(paraBlocks.length===0) return null;
   const first = paraBlocks[0];
-  return {
-    text: first.text||"",
-    images: first.image ? [first.image.dataUrl] : [],
-    image: first.image?.dataUrl||null
-  };
+  return { text:first.text||"", images:first.image?[first.image.dataUrl]:[], image:first.image?.dataUrl||null };
 }
 
 function wizBuildPreview(){
-  const titre  = (wizBlocks[0]?.titre||document.getElementById("wTitre").value||"").trim();
+  if(wizStep < 3) return;
+  const titre  = (wizBlocks[0]?.titre||document.getElementById("wTitre")?.value||"").trim();
   const desc   = (wizBlocks[0]?.subtitle||titre||"").trim();
-  const date   = document.getElementById("wDate").value;
-  const time   = document.getElementById("wTime").value;
-  const paire  = document.getElementById("wPaire").value.trim();
+  const date   = document.getElementById("wDate")?.value||"";
+  const time   = document.getElementById("wTime")?.value||"";
+  const paire  = document.getElementById("wPaire")?.value.trim()||"";
   const acc    = CAT_COLORS[wizCat]||"#00e5a0";
-  const catLbl = CAT_LABEL[wizCat]||wizCat;
+  const catLbl = CAT_LABEL[wizCat]||wizCat||"";
   const timeStr = time ? ` · ${time}` : "";
   const fdate  = date ? new Date(date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})+timeStr : "";
 
@@ -4698,15 +4955,10 @@ function generateArticleTemplate(titre,desc,catLbl,acc,fdate,paire,blocks,author
   const paraBlocks  = blocks.filter(b=>b.type==="para");
   const by = author || sessionStorage.getItem("smf_username") || "Admin";
   switch(wizCat){
-    case "hebdo":        return tplHebdo(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
-    case "weekahead":    return tplWeekAhead(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
-    case "mensuel":      return tplMonthly(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
-    case "banques":      return tplBankMeeting(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
-    case "tradeideas":
-    case "wa":
+    case "ws":
+    case "wr":
     case "mr":
-    case "bm":
-    case "tan":          return tplHebdo(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
+    case "other":          return tplHebdo(titre,desc,fdate,paire,headerBlock,paraBlocks,by);
     case "trade": {
       // Construire les blocs trade avec l'image header comme bloc initial
       const coverFromHeader = headerBlock.image ? [{
@@ -4773,6 +5025,12 @@ const PARA_CSS=`
 .art-fig{border-radius:8px;overflow:hidden;border:1px solid #1c2430;margin-top:.75rem;}
 .art-fig img{width:100%;display:block;object-fit:cover;}
 .art-fig figcaption{font-family:'Space Mono',monospace;font-size:9px;color:#5a6578;padding:.4rem .9rem;background:#060a0f;letter-spacing:.06em;}
+.art-side{display:grid;gap:1.5rem;align-items:start;margin-top:.5rem;}
+.art-side-TI{grid-template-columns:1fr 280px;}
+.art-side-IT{grid-template-columns:280px 1fr;}
+.art-side .art-fig{max-width:100%;margin-top:0;}
+.art-imgs-row{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:.75rem;}
+@media(max-width:600px){.art-side-TI,.art-side-IT{grid-template-columns:1fr;}.art-imgs-row{grid-template-columns:1fr;}}
 `;
 
 // ════════════════════════════════════════════════════════════════════
@@ -4793,11 +5051,31 @@ function mkCoverImg(hb,padding="4rem"){
 function mkParaBlocks(paraBlocks,acc){
   return paraBlocks.map(b=>{
     const paraTitle = b.title ? `<div class="para-title" style="color:${acc}">${b.title}</div>` : "";
-    const txt = b.text ? `<div class="art-body">${fmtText(b.text)}</div>` : "";
-    const img = b.image ? `<figure class="art-fig"><img src="${b.image.dataUrl}" alt=""><figcaption>${b.image.name}</figcaption></figure>` : "";
-    const txt2 = b.text2 ? `<div class="art-body" style="margin-top:.85rem;">${fmtText(b.text2)}</div>` : "";
-    if(!txt&&!img&&!txt2) return "";
-    return `<div class="para-block" style="--acc:${acc}">${paraTitle}${txt}${img}${txt2}</div>`;
+    // Support new elements array OR legacy text/text2/image fields
+    let content = "";
+    if(b.elements && b.elements.length){
+      content = b.elements.map(el=>{
+        if(el.type==="text")  return el.value ? `<div class="art-body">${fmtText(el.value)}</div>` : "";
+        if(el.type==="image") return el.data  ? `<figure class="art-fig"><img src="${el.data.dataUrl}" alt=""><figcaption>${el.data.name}</figcaption></figure>` : "";
+        return "";
+      }).join("");
+    } else {
+      // Legacy
+      const txt1 = b.text  ? `<div class="art-body">${fmtText(b.text)}</div>`  : "";
+      const txt2 = b.text2 ? `<div class="art-body">${fmtText(b.text2)}</div>` : "";
+      const img1 = b.image ? `<figure class="art-fig"><img src="${b.image.dataUrl}" alt=""><figcaption>${b.image.name}</figcaption></figure>` : "";
+      content = txt1+img1+txt2;
+    }
+    // Render header extras the same way
+    if(b.type==="header" && b.extras && b.extras.length){
+      content += b.extras.map(el=>{
+        if(el.type==="text")  return el.value ? `<div class="art-body">${fmtText(el.value)}</div>` : "";
+        if(el.type==="image") return el.data  ? `<figure class="art-fig"><img src="${el.data.dataUrl}" alt=""><figcaption>${el.data.name}</figcaption></figure>` : "";
+        return "";
+      }).join("");
+    }
+    if(!content&&!paraTitle) return "";
+    return `<div class="para-block" style="--acc:${acc}">${paraTitle}${content}</div>`;
   }).join("");
 }
 
@@ -5205,8 +5483,8 @@ let guestMode="text", guestPendingImages=[], guestPendingPdf=null;
 
 function openGuestSubmit(){
   if(role!=="guest"){toast("⚠ Accès réservé aux invités",true);return;}
-  // Utiliser le même wizard que l'admin — catégorie forcée à tradeinvites
-  wizStep = 2;          // Sauter l'étape catégorie
+  // Utiliser le même wizard — catégorie forcée à tradeinvites, sauter étape 1
+  wizStep = 2;
   wizCat  = "tradeinvites";
   wizMode = "manual";
   wizPendingHTML = null;
@@ -5216,37 +5494,24 @@ function openGuestSubmit(){
   const _now = new Date();
   const _dateStr = _now.toISOString().slice(0,10);
   const _timeStr = _now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-  // Date & heure wizard — readonly pour les invités
   const _wDate = document.getElementById("wDate");
   const _wTime = document.getElementById("wTime");
-  _wDate.value    = _dateStr;
-  _wTime.value    = _timeStr;
-  _wDate.readOnly = true;
-  _wTime.readOnly = true;
-  _wDate.style.opacity = "0.6";
-  _wTime.style.opacity = "0.6";
-  _wDate.style.cursor  = "not-allowed";
-  _wTime.style.cursor  = "not-allowed";
-  _wDate.title = "La date est automatiquement fixée à l'instant de la soumission";
-  _wTime.title = "L'heure est automatiquement fixée à l'instant de la soumission";
-  // Auto-remplir aussi les champs du modal legacy (si ouvert)
-  const _gDate = document.getElementById("gDate");
-  const _gTime = document.getElementById("gTime");
-  if(_gDate){ _gDate.value = _dateStr; }
-  if(_gTime){ _gTime.value = _timeStr; }
-  document.getElementById("wPaire").value = "";
+  _wDate.value    = _dateStr; _wTime.value    = _timeStr;
+  _wDate.readOnly = true;     _wTime.readOnly = true;
+  _wDate.style.opacity="0.6"; _wTime.style.opacity="0.6";
+  _wDate.style.cursor="not-allowed"; _wTime.style.cursor="not-allowed";
+  _wDate.title="La date est automatiquement fixée à l'instant de la soumission";
+  _wTime.title="L'heure est automatiquement fixée à l'instant de la soumission";
+  const _gDate=document.getElementById("gDate"); const _gTime=document.getElementById("gTime");
+  if(_gDate) _gDate.value=_dateStr; if(_gTime) _gTime.value=_timeStr;
+  document.getElementById("wPaire").value="";
   resetWizHtml();
-  // Masquer les catégories non-pertinentes pour un guest
   document.querySelectorAll(".cat-card").forEach(c=>c.classList.remove("selected"));
   setWizMode("manual");
   initBlocks();
   wizUpdateUI();
-  // Adapter le titre/sous-titre pour le guest
-  document.getElementById("wizTitle").textContent = "Soumettre un Trade";
-  document.getElementById("wizSub").textContent   = "Étape 1 sur 2 · Titre · Blocs · Date";
-  document.getElementById("wizStepLabel").textContent = "1 / 2";
   document.getElementById("wizOv").classList.add("open");
-  document.body.style.overflow = "hidden";
+  document.body.style.overflow="hidden";
 }
 
 function closeGuestSubmit(){
@@ -5465,12 +5730,9 @@ if(abd){
   abd.addEventListener("drop",e=>{e.preventDefault();abd.classList.remove("drag");onAbImgs(e.dataTransfer.files);});
 }
 // ── FILTERS ───────────────────────────────────────────────────────────────────
-document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".filter-btn").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active"); filt=b.dataset.cat; renderGrid();
-}));
+// Les boutons de filtre sont créés dynamiquement par renderFilterBar() — pas d'init ici
 document.getElementById("searchInput").addEventListener("input",e=>{sq=e.target.value;renderGrid();});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeImport();closeAdminPanel();closeAuthorProfile();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeArtReader();closeImport();closeAdminPanel();closeAuthorProfile();}});
 
 // ── VIEW MODE ─────────────────────────────────────────────────────────────────
 let viewMode = localStorage.getItem("smf_view") || "grid";
@@ -5606,6 +5868,8 @@ const QUOTES=[
     document.getElementById("gateScreen").style.display="none";
     renderHeaderActions();
     startRealtimeSync();
+    // Appliquer le hash après un court délai (laisser arts se charger)
+    setTimeout(applyHash, 600);
   } else {
     renderHeaderActions();
     render();
