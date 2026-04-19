@@ -795,7 +795,7 @@
   @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 
   /* Step bar */
-  .wiz-steps{display:flex;align-items:stretch;background:var(--surface2);border-bottom:1px solid var(--border);overflow-x:auto;}
+  .wiz-steps{display:flex;align-items:stretch;background:var(--surface2);border-bottom:1px solid var(--border);overflow-x:auto;padding-right:44px;/* réserve la place pour le ✕ absolu */}
   .wiz-step{
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:3px;padding:9px 8px;cursor:default;position:relative;
@@ -806,11 +806,16 @@
   .wiz-step.blk:hover{color:var(--accent);}
   .wiz-step.blk .sn{width:26px;height:26px;font-size:7px;letter-spacing:0;}
   .wiz-step-add{
-    flex:0 0 42px;display:flex;align-items:center;justify-content:center;
-    cursor:pointer;font-size:20px;color:var(--muted);border-left:1px solid var(--border);
-    transition:background .15s,color .15s;
+    flex:0 0 38px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:17px;font-weight:700;
+    color:var(--accent);
+    border-left:1px solid var(--border);
+    border-radius:6px;
+    margin:4px 4px;
+    background:rgba(0,229,160,.07);
+    transition:background .15s,box-shadow .15s;
   }
-  .wiz-step-add:hover{background:rgba(0,229,160,.08);color:var(--accent);}
+  .wiz-step-add:hover{background:rgba(0,229,160,.18);box-shadow:0 0 0 1px rgba(0,229,160,.4);}
   /* MODAL wide mode */
   .wiz-modal.wide{max-width:1280px;height:96vh;}
   /* BODY split mode */
@@ -832,11 +837,19 @@
   }
 
   /* Wiz head */
-  .wiz-head{padding:.75rem 1.25rem .5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
-  .wiz-title{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text);letter-spacing:.06em;}
-  .wiz-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.04em;}
-  .btn-wiz-close{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:4px;cursor:pointer;transition:all .15s;}
-  .btn-wiz-close:hover{border-color:var(--red);color:var(--red);}
+  .wiz-head{display:none;}
+  .btn-wiz-close{
+    position:absolute;top:0;right:0;z-index:20;
+    width:44px;height:100%;max-height:54px;
+    background:transparent;border:none;border-left:1px solid var(--border);
+    color:var(--dimmed);font-size:15px;font-weight:700;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:0 16px 0 0;
+    transition:background .15s,color .15s;
+    line-height:1;
+  }
+  .btn-wiz-close:hover{background:var(--red);color:#fff;border-color:var(--red);}
 
   /* Wiz body */
   .wiz-body{padding:.75rem 1.25rem;overflow-y:auto;flex:1;}
@@ -1064,7 +1077,10 @@
 
 <!-- ====== WIZARD MODAL ====== -->
 <div class="wiz-overlay" id="wizOv">
-  <div class="wiz-modal" id="wizModal">
+  <div class="wiz-modal" id="wizModal" style="position:relative;">
+
+    <!-- Bouton fermer — croix coin supérieur droit -->
+    <button class="btn-wiz-close" onclick="closeImport()" title="Fermer">✕</button>
 
     <!-- Step bar (rendu dynamiquement par renderWizSteps) -->
     <div class="wiz-steps" id="wizStepsBar">
@@ -1073,13 +1089,12 @@
       <div class="wiz-step"><div class="sn"><span>3</span></div>Blocs</div>
     </div>
 
-    <!-- Head -->
+    <!-- Head (masqué via CSS) -->
     <div class="wiz-head">
       <div>
         <div class="wiz-title" id="wizTitle">Choisir une catégorie</div>
         <div class="wiz-sub" id="wizSub">Étape 1 sur 3</div>
       </div>
-      <button class="btn-wiz-close" onclick="closeImport()">✕ Fermer</button>
     </div>
 
     <!-- Body -->
@@ -4168,10 +4183,13 @@ function artMeta(art){
     if(m) thumbB64 = m[1];
   }
   if(!thumbB64 && Array.isArray(full.blocks)){
-    thumbB64 = full.blocks[0]?.images?.[0] || full.blocks[0]?.image || null;
+    // L'image du bloc header peut être un objet {name, dataUrl} (format wizard)
+    // ou directement une chaîne base64 (ancien format)
+    let raw = full.blocks[0]?.images?.[0] || full.blocks[0]?.image || null;
+    thumbB64 = (raw && typeof raw === "object") ? (raw.dataUrl || null) : raw;
   }
   // Compresser la miniature à 120px pour la carte
-  if(thumbB64 && thumbB64.startsWith("data:")){
+  if(thumbB64 && typeof thumbB64 === "string" && thumbB64.startsWith("data:")){
     // On garde la miniature — compressImage() est async donc on la stocke telle quelle
     // Elle sera déjà compressée car passée par compressImage() à l'upload
     full.thumb = thumbB64;
@@ -4716,6 +4734,15 @@ function addElem(idx, type){
   if(!arr) return;
   arr.push(type==="image" ? {type:"image", data:null} : {type:"text", value:""});
   renderBlocks(); schedulePreview();
+  if(type === "text"){
+    requestAnimationFrame(() => {
+      const block = document.querySelectorAll(".wb")[idx];
+      if(!block) return;
+      const textareas = block.querySelectorAll(".wiz-textarea");
+      const last = textareas[textareas.length - 1];
+      if(last){ last.focus(); last.scrollIntoView({ behavior:"smooth", block:"nearest" }); }
+    });
+  }
 }
 function removeElem(idx, ei){
   const arr = _getElems(idx); if(!arr) return;
@@ -4752,7 +4779,7 @@ function initBlocks(){
 }
 
 function addParaBlock(){
-  wizBlocks.push({ type:"para", title:"", elements:[{type:"text",value:""}] });
+  wizBlocks.push({ type:"para", title:"", date: new Date().toISOString().slice(0,10), time: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}), elements:[{type:"text",value:""}] });
   wizStep = wizBlocks.length + 2;
   wizUpdateUI();
 }
@@ -4786,6 +4813,8 @@ function onBlockImg(idx, files){
 function removeBlockImg(idx){ wizBlocks[idx].image = null; renderBlocks(); schedulePreview(); }
 
 function syncBlockParaTitle(idx, val)  { if(wizBlocks[idx]) wizBlocks[idx].title = val;    schedulePreview(); }
+function syncBlockDate(idx, val)       { if(wizBlocks[idx]) wizBlocks[idx].date  = val;    schedulePreview(); }
+function syncBlockTime(idx, val)       { if(wizBlocks[idx]) wizBlocks[idx].time  = val;    schedulePreview(); }
 function syncBlockSubtitle(val)        { if(wizBlocks[0])   wizBlocks[0].subtitle = val;   schedulePreview(); }
 function syncBlockTitre(val){
   if(wizBlocks[0]) wizBlocks[0].titre = val;
@@ -4801,6 +4830,15 @@ function schedulePreview(){
 }
 
 // ── ELEMENT HTML BUILDERS ─────────────────────────────────────────────────────
+
+// Slot actif pour le collage d'image (Ctrl+V)
+// { type:"elem", blockIdx, ei } ou { type:"cover", blockIdx }
+let _imgPasteSlot = null;
+
+function setImgPasteSlot(type, blockIdx, ei){
+  _imgPasteSlot = (ei !== undefined) ? {type, blockIdx, ei} : {type, blockIdx};
+}
+
 function mkElemHTML(blockIdx, arr){
   if(!arr||arr.length===0) return "";
   return arr.map((el,ei)=>{
@@ -4817,7 +4855,7 @@ function mkElemHTML(blockIdx, arr){
     const body = isImg
       ? (el.data
           ? `<div class="wb-img-prev"><img src="${el.data.dataUrl}" alt=""><button class="rm-img" onclick="removeElemImg(${blockIdx},${ei})">✕</button></div>`
-          : `<div class="wb-img-zone"><input type="file" accept="image/*" onchange="onElemImg(${blockIdx},${ei},this.files)"><div class="iz-txt">📸 Cliquer pour ajouter une image</div></div>`)
+          : `<div class="wb-img-zone" onclick="setImgPasteSlot('elem',${blockIdx},${ei})"><input type="file" accept="image/*" onchange="onElemImg(${blockIdx},${ei},this.files)"><div class="iz-txt">📸 Cliquer ou <strong style="color:var(--accent)">coller</strong> une image</div><div class="iz-sub" style="display:block">Ctrl+V · Glisser-déposer · Parcourir</div></div>`)
       : `<textarea class="wiz-textarea" style="min-height:58px;" placeholder="Écris ton texte ici..."
            oninput="syncElemText(${blockIdx},${ei},this.value)">${el.value||""}</textarea>`;
     return `<div class="wb-elem">${head}<div class="wb-elem-body">${body}</div></div>`;
@@ -4856,7 +4894,7 @@ function renderBlocks(){
   if(isHeader){
     const coverZone = b.image
       ? `<div class="wb-img-prev"><img src="${b.image.dataUrl}" alt=""><button class="rm-img" onclick="removeBlockImg(${i})">✕</button></div>`
-      : `<div class="wb-img-zone"><input type="file" accept="image/*" onchange="onBlockImg(${i},this.files)"><div class="iz-txt">🖼️ Image de couverture (optionnel)</div></div>`;
+      : `<div class="wb-img-zone" onclick="setImgPasteSlot('cover',${i})"><input type="file" accept="image/*" onchange="onBlockImg(${i},this.files)"><div class="iz-txt">🖼️ Image de couverture — <strong style="color:var(--accent)">coller</strong> ou parcourir</div><div class="iz-sub" style="display:block">Ctrl+V · Glisser-déposer · Cliquer</div></div>`;
     list.innerHTML = `<div class="wb">
       <div class="wb-head"><span class="wb-num is-header" style="color:${acc};">BLOC 1 · EN-TÊTE DE L'ARTICLE</span></div>
       <div class="wb-body">
@@ -4879,6 +4917,23 @@ function renderBlocks(){
       </div>
     </div>`;
   } else {
+    const dateField = _wizContinuationId ? `
+      <div class="wiz-field">
+        <label style="display:flex;align-items:center;gap:.4rem;">
+          📅 Date &amp; heure de cette mise à jour
+          <span style="font-size:10px;color:var(--muted);font-weight:400;">(obligatoire)</span>
+        </label>
+        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+          <input class="wiz-input" type="date"
+            value="${b.date || new Date().toISOString().slice(0,10)}"
+            oninput="syncBlockDate(${i},this.value)"
+            style="font-family:var(--mono);font-size:13px;color:var(--accent);max-width:180px;">
+          <input class="wiz-input" type="time"
+            value="${b.time || new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}"
+            oninput="syncBlockTime(${i},this.value)"
+            style="font-family:var(--mono);font-size:13px;color:var(--accent);max-width:130px;">
+        </div>
+      </div>` : "";
     list.innerHTML = `<div class="wb">
       <div class="wb-head">
         <span class="wb-num">BLOC ${i+1} · PARAGRAPHE</span>
@@ -4889,6 +4944,7 @@ function renderBlocks(){
         </div>
       </div>
       <div class="wb-body">
+        ${dateField}
         <div class="wiz-field">
           <label>Titre du bloc <span style="font-size:10px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
           <input class="wiz-input" type="text" maxlength="200"
@@ -5164,10 +5220,12 @@ async function wizPublish(){
     const a = arts.find(x => x.id === _wizContinuationId);
     if(!a){ toast("⚠ Article introuvable", true); return; }
 
-    const date = document.getElementById("wDate")?.value || new Date().toISOString().slice(0,10);
+    const today = new Date().toISOString().slice(0,10);
+    const nowTime = new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
     const newParaBlocks = wizBlocks.filter(b => b.type === "para").map(b => ({
       ...b,
-      date,
+      date: b.date || today,
+      time: b.time || nowTime,
       addedBy: adminUsername,
       isContinuation: true
     }));
@@ -5400,7 +5458,23 @@ function mkHeaderExtras(hb,acc){
   return `<div class="content" style="padding-bottom:0"><div class="para-block" style="--acc:${acc}">${html}</div></div>`;
 }
 function mkParaBlocks(paraBlocks,acc){
-  return paraBlocks.map(b=>{
+  return paraBlocks.map((b,i)=>{
+    // ── Séparateur MISE À JOUR pour les blocs de continuation ──
+    let sep = "";
+    if(b.isContinuation){
+      const bDate = b.date
+        ? new Date(b.date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})
+        : "";
+      const bTime = b.time ? ` · ${b.time}` : "";
+      const bBy   = b.addedBy ? ` · ${b.addedBy}` : "";
+      sep = `<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.4rem;
+        font-family:'Space Mono',monospace;font-size:9px;color:rgba(${hexToRgb(acc)},.7);letter-spacing:.14em;
+        text-transform:uppercase;margin-bottom:.9rem;padding-bottom:.5rem;
+        border-bottom:1px solid rgba(${hexToRgb(acc)},.15);">
+        <span>MISE À JOUR${i > 0 ? " " + (i+1) : ""}${bBy}</span>
+        <span style="color:rgba(208,218,232,.45);text-transform:none;letter-spacing:.05em;">${bDate}${bTime}</span>
+      </div>`;
+    }
     const paraTitle = b.title ? `<div class="para-title" style="color:${acc}">${b.title}</div>` : "";
     // Support new elements array OR legacy text/text2/image fields
     let content = "";
@@ -5425,8 +5499,8 @@ function mkParaBlocks(paraBlocks,acc){
         return "";
       }).join("");
     }
-    if(!content&&!paraTitle) return "";
-    return `<div class="para-block" style="--acc:${acc}">${paraTitle}${content}</div>`;
+    if(!content&&!paraTitle&&!sep) return "";
+    return `<div class="para-block" style="--acc:${acc}">${sep}${paraTitle}${content}</div>`;
   }).join("");
 }
 
@@ -6043,7 +6117,7 @@ function openWsContinue(e, id){
   wizPendingHTML = null;
 
   // Un seul bloc para vide pour commencer (pas de header — c'est une continuation)
-  wizBlocks = [{ type:"para", title:"", elements:[{type:"text", value:""}] }];
+  wizBlocks = [{ type:"para", title:"", date: new Date().toISOString().slice(0,10), time: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}), elements:[{type:"text", value:""}] }];
 
   // Date du jour pré-remplie
   document.getElementById("wDate").value = new Date().toISOString().slice(0,10);
@@ -6061,7 +6135,76 @@ function closeWsContinue(){
 function onWscImgSelected(){} // stub legacy
 async function submitWsContinue(){} // stub legacy
 
-// ── ADD BLOCK (mise à jour chronologique) ─────────────────────────────────────
+// ── PASTE IMAGE SUPPORT ──────────────────────────────────────────────────────
+// Écoute Ctrl+V partout dans le wizard et injecte l'image dans le slot actif
+document.addEventListener("paste", async function(e){
+  // Uniquement si le wizard est ouvert et qu'on est à l'étape blocs
+  if(!document.getElementById("wizOv")?.classList.contains("open")) return;
+  if(wizStep < 3) return;
+
+  const items = e.clipboardData?.items;
+  if(!items) return;
+
+  const activeEl = document.activeElement;
+  const isTypingInField = activeEl && (activeEl.tagName === "TEXTAREA" || activeEl.tagName === "INPUT");
+
+  // ── CAS 1 : IMAGE ────────────────────────────────────────────────────────
+  let imgFile = null;
+  for(const item of items){
+    if(item.type.startsWith("image/")){
+      imgFile = item.getAsFile();
+      break;
+    }
+  }
+  if(imgFile){
+    e.preventDefault();
+    const i   = wizBlockIdx();
+    const arr = _getElems(i);
+    if(!arr){ toast("⚠ Aucun bloc actif", true); return; }
+    // Créer automatiquement un slot image et y coller
+    arr.push({ type:"image", data: null });
+    const ei = arr.length - 1;
+    const r  = new FileReader();
+    r.onload = async ev => {
+      const compressed = await compressImage(ev.target.result);
+      arr[ei].data = { name: imgFile.name || "image_collée.png", dataUrl: compressed };
+      renderBlocks(); schedulePreview();
+      toast("✓ Image collée !");
+    };
+    r.readAsDataURL(imgFile);
+    return;
+  }
+
+  // ── CAS 2 : TEXTE ────────────────────────────────────────────────────────
+  // Si l'utilisateur est déjà en train de taper dans un champ → paste natif
+  if(isTypingInField) return;
+
+  let txt = "";
+  for(const item of items){
+    if(item.type === "text/plain"){
+      await new Promise(res => item.getAsString(s => { txt = s; res(); }));
+      break;
+    }
+  }
+  if(!txt.trim()) return;
+
+  e.preventDefault();
+  const i   = wizBlockIdx();
+  const arr = _getElems(i);
+  if(!arr){ toast("⚠ Aucun bloc actif", true); return; }
+  // Créer automatiquement un élément texte et y coller le contenu
+  arr.push({ type:"text", value: txt });
+  renderBlocks(); schedulePreview();
+  toast("✓ Texte collé !");
+  // Focus immédiat sur le nouveau textarea
+  requestAnimationFrame(() => {
+    const block = document.querySelectorAll(".wb")[i];
+    if(!block) return;
+    const textareas = block.querySelectorAll(".wiz-textarea");
+    const last = textareas[textareas.length - 1];
+    if(last){ last.focus(); last.scrollIntoView({ behavior:"smooth", block:"nearest" }); }
+  });
+});
 let _abTargetId=null, _abImgs=[];
 
 function openAddBlock(e,id){
@@ -6174,7 +6317,21 @@ if(abd){
 // ── FILTERS ───────────────────────────────────────────────────────────────────
 // Les boutons de filtre sont créés dynamiquement par renderFilterBar() — pas d'init ici
 document.getElementById("searchInput").addEventListener("input",e=>{sq=e.target.value;renderDebounced(120);});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeArtReader();closeImport();closeAdminPanel();closeAuthorProfile();closeWsContinue();}});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){closeArtReader();closeImport();closeAdminPanel();closeAuthorProfile();closeWsContinue();}
+  if(e.key==="Enter"){
+    const wizOpen = document.getElementById("wizOv")?.classList.contains("open");
+    if(!wizOpen) return;
+    // Ne pas interférer si l'utilisateur est dans un textarea ou input
+    const tag = document.activeElement?.tagName;
+    if(tag==="TEXTAREA"||tag==="INPUT") return;
+    // Seulement sur les étapes 1 et 2 (le bouton Suivant)
+    if(wizStep===1||wizStep===2){
+      const btn = document.getElementById("wizBtnNext");
+      if(btn && !btn.disabled){ e.preventDefault(); wizNext(); }
+    }
+  }
+});
 
 // ── VIEW MODE ─────────────────────────────────────────────────────────────────
 let viewMode = localStorage.getItem("smf_view") || "grid";
