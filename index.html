@@ -4815,6 +4815,23 @@ function onBlockImg(idx, files){
 }
 function removeBlockImg(idx){ wizBlocks[idx].image = null; renderBlocks(); schedulePreview(); }
 
+// ── SYNC IMAGE NAMES / LÉGENDES ───────────────────────────────────────────────
+function syncElemImgName(blockIdx, ei, val){
+  const arr = _getElems(blockIdx);
+  if(arr && arr[ei] && arr[ei].data) arr[ei].data.name = val;
+  schedulePreview();
+}
+function syncBlockImgName(idx, val){
+  if(wizBlocks[idx] && wizBlocks[idx].image) wizBlocks[idx].image.name = val;
+  schedulePreview();
+}
+function updateGuestImgName(i, val){
+  if(guestPendingImages[i]) guestPendingImages[i].name = val;
+}
+function updateAbImgName(i, val){
+  if(_abImgs[i]) _abImgs[i].name = val;
+}
+
 function syncBlockParaTitle(idx, val)    { if(wizBlocks[idx]) wizBlocks[idx].title    = val; schedulePreview(); }
 function syncBlockParaSubtitle(idx, val) { if(wizBlocks[idx]) wizBlocks[idx].subtitle = val; schedulePreview(); }
 function syncBlockDate(idx, val)       { if(wizBlocks[idx]) wizBlocks[idx].date  = val;    schedulePreview(); }
@@ -4859,7 +4876,13 @@ function mkElemHTML(blockIdx, arr){
     </div>`;
     const body = isImg
       ? (el.data
-          ? `<div class="wb-img-prev"><img src="${el.data.dataUrl}" alt=""><button class="rm-img" onclick="removeElemImg(${blockIdx},${ei})">✕</button></div>`
+          ? `<div class="wb-img-prev"><img src="${el.data.dataUrl}" alt=""><button class="rm-img" onclick="removeElemImg(${blockIdx},${ei})">✕</button></div>
+             <div class="wiz-field" style="margin-top:.5rem;">
+               <label style="font-size:9px;letter-spacing:.08em;">📝 Légende / Nom de l'image</label>
+               <input class="wiz-input" type="text" placeholder="Ex : Graphique EUR/USD — 4H"
+                 value="${(el.data.name||'').replace(/"/g,'&quot;')}"
+                 oninput="syncElemImgName(${blockIdx},${ei},this.value)">
+             </div>`
           : `<div class="wb-img-zone" onclick="setImgPasteSlot('elem',${blockIdx},${ei})"><input type="file" accept="image/*" onchange="onElemImg(${blockIdx},${ei},this.files)"><div class="iz-txt">📸 Cliquer ou <strong style="color:var(--accent)">coller</strong> une image</div><div class="iz-sub" style="display:block">Ctrl+V · Glisser-déposer · Parcourir</div></div>`)
       : isSub
         ? `<input class="wiz-input" type="text" maxlength="300"
@@ -4905,7 +4928,13 @@ function renderBlocks(){
 
   if(isHeader){
     const coverZone = b.image
-      ? `<div class="wb-img-prev"><img src="${b.image.dataUrl}" alt=""><button class="rm-img" onclick="removeBlockImg(${i})">✕</button></div>`
+      ? `<div class="wb-img-prev"><img src="${b.image.dataUrl}" alt=""><button class="rm-img" onclick="removeBlockImg(${i})">✕</button></div>
+         <div class="wiz-field" style="margin-top:.5rem;">
+           <label style="font-size:9px;letter-spacing:.08em;">📝 Légende / Nom de l'image de couverture</label>
+           <input class="wiz-input" type="text" placeholder="Ex : Vue hebdomadaire — S&P 500"
+             value="${(b.image.name||'').replace(/"/g,'&quot;')}"
+             oninput="syncBlockImgName(${i},this.value)">
+         </div>`
       : `<div class="wb-img-zone" onclick="setImgPasteSlot('cover',${i})"><input type="file" accept="image/*" onchange="onBlockImg(${i},this.files)"><div class="iz-txt">🖼️ Image de couverture — <strong style="color:var(--accent)">coller</strong> ou parcourir</div><div class="iz-sub" style="display:block">Ctrl+V · Glisser-déposer · Cliquer</div></div>`;
     list.innerHTML = `<div class="wb">
       <div class="wb-head"><span class="wb-num is-header" style="color:${acc};">BLOC 1 · EN-TÊTE DE L'ARTICLE</span></div>
@@ -6048,8 +6077,16 @@ function onGuestImagesSelected(files){
 
 function renderGuestImgPreviews(){
   document.getElementById("gImgPreviews").innerHTML=guestPendingImages.map((img,i)=>`
-    <div class="img-thumb-wrap"><img src="${img.dataUrl}" alt="${img.name}">
-    <button class="img-thumb-del" onclick="removeGuestImg(${i})">✕</button></div>`).join("");
+    <div class="img-thumb-wrap" style="display:flex;flex-direction:column;gap:.3rem;align-items:center;width:110px;">
+      <div style="position:relative;">
+        <img src="${img.dataUrl}" alt="${img.name}" style="width:90px;height:90px;object-fit:cover;border-radius:5px;border:1px solid var(--border2);">
+        <button class="img-thumb-del" onclick="removeGuestImg(${i})">✕</button>
+      </div>
+      <input type="text" value="${(img.name||'').replace(/"/g,'&quot;')}"
+        placeholder="Légende…"
+        oninput="updateGuestImgName(${i},this.value)"
+        style="width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:9px;padding:3px 6px;border-radius:4px;outline:none;">
+    </div>`).join("");
 }
 function removeGuestImg(i){ guestPendingImages.splice(i,1); renderGuestImgPreviews(); }
 
@@ -6266,9 +6303,15 @@ function onAbImgs(files){
 
 function renderAbImgPreviews(){
   document.getElementById("abImgPreview").innerHTML=_abImgs.map((img,i)=>`
-    <div class="img-thumb-wrap" style="width:90px;height:90px;">
-      <img src="${img.dataUrl}" style="width:90px;height:90px;object-fit:cover;border-radius:5px;border:1px solid var(--border2);">
-      <button class="img-thumb-del" onclick="_abImgs.splice(${i},1);renderAbImgPreviews();">✕</button>
+    <div class="img-thumb-wrap" style="display:flex;flex-direction:column;gap:.3rem;align-items:center;width:110px;">
+      <div style="position:relative;">
+        <img src="${img.dataUrl}" style="width:90px;height:90px;object-fit:cover;border-radius:5px;border:1px solid var(--border2);">
+        <button class="img-thumb-del" onclick="_abImgs.splice(${i},1);renderAbImgPreviews();">✕</button>
+      </div>
+      <input type="text" value="${(img.name||'').replace(/"/g,'&quot;')}"
+        placeholder="Légende…"
+        oninput="updateAbImgName(${i},this.value)"
+        style="width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:9px;padding:3px 6px;border-radius:4px;outline:none;">
     </div>`).join("");
 }
 
