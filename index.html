@@ -5650,7 +5650,14 @@ async function wizPublish(){
 
     if(ok){
       invalidateHtmlCache(_wizContinuationId);
-      closeImport();
+      // Reset les blocs pour permettre une nouvelle continuation immédiate
+      // Le wizard reste ouvert — la fenêtre revient à son état initial
+      const todayReset = new Date().toISOString().slice(0,10);
+      const nowReset   = new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+      wizBlocks = [{ type:"para", title:"", date: todayReset, time: nowReset, elements:[{type:"text", value:""}] }];
+      document.getElementById("wDate").value = todayReset;
+      document.getElementById("wTime").value = nowReset;
+      wizUpdateUI();
       toast(`✓ ${newParaBlocks.length} section${newParaBlocks.length > 1 ? "s" : ""} ajoutée${newParaBlocks.length > 1 ? "s" : ""} — article WS mis à jour !`);
     } else {
       toast("✕ Erreur lors de la sauvegarde", true);
@@ -6372,6 +6379,12 @@ function tplWS(titre, desc, fdate, paire, blocks, author, pages){
     nonEmptyPages.push(...pageList);
   }
 
+  // Blocs "Afficher dans la vue principale" — visibles dans wsHeader avant tout onglet
+  const mainBlocks = paraBlocks.filter(b => b.showInMain === true);
+  const mainBlocksHtml = mainBlocks.length > 0
+    ? `<div class="content ws-main-content">${mkParaBlocks(mainBlocks, acc)}</div>`
+    : "";
+
   // Tabs (aucun actif par défaut — l'en-tête principal est affiché en premier)
   const tabsHtml = nonEmptyPages.map((p, i) => `
     <button class="ws-tab" data-pid="${p.id}">${p.name}</button>`).join("");
@@ -6436,6 +6449,7 @@ h1{font-family:'Space Mono',monospace;font-size:clamp(1.6rem,3.8vw,2.4rem);lette
 <div class="hero"><h1>${titre}</h1>${subtitle?`<p class="hero-desc">${subtitle}</p>`:""}</div>
 ${coverImg}${headerExtras}
 <div class="divider"><div class="div-line"></div><div class="div-dot"></div><div class="div-line r"></div></div>
+${mainBlocksHtml}
 </div>
 
 <!-- CONTENU : seule la page active est affichée -->
