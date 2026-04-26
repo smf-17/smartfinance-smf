@@ -181,168 +181,28 @@
      ne jamais faire vibrer le layout.
      ════════════════════════════════════════ */
 
-  /* 1 · GLITCH HOLOGRAM */
-  @keyframes aEnter1{
-    0%  {opacity:0;filter:blur(20px) brightness(4) hue-rotate(100deg) saturate(3);}
-    12% {opacity:.7;filter:blur(6px) brightness(2.5) hue-rotate(50deg) saturate(2);}
-    25% {opacity:.5;filter:blur(10px) brightness(1.8) hue-rotate(20deg);}
-    40% {opacity:.9;filter:blur(1px) brightness(1.3) hue-rotate(5deg);}
-    55% {opacity:.8;filter:blur(3px) brightness(1.5) hue-rotate(0deg);}
-    70% {opacity:1;filter:blur(0) brightness(1.1);}
-    100%{opacity:1;filter:none;}
-  }
-  @keyframes aExit1{
-    0%  {opacity:1;filter:none;}
-    20% {opacity:.8;filter:blur(4px) brightness(1.8) hue-rotate(40deg);}
-    50% {opacity:.4;filter:blur(12px) brightness(3) hue-rotate(100deg);}
-    80% {opacity:.1;filter:blur(22px) brightness(5) hue-rotate(160deg);}
-    100%{opacity:0;filter:blur(30px) brightness(6) hue-rotate(200deg);}
-  }
-  @keyframes aPulse1{
-    0%,100%{text-shadow:0 0 8px rgba(0,229,160,.5),0 0 25px rgba(0,229,160,.2);}
-    50%    {text-shadow:0 0 16px rgba(0,229,160,.9),0 0 50px rgba(0,229,160,.4),0 0 100px rgba(0,229,160,.15);}
-  }
-
-  /* 2 · STATIC TV */
-  @keyframes aEnter2{
-    0%  {opacity:0;filter:contrast(20) brightness(.1) saturate(0);}
-    15% {opacity:.8;filter:contrast(6) brightness(2) saturate(1) blur(2px);}
-    28% {opacity:.4;filter:contrast(10) brightness(.7) saturate(0) blur(1px);}
-    42% {opacity:1;filter:contrast(2.5) brightness(1.3) saturate(1);}
-    58% {opacity:.9;filter:contrast(1.5) brightness(1.1);}
-    75% {opacity:1;filter:none;}
-    100%{opacity:1;filter:none;}
-  }
-  @keyframes aExit2{
-    0%  {opacity:1;filter:none;}
-    20% {opacity:.9;filter:contrast(3) brightness(1.8);}
-    45% {opacity:.5;filter:contrast(10) brightness(.5) saturate(0);}
-    70% {opacity:.2;filter:contrast(20) brightness(.1) blur(2px);}
-    100%{opacity:0;filter:contrast(25) brightness(0);}
-  }
-  @keyframes aPulse2{
-    0%,100%{text-shadow:0 0 4px rgba(0,229,160,.3);filter:none;}
-    40%    {text-shadow:0 0 2px #fff,0 0 10px rgba(0,229,160,.7);filter:contrast(1.3);}
-    70%    {text-shadow:0 0 8px rgba(0,229,160,.5);filter:none;}
-  }
-
-  /* 3 · MATRIX RAIN */
-  @keyframes aEnter3{
-    0%  {opacity:0;filter:brightness(.05) saturate(0) blur(8px);}
-    18% {opacity:.5;filter:brightness(2.5) saturate(5) hue-rotate(120deg) blur(3px);}
-    35% {opacity:.8;filter:brightness(1.6) saturate(3) hue-rotate(60deg) blur(1px);}
-    55% {opacity:.95;filter:brightness(1.2) saturate(1.8) hue-rotate(20deg);}
-    75% {opacity:1;filter:brightness(1.05) saturate(1.2);}
-    100%{opacity:1;filter:none;}
-  }
-  @keyframes aExit3{
-    0%  {opacity:1;filter:none;}
-    25% {opacity:.8;filter:brightness(1.8) hue-rotate(40deg) saturate(2);}
-    55% {opacity:.3;filter:brightness(3.5) hue-rotate(120deg) saturate(3) blur(4px);}
-    100%{opacity:0;filter:brightness(6) hue-rotate(180deg) blur(12px);}
-  }
-  @keyframes aPulse3{
-    0%,100%{text-shadow:0 0 6px rgba(0,255,100,.5),0 0 20px rgba(0,255,100,.2);filter:brightness(1);}
-    50%    {text-shadow:0 0 4px rgba(0,255,80,.3),0 0 14px rgba(0,255,80,.1);filter:brightness(1.1) saturate(1.2);}
-  }
-
-  /* 4 · NEON FLICKER */
-  @keyframes aEnter4{
-    0%  {opacity:0;}
-    6%  {opacity:.95;filter:brightness(4);}
-    11% {opacity:.05;}
-    17% {opacity:.9;filter:brightness(3);}
-    22% {opacity:.1;}
-    30% {opacity:1;filter:brightness(2.5) blur(1px);}
-    35% {opacity:.25;}
-    42% {opacity:1;filter:brightness(2);}
-    50% {opacity:.7;filter:brightness(1.5);}
-    62% {opacity:1;filter:brightness(1.2);}
-    78% {opacity:.9;filter:brightness(1.05);}
-    100%{opacity:1;filter:brightness(1);}
-  }
-  @keyframes aExit4{
-    0%  {opacity:1;}
-    12% {opacity:.5;filter:brightness(2.5);}
-    18% {opacity:1;}
-    30% {opacity:0;filter:brightness(5);}
-    36% {opacity:.7;}
-    50% {opacity:0;filter:brightness(3);}
-    62% {opacity:.3;}
-    78% {opacity:0;}
-    100%{opacity:0;}
-  }
-  @keyframes aPulse4{
-    0%,100%{text-shadow:0 0 10px rgba(0,229,160,.9),0 0 30px rgba(0,229,160,.4),0 0 60px rgba(0,229,160,.2);}
-    44%    {text-shadow:0 0 6px rgba(0,229,160,.5),0 0 18px rgba(0,229,160,.2);filter:brightness(.85);}
-    46%    {text-shadow:0 0 18px rgba(0,229,160,1),0 0 50px rgba(0,229,160,.7);filter:brightness(1.4);}
-    48%    {text-shadow:0 0 8px rgba(0,229,160,.6);filter:brightness(.9);}
-  }
-
-  /* 5 · QUANTUM DISSOLVE */
-  @keyframes aEnter5{
-    0%  {opacity:0;filter:blur(35px) saturate(0) brightness(6);}
-    20% {opacity:.35;filter:blur(14px) saturate(2.5) brightness(3);}
-    40% {opacity:.65;filter:blur(6px) saturate(1.8) brightness(1.8);}
-    62% {opacity:.9;filter:blur(2px) saturate(1.3) brightness(1.2);}
-    80% {opacity:1;filter:blur(.5px) saturate(1.1) brightness(1.05);}
-    100%{opacity:1;filter:none;}
-  }
-  @keyframes aExit5{
-    0%  {opacity:1;filter:none;}
-    28% {opacity:.7;filter:blur(4px) saturate(1.8) brightness(1.8);}
-    60% {opacity:.25;filter:blur(16px) saturate(3) brightness(3.5);}
-    100%{opacity:0;filter:blur(35px) saturate(0) brightness(6);}
-  }
-  @keyframes aPulse5{
-    0%,100%{text-shadow:0 0 8px rgba(0,229,160,.4),0 0 30px rgba(0,229,160,.15);filter:saturate(1);}
-    50%    {text-shadow:0 0 20px rgba(0,229,160,.8),0 0 60px rgba(0,229,160,.35);filter:saturate(1.4);}
-  }
-
-  /* 6 · SHATTER (filter seulement, pas de perspective) */
-  @keyframes aEnter6{
-    0%  {opacity:0;filter:blur(0) brightness(.05) invert(1);}
-    15% {opacity:.6;filter:blur(3px) brightness(1.8) invert(.5) hue-rotate(40deg);}
-    30% {opacity:.4;filter:blur(5px) brightness(2.5) invert(.8) hue-rotate(80deg);}
-    50% {opacity:.85;filter:blur(1px) brightness(1.4) invert(.2) hue-rotate(20deg);}
-    68% {opacity:1;filter:blur(0) brightness(1.1) invert(0);}
-    100%{opacity:1;filter:none;}
-  }
-  @keyframes aExit6{
-    0%  {opacity:1;filter:none;}
-    20% {opacity:.8;filter:brightness(1.5) invert(.1) hue-rotate(15deg);}
-    45% {opacity:.4;filter:blur(4px) brightness(2.5) invert(.6) hue-rotate(60deg);}
-    75% {opacity:.1;filter:blur(8px) brightness(.2) invert(1) hue-rotate(100deg);}
-    100%{opacity:0;filter:blur(12px) brightness(0) invert(1);}
-  }
-  @keyframes aPulse6{
-    0%,100%{text-shadow:0 0 6px rgba(0,229,160,.4);filter:brightness(1);}
-    33%    {text-shadow:0 0 12px rgba(0,229,160,.8),0 0 40px rgba(0,229,160,.3);filter:brightness(1.15);}
-    66%    {text-shadow:0 0 8px rgba(0,229,160,.5),0 0 25px rgba(0,229,160,.15);filter:brightness(.95);}
-  }
-
-  /* 7 · WARP SPEED (blur directionnel simulé) */
-  @keyframes aEnter7{
-    0%  {opacity:0;filter:blur(40px) brightness(8) saturate(0);}
-    12% {opacity:.5;filter:blur(18px) brightness(4) saturate(1);}
-    25% {opacity:.7;filter:blur(8px) brightness(2.2) saturate(1.5);}
-    42% {opacity:.9;filter:blur(2px) brightness(1.4) saturate(1.2);}
-    60% {opacity:1;filter:blur(.5px) brightness(1.1);}
-    75% {opacity:1;filter:none;}
-    100%{opacity:1;filter:none;}
-  }
-  @keyframes aExit7{
-    0%  {opacity:1;filter:none;}
-    18% {opacity:.8;filter:blur(3px) brightness(1.6) saturate(1.3);}
-    42% {opacity:.4;filter:blur(12px) brightness(3.5) saturate(2);}
-    70% {opacity:.1;filter:blur(28px) brightness(6) saturate(0);}
-    100%{opacity:0;filter:blur(42px) brightness(8);}
-  }
-  @keyframes aPulse7{
-    0%,100%{text-shadow:0 0 8px rgba(0,229,160,.5),0 0 25px rgba(0,229,160,.2);filter:brightness(1);}
-    40%    {text-shadow:0 0 18px rgba(0,229,160,.9),0 0 55px rgba(0,229,160,.4),0 0 6px #fff;filter:brightness(1.2);}
-    70%    {text-shadow:0 0 6px rgba(0,229,160,.4),0 0 18px rgba(0,229,160,.15);filter:brightness(.95);}
-  }
+  /* ── ANIMATIONS TICKER optimisées (opacity + transform uniquement, GPU-friendly) ── */
+  @keyframes aEnter1{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes aEnter2{from{opacity:0;transform:translateY(6px) scaleX(.97)}to{opacity:1;transform:translateY(0) scaleX(1)}}
+  @keyframes aEnter3{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes aEnter4{0%{opacity:0}30%{opacity:.6}45%{opacity:.2}65%{opacity:.9}80%{opacity:.7}100%{opacity:1}}
+  @keyframes aEnter5{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes aEnter6{from{opacity:0;transform:translateY(7px) scaleY(.96)}to{opacity:1;transform:translateY(0) scaleY(1)}}
+  @keyframes aEnter7{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes aExit1{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-8px)}}
+  @keyframes aExit2{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-6px)}}
+  @keyframes aExit3{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-10px)}}
+  @keyframes aExit4{0%{opacity:1}25%{opacity:.5}50%{opacity:.8}75%{opacity:.2}100%{opacity:0}}
+  @keyframes aExit5{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-5px)}}
+  @keyframes aExit6{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-7px)}}
+  @keyframes aExit7{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-6px)}}
+  @keyframes aPulse1{0%,100%{opacity:.85}50%{opacity:1}}
+  @keyframes aPulse2{0%,100%{opacity:.8}50%{opacity:1}}
+  @keyframes aPulse3{0%,100%{opacity:.82}50%{opacity:1}}
+  @keyframes aPulse4{0%,100%{opacity:.88}50%{opacity:1}}
+  @keyframes aPulse5{0%,100%{opacity:.8}50%{opacity:1}}
+  @keyframes aPulse6{0%,100%{opacity:.85}50%{opacity:1}}
+  @keyframes aPulse7{0%,100%{opacity:.82}50%{opacity:1}}
 
   /* Classes d'état */
   .ticker-quote.q-enter-1{animation:aEnter1 1.1s cubic-bezier(.22,1,.36,1) forwards;}
@@ -770,6 +630,11 @@
 
   /* ── PERFORMANCE : cartes hors-viewport ignorées par le moteur de rendu ── */
   .article-card{content-visibility:auto;contain-intrinsic-size:0 220px;}
+
+  /* ── ANIMATIONS : suspendues quand l'onglet est inactif ── */
+  .orbital-svg,.orbital-hex-glow,.fab,.online-badge{
+    animation-play-state:var(--anim-state,running);
+  }
 
   /* ── ACCESSIBILITÉ : désactiver les animations lourdes si l'utilisateur le préfère ── */
   @media(prefers-reduced-motion:reduce){
@@ -2030,6 +1895,14 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <script>
+// ── PERFORMANCE : pause animations when tab is hidden ────────────────────────
+document.addEventListener("visibilitychange", () => {
+  document.documentElement.style.setProperty(
+    "--anim-state",
+    document.hidden ? "paused" : "running"
+  );
+});
+
 // ── HASH ROUTING ──────────────────────────────────────────────────────────────
 let _artReaderBlobUrl = null;
 let _currentArtId = null;
@@ -2417,9 +2290,30 @@ let unsubscribe = null;
 // ── Utils ────────────────────────────────────────────────────────────────────
 let _saveTimer = null;
 function save(){
-  // Debounce : évite de bloquer le thread principal à chaque snapshot Firestore
+  // Debounce + purge des images base64 avant localStorage
   clearTimeout(_saveTimer);
-  _saveTimer = setTimeout(()=>{ localStorage.setItem(SK, JSON.stringify(arts)); }, 300);
+  _saveTimer = setTimeout(()=>{
+    try{
+      // ✅ Ne pas stocker les images base64 dans localStorage (trop lourd)
+      const lite = arts.map(a => {
+        const s = {...a};
+        // Garder uniquement la miniature compressée, pas les images originales
+        if(Array.isArray(s.blocks)){
+          s.blocks = s.blocks.map(b => {
+            const c = {...b};
+            if(c.image && typeof c.image === "object") c.image = { name: c.image.name || "" };
+            else if(typeof c.image === "string" && c.image.startsWith("data:")) c.image = null;
+            if(Array.isArray(c.images)) c.images = [];
+            return c;
+          });
+        }
+        delete s.pdfData;
+        delete s._htmlCache;
+        return s;
+      });
+      localStorage.setItem(SK, JSON.stringify(lite));
+    }catch(e){ console.warn("save localStorage:", e); }
+  }, 300);
 }
 function fmtD(s,t){ const d=new Date(s+"T00:00:00").toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"}); return t?d+" · "+t:d; }
 function fmtSz(b){ return b<1024?"< 1 Ko":b<1048576?(b/1024).toFixed(0)+" Ko":(b/1048576).toFixed(1)+" Mo"; }
@@ -2433,7 +2327,8 @@ function toast(msg,err=false){
 // Compresse toute image en JPEG max 900px, qualité 0.72 → ~80-150 Ko typique
 // Compression minimale — qualité quasi originale, max 1600px, qualité 0.88
 // Nécessaire pour rester sous la limite Firestore de 1Mo par document
-function compressImage(dataUrl, maxPx=1600, quality=0.88){
+// ✅ Défaut réduit : 900px / 0.78 au lieu de 1600px / 0.88 → images ~3× plus légères
+function compressImage(dataUrl, maxPx=900, quality=0.78){
   return new Promise(resolve=>{
     const img=new Image();
     img.onload=()=>{
@@ -2677,6 +2572,7 @@ async function doLogin(){
     }
 
     // limite connectes + profil en parallele
+    // ✅ select("online") : télécharge uniquement le champ utile, pas les photos base64
     const [activeSnap, profilesDoc] = await Promise.all([
       db.collection("users").where("online","==",true).get(),
       db.collection("config").doc("profiles").get().catch(()=>null)
@@ -3004,7 +2900,7 @@ async function doLogout(){
   sessionStorage.removeItem("smf_user");
   sessionStorage.removeItem("smf_username");
   if(banWatchUnsub){ banWatchUnsub(); banWatchUnsub=null; }
-  if(unsubscribe){ unsubscribe(); unsubscribe=null; }
+  if(unsubscribe){ stopSync(); unsubscribe=null; }
   arts=[];
   document.getElementById("lUser").value="";
   document.getElementById("lPass").value="";
@@ -4071,17 +3967,31 @@ async function loadUserPhotoCache(){
   }catch(e){}
 
   try{
-    // Guests — collection users
-    const snap = await db.collection("users").get();
-    snap.docs.forEach(d=>{
-      const u = d.data();
-      if(u.username && u.photoURL) userPhotoCache[u.username] = u.photoURL;
-      if(u.prenom || u.nom){
-        const fullName = ((u.prenom||"")+" "+(u.nom||"")).trim();
-        if(fullName && u.photoURL) userPhotoCache[fullName] = u.photoURL;
+    // ✅ OPTIMISATION : ne charger que les photos des auteurs des articles en mémoire
+    const authorUsernames = [...new Set(
+      arts.map(a => a.submittedByUsername).filter(Boolean)
+    )];
+
+    if(authorUsernames.length){
+      // Firestore whereIn : max 30 par batch
+      const BATCH = 30;
+      for(let i = 0; i < authorUsernames.length; i += BATCH){
+        const batch = authorUsernames.slice(i, i + BATCH);
+        // ✅ select() : télécharge uniquement username + photoURL, pas les autres champs
+      const snap = await db.collection("users")
+          .where("username","in", batch).get();
+        snap.docs.forEach(d=>{
+          const u = d.data();
+          if(u.username && u.photoURL) userPhotoCache[u.username] = u.photoURL;
+          if(u.prenom || u.nom){
+            const fullName = ((u.prenom||"")+" "+(u.nom||"")).trim();
+            if(fullName && u.photoURL) userPhotoCache[fullName] = u.photoURL;
+          }
+        });
       }
-    });
+    }
   }catch(e){}
+
   try{
     // Admins — config/profiles (clé = username ex: "SMF", "KGB")
     const profilesDoc = await db.collection("config").doc("profiles").get();
@@ -4100,12 +4010,12 @@ async function loadUserPhotoCache(){
 }
 
 // ── FIRESTORE ARTICLES ────────────────────────────────────────────────────────
-const ART_PAGE_SIZE = 20; // Articles chargés par batch
+const ART_PAGE_SIZE = 10; // ✅ Réduit de 20→10 pour limiter la consommation de données initiale
 let _lastArtDoc = null;   // Curseur pagination
 let _allLoaded  = false;  // Plus d'articles à charger
 
 function startRealtimeSync(){
-  if(unsubscribe) unsubscribe();
+  if(unsubscribe) stopSync();
   _lastArtDoc = null;
   _allLoaded  = false;
 
@@ -4135,7 +4045,7 @@ function startRealtimeSync(){
     loadUserPhotoCache();
   }
 
-  // Charger uniquement les ART_PAGE_SIZE premiers articles + écouter les nouveaux
+  // Charger les articles + écouter les nouveaux en temps réel
   unsubscribe = db.collection("articles").orderBy("date","desc")
     .limit(ART_PAGE_SIZE)
     .onSnapshot(snap=>{
@@ -4156,14 +4066,21 @@ function startRealtimeSync(){
   }
 }
 
+// Stopper le rafraîchissement auto proprement
+function stopSync(){
+  if(unsubscribe){ try{ unsubscribe(); }catch(e){} unsubscribe=null; }
+}
+
 // Charger la page suivante d'articles
 async function loadMoreArts(){
   if(_allLoaded || !_lastArtDoc) return;
   const btn = document.getElementById("loadMoreBtn");
   if(btn){ btn.disabled=true; btn.textContent="⏳ Chargement…"; }
   try{
+    // ✅ select() : mêmes champs légers que fetchArts
     const snap = await db.collection("articles").orderBy("date","desc")
-      .startAfter(_lastArtDoc).limit(ART_PAGE_SIZE).get();
+      .startAfter(_lastArtDoc).limit(ART_PAGE_SIZE)
+      .get();
     const newArts = snap.docs.map(d=>({id:d.id,...d.data()}));
     arts = [...arts, ...newArts];
     _lastArtDoc = snap.docs[snap.docs.length - 1] || _lastArtDoc;
@@ -4191,7 +4108,7 @@ function startBanWatch(){
 
 function forcedLogout(msg){
   if(banWatchUnsub){ banWatchUnsub(); banWatchUnsub=null; }
-  if(unsubscribe){ unsubscribe(); unsubscribe=null; }
+  if(unsubscribe){ stopSync(); unsubscribe=null; }
   role=null; currentUser=null;
   sessionStorage.removeItem("smf_role");
   sessionStorage.removeItem("smf_user");
@@ -4208,29 +4125,48 @@ function forcedLogout(msg){
 // → chaque doc reste sous 1Mo, images en qualité originale
 
 function artMeta(art){
-  // Extraire une miniature très compressée (120px) pour la carte
   const full = {...art};
   const htmlContent = full.html || "";
-  delete full.html; // ne pas stocker le HTML dans les métadonnées
+  delete full.html;
 
-  // Miniature légère pour la carte (extraite du HTML ou des blocks)
+  // ── Extraire miniature AVANT de purger les images des blocks ─────────────────
   let thumbB64 = null;
   if(htmlContent){
     const m = htmlContent.match(/<img[^>]+src="(data:image[^"]+)"/);
     if(m) thumbB64 = m[1];
   }
   if(!thumbB64 && Array.isArray(full.blocks)){
-    // L'image du bloc header peut être un objet {name, dataUrl} (format wizard)
-    // ou directement une chaîne base64 (ancien format)
     let raw = full.blocks[0]?.images?.[0] || full.blocks[0]?.image || null;
     thumbB64 = (raw && typeof raw === "object") ? (raw.dataUrl || null) : raw;
   }
-  // Compresser la miniature à 120px pour la carte
+  // Miniature très compressée (200px, 0.60) pour les cartes de la grille
   if(thumbB64 && typeof thumbB64 === "string" && thumbB64.startsWith("data:")){
-    // On garde la miniature — compressImage() est async donc on la stocke telle quelle
-    // Elle sera déjà compressée car passée par compressImage() à l'upload
-    full.thumb = thumbB64;
+    compressImage(thumbB64, 200, 0.60).then(small => { full.thumb = small; });
   }
+
+  // ── PURGER les images base64 des blocks avant sauvegarde Firestore ────────────
+  // Les images HD complètes sont dans articles_html — inutile de les dupliquer ici
+  if(Array.isArray(full.blocks)){
+    full.blocks = full.blocks.map(b => {
+      const clean = {...b};
+      if(clean.image && typeof clean.image === "object" && clean.image.dataUrl){
+        clean.image = { name: clean.image.name || "" }; // nom seul, sans le data
+      } else if(typeof clean.image === "string" && clean.image.startsWith("data:")){
+        clean.image = null;
+      }
+      if(Array.isArray(clean.images)){
+        clean.images = clean.images.map(img => {
+          if(typeof img === "string" && img.startsWith("data:")) return null;
+          if(img && typeof img === "object" && img.dataUrl) return { name: img.name || "" };
+          return img;
+        }).filter(Boolean);
+      }
+      return clean;
+    });
+  }
+  // pdfData très lourd — déjà dans articles_html, inutile dans les métadonnées
+  delete full.pdfData;
+
   return { meta: full, html: htmlContent };
 }
 
@@ -4238,7 +4174,6 @@ async function fbAdd(art){
   try{
     const ref = db.collection("articles").doc();
     const { meta, html } = artMeta(art);
-    // Écrire métadonnées + HTML en parallèle
     await Promise.all([
       ref.set(meta),
       html ? db.collection("articles_html").doc(ref.id).set({html}) : Promise.resolve()
@@ -4258,7 +4193,7 @@ async function fbUpdate(id, data){
     const ops = [db.collection("articles").doc(id).update(meta)];
     if(html) ops.push(db.collection("articles_html").doc(id).set({html}));
     await Promise.all(ops);
-    invalidateHtmlCache(id); // vider le cache pour forcer rechargement
+    invalidateHtmlCache(id);
     return true;
   }
   catch(e){
@@ -4430,14 +4365,10 @@ function _doRenderGrid(){
     const isBlocks=(primaryCat==="trade"||primaryCat==="tradeinvites"||cats.includes("trade")||cats.includes("tradeinvites"))&&Array.isArray(a.blocks)&&a.blocks.length>0;
     const isAdminTrade = cats.includes("trade") && role==="admin";
     // Thumbnail
-    let thumbSrc=null;
-    if(isBlocks){ thumbSrc=(a.blocks[0].images&&a.blocks[0].images[0])||a.blocks[0].image||null; }
-    else if(a.thumb){ thumbSrc=a.thumb; } // miniature stockée dans métadonnées (nouvelle archi)
-    else if(a.images&&a.images.length){ thumbSrc=a.images[0]; }
-    else if(a.type==="html"&&a.html){ // fallback anciens articles
-      const m=a.html.match(/<img[^>]+src="(data:image[^"]+)"/);
-      if(m) thumbSrc=m[1];
-    }
+    // ✅ Uniquement la miniature compressée (200px) — jamais les images HD des blocks
+    let thumbSrc = a.thumb || null;
+    // Fallback pour anciens articles sans miniature pré-calculée
+    if(!thumbSrc && a.images && a.images.length) thumbSrc = a.images[0];
     const thumb=thumbSrc?`<img class="card-thumb" src="${thumbSrc}" alt="" loading="lazy" decoding="async">`:"";
     const authorName=a.submittedBy||"";
     let blocksBadge="", addBtn="";
@@ -4455,7 +4386,7 @@ function _doRenderGrid(){
     const wsBtn = isAdminWS ? `<button class="btn-ws-continue" onclick="openWsContinue(event,'${a.id}')" title="Ajouter une section à cet article WS">✏ Continuer</button>` : "";
     const extraBadges = extraCats.map(c=>`<span class="cat-badge-extra ${c}">${CAT_LABEL[c]||c}</span>`).join("");
     const editTagBtn = role==="admin" ? `<button class="btn-edit-tag" onclick="openEditTags(event,'${a.id}')" title="Modifier les tags">✏️</button>` : "";
-    return `<div class="article-card" data-cat="${primaryCat}" onmouseenter="prefetchArt('${a.id}')" onclick="openArt('${a.id}')">
+    return `<div class="article-card" data-cat="${primaryCat}" onclick="openArt('${a.id}')">
       <div class="card-body">
         <div class="card-left">
           <div class="card-top">
@@ -4469,7 +4400,7 @@ function _doRenderGrid(){
           <div class="card-desc">${a.desc||""}</div>
         </div>
         <div class="card-right${thumbSrc?"":" no-img"}">
-          ${thumbSrc?`<img src="${thumbSrc}" alt="" loading="lazy">`:""}
+          ${thumbSrc?`<img src="${thumbSrc}" alt="" loading="lazy" decoding="async">`:""}
         </div>
       </div>
       <div class="card-footer">
@@ -4700,32 +4631,9 @@ async function openArt(id){
 }
 
 // Précharge le HTML d'un article en cache dès que l'utilisateur survole la carte
-function prefetchArt(id){
-  const a = arts.find(x=>x.id===id);
-  if(!a || _htmlCache.has(id)) return;
-  if(Array.isArray(a.blocks) && a.blocks.length > 0){
-    // Articles avec blocs : pré-générer le HTML immédiatement (CPU local, pas de réseau)
-    const primaryCat = artCats(a)[0];
-    const fdate = fmtD(a.date, a.time||"");
-    const by = a.submittedBy || "Admin";
-    let html = "";
-    try{
-      if(primaryCat === "tradeinvites") html = tplTradeInvites(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
-      else if(primaryCat === "trade")  html = tplTrade(a.titre, a.desc||"", fdate, a.paire||"", a.blocks, by);
-      else {
-        const acc = CAT_COLORS[primaryCat]||"#00e5a0";
-        const catLbl = CAT_LABEL[primaryCat]||primaryCat;
-        const old = wizCat; wizCat = primaryCat;
-        html = generateArticleTemplate(a.titre, a.desc||"", catLbl, acc, fdate, a.paire||"", a.blocks, by, a.pages||null);
-        wizCat = old;
-      }
-      if(html) _htmlCache.set(id, html);
-    }catch(e){}
-  } else {
-    // Articles sans blocs : précharger depuis Firestore (réseau)
-    fbGetHtml(id); // fire-and-forget
-  }
-}
+// prefetchArt désactivé — le HTML est chargé UNIQUEMENT au clic (openArt)
+// Cela évite de télécharger tous les articles dès le chargement de la page
+function prefetchArt(id){ /* désactivé volontairement */ }
 
 // ── WIZARD STATE ─────────────────────────────────────────────────────────────
 // Steps: 1=Catégorie, 2=Config(mode+date), 3+=Blocs (step 3 = bloc 0, step 4 = bloc 1, ...)
