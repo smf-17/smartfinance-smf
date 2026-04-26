@@ -2087,6 +2087,12 @@ async function _openArtInReader(id, pushToHistory = true){
 
   if(!html){ toast("⚠ Contenu introuvable", true); return; }
 
+  // ── PATCH FONT : forcer Playfair Display sur h1 (compatibilité anciens articles stockés) ──
+  html = html.replace(
+    '</head>',
+    `<style>h1{font-family:'Playfair Display',serif !important;font-size:clamp(2rem,4.5vw,3rem) !important;letter-spacing:-.01em !important;font-weight:800 !important;}</style></head>`
+  );
+
   // Révoquer l'ancien blob
   if(_artReaderBlobUrl){ URL.revokeObjectURL(_artReaderBlobUrl); _artReaderBlobUrl = null; }
 
@@ -4841,6 +4847,12 @@ async function openArt(id){
 
   if(!html){ toast("⚠ Contenu introuvable", true); return; }
 
+  // ── PATCH FONT : forcer Playfair Display sur h1 (compatibilité anciens articles stockés) ──
+  html = html.replace(
+    '</head>',
+    `<style>h1{font-family:'Playfair Display',serif !important;font-size:clamp(2rem,4.5vw,3rem) !important;letter-spacing:-.01em !important;font-weight:800 !important;}</style></head>`
+  );
+
   const blob = new Blob([html], {type:"text/html"});
   window.open(URL.createObjectURL(blob), "_blank");
 }
@@ -6508,7 +6520,7 @@ ${sharedCSS(acc,"0.02")}
 ${PARA_CSS}
 
 .topbar{border-bottom:3px solid ${acc} !important;gap:0 !important;}
-h1{font-family:'Space Mono',monospace;font-size:clamp(1.6rem,3.8vw,2.4rem);letter-spacing:.02em;}
+h1{font-family:'Playfair Display',serif !important;font-size:clamp(2rem,4.5vw,3rem) !important;letter-spacing:-.01em !important;}
 
 /* ── TABS dans topbar ── */
 .ws-tabs-inline{
@@ -6621,7 +6633,7 @@ function tplWeekAhead(titre,desc,fdate,paire,hb,paraBlocks,by){
 <style>
 ${sharedCSS(acc,"0.02")}
 /* Week Ahead spécifique */
-h1{font-family:'Space Mono',monospace !important;font-size:clamp(1.6rem,3.8vw,2.5rem) !important;letter-spacing:.02em !important;}
+h1{font-family:'Playfair Display',serif !important;font-size:clamp(2rem,4.5vw,3rem) !important;letter-spacing:-.01em !important;}
 .topbar{border-bottom:3px solid ${acc} !important;}
 /* Grande initiale sur 1er paragraphe */
 .para-block .para-title::first-letter{
