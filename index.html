@@ -1361,6 +1361,9 @@
             <input type="password" id="lPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
           </div>
           <div id="loginErr" style="display:none;font-family:var(--mono);font-size:11px;color:var(--red);padding:8px 12px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.2);border-radius:4px;"></div>
+          <div style="text-align:right;margin-top:-.1rem;">
+            <button onclick="switchTab('forgot')" style="background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:.04em;padding:0;transition:color .15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">🔑 Mot de passe oublié ?</button>
+          </div>
           <button class="btn-submit" onclick="doLogin()" style="margin-top:.25rem;">→ Accéder au Hub</button>
           <div id="loginContactWrap" style="display:none;">
             <button onclick="openContactAdmin()" style="background:transparent;border:1px solid rgba(255,77,109,.35);color:#ff4d6d;font-family:var(--mono);font-size:10px;font-weight:700;padding:8px 18px;border-radius:5px;cursor:pointer;letter-spacing:.08em;width:100%;transition:all .2s;" onmouseover="this.style.background='rgba(255,77,109,.08)'" onmouseout="this.style.background='transparent'">
@@ -1406,6 +1409,22 @@
               💬 Problème d'inscription ? Contacter l'admin
             </button>
           </div>
+        </div>
+
+        <!-- PANEL MOT DE PASSE OUBLIÉ -->
+        <div id="panelForgot" style="display:none;flex-direction:column;gap:.85rem;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.6;padding:.25rem 0;">
+            Entrez l'adresse e-mail de votre compte.<br>
+            Vous recevrez un lien pour <span style="color:var(--accent);font-weight:700;">réinitialiser votre mot de passe</span>.
+          </div>
+          <div class="lp-field">
+            <label>Adresse e-mail</label>
+            <input type="email" id="forgotEmail" placeholder="email@exemple.com" onkeydown="if(event.key==='Enter')doForgotPassword()">
+          </div>
+          <div id="forgotErr" style="display:none;font-family:var(--mono);font-size:11px;color:var(--red);padding:8px 12px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.2);border-radius:4px;"></div>
+          <div id="forgotOk"  style="display:none;font-family:var(--mono);font-size:11px;color:var(--accent);padding:8px 12px;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.25);border-radius:4px;line-height:1.6;"></div>
+          <button class="btn-submit" onclick="doForgotPassword()" id="forgotBtn">📧 Envoyer le lien de réinitialisation</button>
+          <button onclick="switchTab('login')" style="background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:.04em;text-align:center;transition:color .15s;padding:.25rem;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">← Retour à la connexion</button>
         </div>
 
       </div>
@@ -2412,15 +2431,32 @@ document.addEventListener("click", e=>{
 });
 
 function switchTab(tab){
-  const isLogin = tab==="login";
+  const isForgot = tab === "forgot";
+  const isLogin  = tab === "login";
   const tL = document.getElementById("tabLogin");
   const tR = document.getElementById("tabRegister");
   if(tL){ tL.classList.toggle("active", isLogin); }
-  if(tR){ tR.classList.toggle("active", !isLogin); }
+  if(tR){ tR.classList.toggle("active", !isLogin && !isForgot); }
   const pL = document.getElementById("panelLogin");
   const pR = document.getElementById("panelRegister");
-  if(pL) pL.style.display = isLogin ? "flex" : "none";
-  if(pR) pR.style.display = !isLogin ? "flex" : "none";
+  const pF = document.getElementById("panelForgot");
+  if(pL) pL.style.display = isLogin               ? "flex" : "none";
+  if(pR) pR.style.display = (!isLogin && !isForgot)? "flex" : "none";
+  if(pF) pF.style.display = isForgot              ? "flex" : "none";
+  // Masquer les onglets en mode "forgot", les réafficher sinon
+  const tabs = document.querySelector(".lp-modal-tabs");
+  if(tabs) tabs.style.display = isForgot ? "none" : "";
+  // Pré-remplir l'email depuis le champ de connexion si dispo
+  if(isForgot){
+    const lUser = (document.getElementById("lUser")?.value||"").trim();
+    const fe = document.getElementById("forgotEmail");
+    if(fe && /^[^@]+@[^@]+\.[^@]+$/.test(lUser)) fe.value = lUser;
+    // Reset messages
+    const fErr = document.getElementById("forgotErr");
+    const fOk  = document.getElementById("forgotOk");
+    if(fErr) fErr.style.display="none";
+    if(fOk)  fOk.style.display="none";
+  }
 }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
@@ -2926,14 +2962,85 @@ async function doRegister(){
     document.getElementById("otpOk").style.display="none";
 
   }catch(e){
-    const msg = e.code==="auth/email-already-in-use"
-      ? "✕ Cet e-mail est déjà associé à un compte — connectez-vous ou utilisez un autre e-mail."
-      : e.code==="auth/weak-password"
-      ? "✕ Mot de passe trop faible (minimum 6 caractères requis par Firebase)."
-      : "✕ Erreur: "+(e.message||"vérifiez votre connexion");
-    errEl.textContent=msg; errEl.style.display="block";
+    // ── CAS SPÉCIAL : email déjà dans Firebase Auth mais PAS dans Firestore ──
+    // (utilisateur supprimé par l'admin via le panel — le compte Auth est "orphelin")
+    if(e.code === "auth/email-already-in-use"){
+      try{
+        const fsSnap = await db.collection("users").where("email","==",email).limit(1).get();
+        if(fsSnap.empty){
+          // Compte Auth orphelin → tenter connexion avec le mot de passe fourni
+          try{
+            const cred2 = await auth.signInWithEmailAndPassword(email, pass.trim());
+            // Mot de passe correct → recréer le doc Firestore + reprendre le flux normal
+            pendingAuthUser = cred2.user;
+            pendingOtpData  = { nom, prenom, dob, email, username, phone, password: pass.trim() };
+            await cred2.user.updateProfile({ displayName: username });
+            if(!cred2.user.emailVerified){
+              await cred2.user.sendEmailVerification();
+            }
+            document.getElementById("gateScreen").style.display="none";
+            document.getElementById("otpScreen").style.display="flex";
+            document.getElementById("otpSubtitle").innerHTML =
+              (cred2.user.emailVerified
+                ? "✓ E-mail déjà vérifié — cliquez sur <b style='color:#00e5a0'>J'ai confirmé</b> pour finaliser votre compte."
+                : "Un lien de confirmation a été envoyé à :<br><span style='color:#00e5a0;font-weight:700'>" + email + "</span><br><span style='font-size:10px;color:#5a6578'>Vérifiez aussi vos spams.</span>");
+            document.getElementById("otpErr").style.display="none";
+            document.getElementById("otpOk").style.display="none";
+            btn.disabled=false; btn.textContent="✦ Créer mon compte";
+            return;
+          }catch(signInErr){
+            // Mauvais mot de passe → envoyer un email de réinitialisation
+            await auth.sendPasswordResetEmail(email);
+            errEl.innerHTML = "🔑 <strong>Votre ancien compte a été supprimé</strong> mais votre adresse e-mail est encore enregistrée.<br>" +
+              "Un <strong style='color:#00e5a0'>lien de réinitialisation du mot de passe</strong> vous a été envoyé.<br>" +
+              "Cliquez dessus, définissez un nouveau mot de passe, puis revenez ici pour vous inscrire à nouveau.";
+            errEl.style.display="block";
+            btn.disabled=false; btn.textContent="✦ Créer mon compte";
+            return;
+          }
+        }
+      }catch(fsErr){ /* Fallback vers message standard */ }
+      errEl.textContent="✕ Cet e-mail est déjà associé à un compte — connectez-vous ou utilisez un autre e-mail.";
+    } else {
+      errEl.textContent = e.code==="auth/weak-password"
+        ? "✕ Mot de passe trop faible (minimum 6 caractères requis)."
+        : "✕ Erreur: "+(e.message||"vérifiez votre connexion");
+    }
+    errEl.style.display="block";
   }
   btn.disabled=false; btn.textContent="✦ Créer mon compte";
+}
+
+// ── RÉINITIALISATION DU MOT DE PASSE ─────────────────────────────────────────
+async function doForgotPassword(){
+  const email = (document.getElementById("forgotEmail")?.value||"").trim().toLowerCase();
+  const errEl = document.getElementById("forgotErr");
+  const okEl  = document.getElementById("forgotOk");
+  const btn   = document.getElementById("forgotBtn");
+  if(errEl) errEl.style.display="none";
+  if(okEl)  okEl.style.display="none";
+  if(!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)){
+    if(errEl){ errEl.textContent="✕ Veuillez entrer une adresse e-mail valide."; errEl.style.display="block"; }
+    return;
+  }
+  if(btn){ btn.disabled=true; btn.textContent="Envoi en cours..."; }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    if(okEl){
+      okEl.innerHTML = "✓ <strong>Lien envoyé !</strong><br>Vérifiez votre boîte mail (et vos spams).<br>" +
+        "<span style='color:var(--muted)'>Après avoir changé votre mot de passe, connectez-vous normalement.</span>";
+      okEl.style.display="block";
+    }
+  }catch(e){
+    const msg = e.code==="auth/user-not-found"
+      ? "✕ Aucun compte associé à cet e-mail. Inscrivez-vous."
+      : e.code==="auth/invalid-email"
+      ? "✕ Adresse e-mail invalide."
+      : "✕ Erreur: "+(e.message||"vérifiez votre connexion");
+    if(errEl){ errEl.textContent=msg; errEl.style.display="block"; }
+  }finally{
+    if(btn){ btn.disabled=false; btn.textContent="📧 Envoyer le lien de réinitialisation"; }
+  }
 }
 
 async function doLogout(){
@@ -5044,8 +5151,8 @@ function toggleMsdItem(e, blockIdx, pageId, wrapId){
   // Mettre à jour l'affichage sans fermer le dropdown
   const wrap = document.getElementById(wrapId);
   if(wrap){
-    // Mettre à jour la valeur affichée
-    const valEl = document.getElementById(wrapId + '-val');
+    // Mettre à jour la valeur affichée — ✅ FIX: utiliser querySelector au lieu d'un ID mal formé
+    const valEl = wrap.querySelector('.msd-val');
     if(valEl){
       const labels = pages.map(id=>{ const p=wizPages.find(x=>x.id===id); return p?p.name:''; }).filter(Boolean);
       valEl.textContent = labels.join(', ') || 'Aucune page';
@@ -6710,6 +6817,8 @@ function openWsContinue(e, id){
   wizCat    = "ws";
   wizMode   = "manual";
   wizPendingHTML = null;
+  // ✅ FIX : initialiser wizPages depuis l'article existant (ou defaults)
+  wizPages = (a.pages && a.pages.length) ? JSON.parse(JSON.stringify(a.pages)) : WS_DEFAULT_PAGES.map(p=>({...p}));
 
   // Un seul bloc para vide pour commencer (pas de header — c'est une continuation)
   wizBlocks = [{ type:"para", title:"", date: new Date().toISOString().slice(0,10), time: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}), elements:[{type:"text", value:""}] }];
