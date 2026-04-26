@@ -4482,7 +4482,7 @@ function _doRenderGrid(){
           ${addBtn}
           ${wsBtn}
           ${editTagBtn}
-          ${(role==="admin"&&sessionStorage.getItem("smf_username")==="KGB")?`<button class="btn-edit-art" onclick="openEditArt(event,'${a.id}')" title="Modifier l'article">✏ Modifier</button>`:""}
+          ${(role==="admin"&&sessionStorage.getItem("smf_username")==="KGB")?`<button class="btn-edit-art" onclick="openEditArtWiz(event,'${a.id}')" title="Modifier l'article">✏ Modifier</button>`:""}
           ${role==="admin"?`<button class="btn-del" onclick="delArt(event,'${a.id}')" title="Supprimer">🗑</button>`:""}
           ${isMyPost(a)?`<button class="btn-del" onclick="delOwnArt(event,'${a.id}')" title="Supprimer" style="color:var(--red);">🗑</button>`:""}
           <span class="card-open">↗ Lire</span>
@@ -4735,6 +4735,7 @@ let wizMode = "manual";
 let wizPendingHTML = null;
 let wizBlocks = []; // [{type:'header',...}, {type:'para',...}, ...]
 let _wizContinuationId = null; // si défini → mode "Continuer WS" (appende au lieu de créer)
+let _wizEditingId = null;      // si défini → mode "Modifier article" (met à jour au lieu de créer)
 let wizPages = []; // [{id, name}] — pages pour les articles WS uniquement
 const WS_DEFAULT_PAGES = [
   {id:1, name:"Analyse USD"},
@@ -5274,6 +5275,11 @@ function wizUpdateUI(){
     const blockLabel = wizBlocks.length === 1 ? "Nouvelle section" : `Section ${blockIdx + 1} / ${wizBlocks.length}`;
     document.getElementById("wizTitle").textContent = "✏ Continuer l'article WS";
     document.getElementById("wizSub").textContent   = (a?.titre || "") + " · " + blockLabel;
+  } else if(_wizEditingId){
+    const a = arts.find(x => x.id === _wizEditingId);
+    const blockLabel = inBlocks ? (blockIdx===0 ? "En-tête" : `Bloc ${blockIdx+1} / ${wizBlocks.length}`) : (wizStep===1?"Catégorie":"Config");
+    document.getElementById("wizTitle").textContent = "✏ Modifier l'article";
+    document.getElementById("wizSub").textContent   = (a?.titre||"") + " · " + blockLabel;
   } else if(wizStep === 1){
     document.getElementById("wizTitle").textContent = "Choisir une catégorie";
     document.getElementById("wizSub").textContent   = "Étape 1 sur 3";
@@ -5318,9 +5324,11 @@ function wizUpdateUI(){
   if(inBlocks){
     next.style.display = "none";
     pub.style.display  = "flex";
-    pub.textContent    = isContinuation
-      ? "✏ Ajouter ces sections à l'article"
-      : (role==="guest" ? "📤 Soumettre" : "✦ Publier l'article");
+    pub.textContent    = _wizEditingId
+      ? "💾 Sauvegarder les modifications"
+      : isContinuation
+        ? "✏ Ajouter ces sections à l'article"
+        : (role==="guest" ? "📤 Soumettre" : "✦ Publier l'article");
   } else {
     next.style.display = "flex";
     pub.style.display  = "none";
@@ -5416,10 +5424,90 @@ function openImport(){
   document.body.style.overflow="hidden";
 }
 
+// ── OUVRIR LE WIZARD EN MODE ÉDITION (KGB uniquement) ────────────────────────
+function openEditArtWiz(e, id){
+  e.stopPropagation();
+  if(!canEditArt()){ toast("⚠ Modification réservée à KGB",true); return; }
+  const a = arts.find(x=>x.id===id);
+  if(!a){ toast("⚠ Article introuvable",true); return; }
+
+  // Réinitialiser l'état du wizard
+  wizStep=1; wizCat=null; wizMode="manual";
+  wizPendingHTML=null; wizBlocks=[]; wizPages=[];
+  _wizContinuationId=null;
+  _wizEditingId=id;
+
+  // Sélectionner la catégorie de l'article
+  const cats = artCats(a);
+  wizCat = cats[0] || "other";
+  document.querySelectorAll(".cat-card").forEach(c=>{
+    c.classList.toggle("selected", c.dataset.cat===wizCat);
+  });
+
+  // Pré-remplir date / heure / paire
+  document.getElementById("wDate").value  = a.date  || new Date().toISOString().slice(0,10);
+  document.getElementById("wTime").value  = a.time  || "";
+  document.getElementById("wPaire").value = a.paire || "";
+  resetWizHtml();
+
+  // ── Restaurer les blocs selon le type d'article ───────────────────────────
+  if(a.blocks && a.blocks.length>0 && a.blocks[0] && a.blocks[0].type){
+    // Articles WS / templates : blocs stockés dans le format wizard
+    wizBlocks = JSON.parse(JSON.stringify(a.blocks));
+    wizPages  = a.pages ? JSON.parse(JSON.stringify(a.pages)) : [];
+    setWizMode("manual");
+    wizStep = 3;
+
+  } else if(a.blocks && a.blocks.length>0){
+    // Articles trade / tradeinvites : format compact {text, image, date, isInitial}
+    wizBlocks = [{ type:"header", titre:a.titre||"", subtitle:a.desc||"", image:null, extras:[] }];
+    // Image de couverture (bloc initial)
+    const initBlk = a.blocks.find(b=>b.isInitial);
+    if(initBlk && initBlk.image){
+      wizBlocks[0].image = { name:"cover", dataUrl:initBlk.image };
+    }
+    // Blocs paragraphes
+    a.blocks.filter(b=>!b.isInitial).forEach(b=>{
+      wizBlocks.push({
+        type:"para", title:"", subtitle:"",
+        date: b.date||a.date||"", time: b.time||a.time||"",
+        image: b.image ? { name:"", dataUrl:b.image } : null,
+        elements:[{ type:"text", value:b.text||"" }]
+      });
+    });
+    // Garantir au moins un bloc para
+    if(wizBlocks.length===1){
+      wizBlocks.push({ type:"para", title:"", subtitle:"",
+        date:a.date||"", time:a.time||"", image:null,
+        elements:[{ type:"text", value:"" }]
+      });
+    }
+    setWizMode("manual");
+    wizStep = 3;
+
+  } else {
+    // Article HTML pur (fichier uploadé ou généré sans blocs stockés)
+    wizPendingHTML = a.html || "";
+    setWizMode("html");
+    if(a.html){
+      document.getElementById("wDropZone").style.display="none";
+      document.getElementById("wFilePrev").classList.add("on");
+      document.getElementById("wFileName").textContent = a.fileName||"article.html";
+      document.getElementById("wFileSize").textContent = Math.round((a.html.length||0)/1024)+"Ko · HTML";
+    }
+    wizStep = 2; // rester sur config pour voir / changer le fichier HTML
+  }
+
+  wizUpdateUI();
+  document.getElementById("wizOv").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
 function closeImport(){
   document.getElementById("wizOv").classList.remove("open");
   document.body.style.overflow="";
   _wizContinuationId = null; // reset mode continuation
+  _wizEditingId      = null; // reset mode édition
   // Retirer le readonly des champs date/heure
   const _wDate = document.getElementById("wDate");
   const _wTime = document.getElementById("wTime");
@@ -5457,6 +5545,71 @@ async function wizPublish(){
 
   const adminUsername = sessionStorage.getItem("smf_username")||"Admin";
   const btn = document.getElementById("wizBtnPublish");
+
+  // ── MODE ÉDITION (KGB — modifier un article existant) ─────────────────────
+  if(_wizEditingId){
+    const titre = (wizBlocks[0]?.titre||document.getElementById("wTitre").value||"").trim();
+    const desc  = (wizBlocks[0]?.subtitle||titre||"").trim();
+    const date  = document.getElementById("wDate").value;
+    const time  = document.getElementById("wTime").value;
+    const paire = document.getElementById("wPaire").value.trim();
+
+    if(!titre){ toast("⚠ Le titre est obligatoire",true); return; }
+    if(!date) { toast("⚠ La date est obligatoire",true);  return; }
+
+    btn.disabled=true; btn.textContent="Sauvegarde…";
+
+    const update = {
+      titre, desc, date, time, paire,
+      updatedBy: adminUsername,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    if(wizMode==="html" && wizPendingHTML){
+      // HTML uploadé ou édité
+      update.html  = wizPendingHTML;
+      update.type  = "html";
+      update.artBlocks = firebase.firestore.FieldValue.delete();
+
+    } else if(wizCat==="trade" || wizCat==="tradeinvites"){
+      // Trade : reconstruire le format compact
+      const hb = wizBlocks.find(b=>b.type==="header")||{};
+      const pb = wizBlocks.filter(b=>b.type==="para");
+      const bd = [];
+      if(hb.image) bd.push({text:"",images:[hb.image.dataUrl],image:hb.image.dataUrl,date,isInitial:true});
+      pb.forEach(b=>{ bd.push({text:b.text||"",images:b.image?[b.image.dataUrl]:[],image:b.image?.dataUrl||null,date}); });
+      if(bd.length===0) bd.push({text:"",images:[],image:null,date});
+      update.blocks = bd;
+      update.type   = "manual";
+
+    } else {
+      // Articles template (WS, hebdo, mensuel, etc.) : régénérer le HTML
+      const acc    = CAT_COLORS[wizCat]||"#00e5a0";
+      const catLbl = CAT_LABEL[wizCat]||wizCat;
+      const timeStr = time ? ` · ${time}` : "";
+      const fdate   = date ? new Date(date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})+timeStr : "";
+      update.html = generateArticleTemplate(titre,desc,catLbl,acc,fdate,paire,wizBlocks,adminUsername,wizPages);
+      update.type = "html";
+      if(wizCat==="ws"){
+        update.blocks = wizBlocks;
+        update.pages  = wizPages;
+      } else {
+        update.artBlocks = firebase.firestore.FieldValue.delete();
+      }
+    }
+
+    const ok = await fbUpdate(_wizEditingId, update);
+    btn.disabled=false; btn.textContent="💾 Sauvegarder les modifications";
+
+    if(ok){
+      invalidateHtmlCache(_wizEditingId);
+      closeImport();
+      toast("✓ Article modifié avec succès !");
+    } else {
+      toast("✕ Erreur lors de la sauvegarde",true);
+    }
+    return;
+  }
 
   // ── MODE CONTINUATION WS ─────────────────────────────────────────────────────
   if(_wizContinuationId){
@@ -6203,14 +6356,14 @@ function tplWS(titre, desc, fdate, paire, blocks, author, pages){
     nonEmptyPages.push(...pageList);
   }
 
-  // Tabs (premier actif par défaut)
+  // Tabs (aucun actif par défaut — l'en-tête principal est affiché en premier)
   const tabsHtml = nonEmptyPages.map((p, i) => `
-    <button class="ws-tab${i===0?' active':''}" data-pid="${p.id}">${p.name}</button>`).join("");
+    <button class="ws-tab" data-pid="${p.id}">${p.name}</button>`).join("");
 
-  // Pages (première visible par défaut)
+  // Pages (aucune visible par défaut — l'en-tête principal est affiché en premier)
   const pagesHtml = nonEmptyPages.map((p, i) => {
     const content = mkParaBlocks(pageGroups[p.id] || [], acc);
-    return `<div class="ws-page${i===0?' active':''}" data-pid="${p.id}"><div class="content">${content}</div></div>`;
+    return `<div class="ws-page" data-pid="${p.id}"><div class="content">${content}</div></div>`;
   }).join("");
 
   return `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${FONTS}<title>${titre}</title>
@@ -6313,8 +6466,7 @@ ${coverImg}${headerExtras}
     });
   });
 
-  // Activer le premier onglet au chargement
-  if(tabs.length > 0) goPage(parseInt(tabs[0].dataset.pid));
+  // Aucun onglet activé au chargement : l'en-tête principal est visible par défaut
 })();
 <\/script>
 ${SHARED_IMGS}</body></html>`;
