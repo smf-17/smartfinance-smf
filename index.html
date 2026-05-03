@@ -1083,11 +1083,11 @@
           <div style="display:grid;grid-template-columns:1fr 120px 1fr;gap:.6rem;align-items:end;">
             <div class="wiz-field" style="margin-bottom:0;">
               <label>Date *</label>
-              <input class="wiz-input" type="date" id="wDate">
+              <input class="wiz-input" type="date" id="wDate" oninput="applySessionDateToAllBlocks()">
             </div>
             <div class="wiz-field" style="margin-bottom:0;">
               <label>Heure</label>
-              <input class="wiz-input" type="time" id="wTime" placeholder="09:00">
+              <input class="wiz-input" type="time" id="wTime" placeholder="09:00" oninput="applySessionDateToAllBlocks()">
             </div>
             <div class="wiz-field" style="margin-bottom:0;">
               <label>Paire / Instrument</label>
@@ -2082,6 +2082,133 @@ async function _openArtInReader(id, pushToHistory = true){
     '</head>',
     `<style>h1{font-family:'Playfair Display',serif !important;font-size:clamp(2rem,4.5vw,3rem) !important;letter-spacing:-.01em !important;font-weight:800 !important;}</style></head>`
   );
+
+  // ── PATCH TABS : transforme les onglets WS en sidebar verticale gauche ──
+  if(html.includes('ws-tabs-inline')){
+    const tabPatchScript = `
+<style>
+body{display:flex;flex-direction:column;min-height:100vh;margin:0;}
+.ws-layout-p{display:flex;align-items:flex-start;flex:1;}
+.ws-sidenav-p{
+  width:168px;flex-shrink:0;
+  position:sticky;top:0;max-height:100vh;
+  background:rgba(2,4,10,.97);
+  border-right:1px solid rgba(247,183,49,.18);
+  display:flex;flex-direction:column;
+  overflow-y:auto;scrollbar-width:none;
+  z-index:80;
+}
+.ws-sidenav-p::-webkit-scrollbar{display:none;}
+.ws-main-p{flex:1;min-width:0;}
+.ws-home-p{
+  display:flex;align-items:center;gap:.55rem;
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  color:#5a6578;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;border:none;
+  border-bottom:1px solid rgba(247,183,49,.12);
+  padding:.85rem 1rem;cursor:pointer;width:100%;text-align:left;
+  transition:color .18s,background .18s;
+}
+.ws-home-p:hover,.ws-home-p.active{color:#f7b731;background:rgba(247,183,49,.05);}
+.ws-home-p .hex-p{
+  width:18px;height:18px;flex-shrink:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:7px;font-weight:900;color:#000;
+  clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);
+}
+.ws-sidenav-p .ws-tab{
+  background:transparent;border:none;
+  border-right:2px solid transparent;
+  color:#5a6578;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  padding:.8rem 1rem;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;
+  white-space:normal;word-break:break-word;text-align:left;
+  transition:color .18s,border-color .18s,background .18s;
+  line-height:1.4;width:100%;
+}
+.ws-sidenav-p .ws-tab:hover{color:#d0dae8;background:rgba(247,183,49,.04);border-right-color:rgba(247,183,49,.35);}
+.ws-sidenav-p .ws-tab.active{color:#f7b731;border-right-color:#f7b731;background:rgba(247,183,49,.07);}
+</style>
+<script>
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
+    var topbar  = document.querySelector('.topbar');
+    var tabsDiv = topbar && topbar.querySelector('.ws-tabs-inline');
+    if(!topbar || !tabsDiv) return;
+
+    // Couleur accent
+    var acc = '#f7b731';
+    try{
+      var bc = window.getComputedStyle(topbar).borderBottomColor;
+      if(bc && bc !== 'rgba(0, 0, 0, 0)') acc = bc;
+    }catch(e){}
+
+    // Nettoyer la topbar
+    topbar.removeChild(tabsDiv);
+    topbar.style.borderBottom = '1px solid rgba(247,183,49,.18)';
+
+    // Créer la sidenav
+    var sidenav = document.createElement('nav');
+    sidenav.className = 'ws-sidenav-p';
+
+    // Bouton Accueil
+    var homeBtn = document.createElement('button');
+    homeBtn.className = 'ws-home-p active';
+    homeBtn.innerHTML = '<span class="hex-p" style="background:'+acc+';">S</span><span>Accueil</span>';
+    homeBtn.addEventListener('click', function(){
+      if(window.wsGoMain) window.wsGoMain();
+      homeBtn.classList.add('active');
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+    });
+    sidenav.appendChild(homeBtn);
+
+    // Déplacer les onglets dans la sidenav
+    var tabs = Array.prototype.slice.call(tabsDiv.querySelectorAll('.ws-tab'));
+    tabs.forEach(function(t){
+      t.style.cssText = '';
+      var origClick = t.onclick;
+      t.addEventListener('click', function(){
+        homeBtn.classList.remove('active');
+      });
+      sidenav.appendChild(t);
+    });
+
+    // Créer le layout flex
+    var layout  = document.createElement('div');
+    layout.className = 'ws-layout-p';
+    var mainDiv = document.createElement('div');
+    mainDiv.className = 'ws-main-p';
+
+    // Déplacer tout le contenu après la topbar dans ws-main-p
+    var allChildren = Array.prototype.slice.call(document.body.children);
+    allChildren.forEach(function(c){
+      if(c !== topbar) mainDiv.appendChild(c);
+    });
+
+    layout.appendChild(sidenav);
+    layout.appendChild(mainDiv);
+    document.body.appendChild(layout);
+
+    // Aligner sticky top avec la hauteur réelle de la topbar
+    function adjust(){
+      var h = topbar.getBoundingClientRect().height;
+      sidenav.style.top       = h + 'px';
+      sidenav.style.maxHeight = 'calc(100vh - ' + h + 'px)';
+    }
+    adjust();
+    window.addEventListener('resize', adjust);
+
+    // Patcher wsGoMain pour restaurer le homeBtn actif
+    var origGoMain = window.wsGoMain;
+    window.wsGoMain = function(){
+      if(origGoMain) origGoMain();
+      homeBtn.classList.add('active');
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+    };
+  });
+})();
+<\/script>`;
+    html = html.replace('</head>', tabPatchScript + '</head>');
+  }
 
   // Révoquer l'ancien blob
   if(_artReaderBlobUrl){ URL.revokeObjectURL(_artReaderBlobUrl); _artReaderBlobUrl = null; }
@@ -4971,15 +5098,20 @@ function initBlocks(){
 }
 
 function addParaBlock(){
-  const now = new Date();
+  // ✅ Date de session : utilise wDate/wTime (commune à tous les blocs)
+  const sessionDate = document.getElementById("wDate")?.value || new Date().toISOString().slice(0,10);
+  const sessionTime = document.getElementById("wTime")?.value || "";
   const newBlock = {
     type:"para", title:"", subtitle:"",
-    date: now.toISOString().slice(0,10),
-    time: now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
+    date: sessionDate,
+    time: sessionTime,
     elements:[{type:"text",value:""}]
   };
-  // Associer au page active
-  if(wizPages.length > 0 && wizActivePage >= 0 && wizPages[wizActivePage]){
+  // ✅ FIX : Page principale (wizActivePage === -1) → showInMain:true
+  if(wizActivePage === -1){
+    newBlock.showInMain = true;
+    newBlock.pages = [];
+  } else if(wizPages.length > 0 && wizActivePage >= 0 && wizPages[wizActivePage]){
     newBlock.pages = [wizPages[wizActivePage].id];
   } else {
     newBlock.pages = [];
@@ -5080,6 +5212,16 @@ function syncBlockParaSubtitle(idx, val) { if(wizBlocks[idx]) wizBlocks[idx].sub
 function syncBlockShowInMain(idx, val)   { if(wizBlocks[idx]) wizBlocks[idx].showInMain = val; schedulePreview(); }
 function syncBlockDate(idx, val)       { if(wizBlocks[idx]) wizBlocks[idx].date  = val;    schedulePreview(); }
 function syncBlockTime(idx, val)       { if(wizBlocks[idx]) wizBlocks[idx].time  = val;    schedulePreview(); }
+
+// ✅ Date de session — applique wDate/wTime à tous les blocs para du wizard
+function applySessionDateToAllBlocks(){
+  const d = document.getElementById("wDate")?.value  || "";
+  const t = document.getElementById("wTime")?.value  || "";
+  wizBlocks.forEach(b => {
+    if(b.type === "para"){ b.date = d; b.time = t; }
+  });
+  schedulePreview();
+}
 function syncBlockSubtitle(val)        { if(wizBlocks[0])   wizBlocks[0].subtitle = val;   schedulePreview(); }
 function syncBlockTitre(val){
   if(wizBlocks[0]) wizBlocks[0].titre = val;
@@ -5300,6 +5442,62 @@ function renderBlocks(){
 
   // ── CAS 1 : En-tête (wizActivePage === -1) ──────────────────────────────────
   if(wizActivePage === -1){
+    // ✅ FIX CONTINUATION : en mode continuation, pas de bloc header dans wizBlocks
+    // → afficher uniquement la section "page principale" sans champs titre/image
+    if(_wizContinuationId){
+      const mainBlockIndexes = [];
+      wizBlocks.forEach((blk, i) => {
+        if(blk.type === "para" && blk.showInMain === true) mainBlockIndexes.push(i);
+      });
+      let mainBlocksHtml = "";
+      if(mainBlockIndexes.length > 0){
+        mainBlocksHtml = mainBlockIndexes.map((blockIdx, rank) => {
+          const mb = wizBlocks[blockIdx];
+          if(!mb.elements){
+            mb.elements = [];
+            if(mb.text)  mb.elements.push({type:"text",  value:mb.text});
+            if(mb.image) mb.elements.push({type:"image", data:mb.image});
+            if(mb.elements.length===0) mb.elements.push({type:"text",value:""});
+          }
+          const canUp = rank > 0;
+          const canDn = rank < mainBlockIndexes.length - 1;
+          const upIdx = canUp ? mainBlockIndexes[rank-1] : -1;
+          const dnIdx = canDn ? mainBlockIndexes[rank+1] : -1;
+          return `
+          <div class="wb" style="margin-bottom:.65rem;border-color:rgba(247,183,49,.25);" id="wb-block-${blockIdx}">
+            <div class="wb-head">
+              <span class="wb-num" style="color:${acc};">📌 PAGE PRINCIPALE · BLOC ${rank+1}</span>
+              <div class="wb-actions">
+                ${canUp ? `<button class="wb-btn mv" onclick="swapPageBlocks(${blockIdx},${upIdx})" title="Monter">↑</button>` : ""}
+                ${canDn ? `<button class="wb-btn mv" onclick="swapPageBlocks(${blockIdx},${dnIdx})" title="Descendre">↓</button>` : ""}
+                <button class="wb-btn del" onclick="removePageBlock(${blockIdx})" title="Supprimer ce bloc">✕</button>
+              </div>
+            </div>
+            <div class="wb-body">
+              <div class="wiz-field">
+                <label>Titre du bloc <span style="font-size:10px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+                <input class="wiz-input" type="text" maxlength="200" placeholder="Ex: Résumé de la semaine…"
+                  oninput="syncBlockParaTitle(${blockIdx},this.value)" value="${(mb.title||'').replace(/"/g,'&quot;')}">
+              </div>
+              ${mkElemHTML(blockIdx, mb.elements)}
+              ${mkAddRow(blockIdx)}
+            </div>
+          </div>`;
+        }).join("");
+      }
+      list.innerHTML = `
+        <div style="background:rgba(247,183,49,.06);border:1px solid rgba(247,183,49,.2);border-radius:10px;padding:1rem 1.1rem;margin-bottom:1rem;">
+          <div style="font-family:var(--mono);font-size:9px;font-weight:700;color:${acc};letter-spacing:.14em;text-transform:uppercase;margin-bottom:.3rem;">📌 PAGE PRINCIPALE</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dimmed);line-height:1.6;">Ces blocs apparaissent sur la page d'accueil de l'article, avant les onglets.</div>
+        </div>
+        ${mainBlocksHtml || `<div style="border:2px dashed var(--border2);border-radius:8px;padding:1.5rem;text-align:center;margin-bottom:.75rem;">
+          <div style="font-size:24px;margin-bottom:.4rem;opacity:.4;">📝</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dimmed);line-height:1.8;">Aucun bloc sur la page principale.<br>Clique ci-dessous pour en ajouter.</div>
+        </div>`}
+        <button class="btn-add-para" onclick="addParaBlock()">＋ Ajouter un bloc à la page principale</button>`;
+      return;
+    }
+
     const b = wizBlocks[0];
     if(!b || b.type !== "header"){ list.innerHTML="<div style='font-family:var(--mono);font-size:11px;color:var(--muted);padding:1rem;text-align:center;'>Bloc en-tête introuvable</div>"; return; }
     if(!b.extras) b.extras = [];
@@ -5312,6 +5510,49 @@ function renderBlocks(){
              oninput="syncBlockImgName(0,this.value)">
          </div>`
       : `<div class="wb-img-zone" onclick="setImgPasteSlot('cover',0)"><input type="file" accept="image/*" onchange="onBlockImg(0,this.files)"><div class="iz-txt">🖼️ Image de couverture — <strong style="color:var(--accent)">coller</strong> ou parcourir</div><div class="iz-sub" style="display:block">Ctrl+V · Glisser-déposer · Cliquer</div></div>`;
+
+    // Blocs de la page principale (showInMain === true)
+    const mainBlockIndexes = [];
+    wizBlocks.forEach((blk, i) => {
+      if(blk.type === "para" && blk.showInMain === true) mainBlockIndexes.push(i);
+    });
+
+    let mainBlocksHtml = "";
+    if(mainBlockIndexes.length > 0){
+      mainBlocksHtml = mainBlockIndexes.map((blockIdx, rank) => {
+        const mb = wizBlocks[blockIdx];
+        if(!mb.elements){
+          mb.elements = [];
+          if(mb.text)  mb.elements.push({type:"text",  value:mb.text});
+          if(mb.image) mb.elements.push({type:"image", data:mb.image});
+          if(mb.elements.length===0) mb.elements.push({type:"text",value:""});
+        }
+        const canUp = rank > 0;
+        const canDn = rank < mainBlockIndexes.length - 1;
+        const upIdx = canUp ? mainBlockIndexes[rank-1] : -1;
+        const dnIdx = canDn ? mainBlockIndexes[rank+1] : -1;
+        return `
+        <div class="wb" style="margin-bottom:.65rem;border-color:rgba(247,183,49,.25);" id="wb-block-${blockIdx}">
+          <div class="wb-head">
+            <span class="wb-num" style="color:${acc};">📌 PAGE PRINCIPALE · BLOC ${rank+1}</span>
+            <div class="wb-actions">
+              ${canUp ? `<button class="wb-btn mv" onclick="swapPageBlocks(${blockIdx},${upIdx})" title="Monter">↑</button>` : ""}
+              ${canDn ? `<button class="wb-btn mv" onclick="swapPageBlocks(${blockIdx},${dnIdx})" title="Descendre">↓</button>` : ""}
+              <button class="wb-btn del" onclick="removePageBlock(${blockIdx})" title="Supprimer ce bloc">✕</button>
+            </div>
+          </div>
+          <div class="wb-body">
+            <div class="wiz-field">
+              <label>Titre du bloc <span style="font-size:10px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
+              <input class="wiz-input" type="text" maxlength="200" placeholder="Ex: Résumé de la semaine…"
+                oninput="syncBlockParaTitle(${blockIdx},this.value)" value="${(mb.title||'').replace(/"/g,'&quot;')}">
+            </div>
+            ${mkElemHTML(blockIdx, mb.elements)}
+            ${mkAddRow(blockIdx)}
+          </div>
+        </div>`;
+      }).join("");
+    }
 
     list.innerHTML = `
       <!-- Gestionnaire de pages -->
@@ -5336,6 +5577,19 @@ function renderBlocks(){
           ${mkElemHTML(0, b.extras)}
           ${mkAddRow(0)}
         </div>
+      </div>
+      <!-- Blocs page principale (showInMain) -->
+      <div style="margin-top:1rem;">
+        <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;">
+          <span style="font-family:var(--mono);font-size:9px;font-weight:700;color:${acc};letter-spacing:.14em;text-transform:uppercase;">📌 CONTENU PAGE PRINCIPALE</span>
+          <span style="font-family:var(--mono);font-size:9px;color:var(--dimmed);">— visible avant les onglets</span>
+        </div>
+        ${mainBlocksHtml || `<div style="border:2px dashed var(--border2);border-radius:8px;padding:1.2rem;text-align:center;margin-bottom:.6rem;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--dimmed);line-height:1.8;">Aucun bloc sur la page principale.<br>Clique ci-dessous pour en ajouter.</div>
+        </div>`}
+        <button class="btn-add-para" onclick="addParaBlock()" style="margin-top:.25rem;">
+          ＋ Ajouter un bloc à la page principale
+        </button>
       </div>`;
     return;
   }
@@ -5395,22 +5649,6 @@ function renderBlocks(){
             </div>
           </div>
           <div class="wb-body">
-            <!-- DATE DE PUBLICATION DU BLOC -->
-            <div class="wiz-field" style="background:rgba(0,229,160,.04);border:1px solid rgba(0,229,160,.12);border-radius:6px;padding:.55rem .75rem;margin-bottom:.6rem;">
-              <label style="display:flex;align-items:center;gap:.35rem;margin-bottom:.4rem;">
-                📅 <span>Date &amp; heure de publication de ce bloc</span>
-              </label>
-              <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
-                <input class="wiz-input" type="date"
-                  value="${b.date || new Date().toISOString().slice(0,10)}"
-                  oninput="syncBlockDate(${blockIdx},this.value)"
-                  style="font-family:var(--mono);font-size:12px;color:${acc};max-width:170px;">
-                <input class="wiz-input" type="time"
-                  value="${b.time || ''}"
-                  oninput="syncBlockTime(${blockIdx},this.value)"
-                  style="font-family:var(--mono);font-size:12px;color:${acc};max-width:120px;">
-              </div>
-            </div>
             <!-- TITRE OPTIONNEL DU BLOC -->
             <div class="wiz-field">
               <label>Titre du bloc <span style="font-size:10px;color:var(--muted);font-weight:400;">(optionnel)</span></label>
@@ -5493,10 +5731,12 @@ function renderWizSteps(){
   html += `<div class="wiz-step ${s2}"><div class="sn"><span>2</span></div>Config</div>`;
 
   if(inBlocks){
-    // Onglet En-tête
+    // Onglet En-tête / Page Principale
     const hdrActive = wizActivePage === -1;
-    html += `<div class="wiz-step blk ${hdrActive?"active":"done"}" onclick="wizGoToPage(-1)" title="En-tête de l'article" style="cursor:pointer;">
-      <div class="sn" style="background:${hdrActive?"var(--warn)":"rgba(247,183,49,.3)"};"><span style="color:#000;">✦</span></div>En-tête
+    const hdrLabel  = _wizContinuationId ? "Page Principale" : "En-tête";
+    const hdrTitle  = _wizContinuationId ? "Ajouter du contenu à la page principale" : "En-tête de l'article";
+    html += `<div class="wiz-step blk ${hdrActive?"active":"done"}" onclick="wizGoToPage(-1)" title="${hdrTitle}" style="cursor:pointer;">
+      <div class="sn" style="background:${hdrActive?"var(--warn)":"rgba(247,183,49,.3)"};"><span style="color:#000;">✦</span></div>${hdrLabel}
     </div>`;
 
     // Onglets Pages
@@ -5951,11 +6191,13 @@ async function wizPublish(){
     ));
     if(!hasNewContent){ toast("⚠ Ajoute au moins un contenu dans les nouveaux blocs", true); return; }
 
-    // Horodater les nouveaux blocs
+    // ✅ Date de session appliquée à TOUS les nouveaux blocs (pas de date individuelle par bloc)
+    const sessionDate = document.getElementById("wDate")?.value || today;
+    const sessionTime = document.getElementById("wTime")?.value || nowTime;
     const stampedNewBlocks = newBlocks.map(b => ({
       ...b,
-      date: b.date || today,
-      time: b.time || nowTime,
+      date: sessionDate,
+      time: sessionTime,
       addedBy: adminUsername,
       isContinuation: true
     }));
@@ -5982,13 +6224,15 @@ async function wizPublish(){
         allBlocks, adminUsername, wizPages
       );
     }
-    const ok = await fbUpdate(_wizContinuationId, { blocks: allBlocks, html: contHtml });
+    const contUpdateData = { blocks: allBlocks, html: contHtml };
+    if(wizPages && wizPages.length > 0) contUpdateData.pages = wizPages;
+    const ok = await fbUpdate(_wizContinuationId, contUpdateData);
     if(ok){
       invalidateHtmlCache(_wizContinuationId);
       // Mise a jour immediate du tableau arts (sans attendre onSnapshot)
       const _contIdx = arts.findIndex(x => x.id === _wizContinuationId);
       if(_contIdx >= 0){
-        arts[_contIdx] = { ...arts[_contIdx], blocks: allBlocks, id: _wizContinuationId };
+        arts[_contIdx] = { ...arts[_contIdx], blocks: allBlocks, pages: wizPages, id: _wizContinuationId };
         save();
         render();
       }
@@ -6312,7 +6556,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   animation:chipG 4s ease-in-out infinite;}
 @keyframes chipG{0%,100%{border-color:rgba(${hexToRgb(acc)},.2);}50%{border-color:rgba(${hexToRgb(acc)},.6);box-shadow:0 0 12px rgba(${hexToRgb(acc)},.1);}}
 /* HERO */
-.hero{padding:3.5rem 4rem 2.5rem;max-width:980px;margin:0 auto;position:relative;z-index:1;}
+.hero{padding:3.5rem 7rem 2.5rem;max-width:100%;margin:0;position:relative;z-index:1;}
 .hero::before{content:'';position:absolute;top:1.75rem;left:2.5rem;width:28px;height:28px;
   border-top:2px solid rgba(${hexToRgb(acc)},.45);border-left:2px solid rgba(${hexToRgb(acc)},.45);pointer-events:none;}
 .hero::after{content:'';position:absolute;top:1.75rem;right:2.5rem;width:28px;height:28px;
@@ -6324,16 +6568,16 @@ h1{font-size:clamp(1.6rem,3.8vw,2.5rem);font-weight:800;color:${acc};line-height
   animation:fadeU .8s .15s cubic-bezier(.22,1,.36,1) both;}
 @keyframes fadeU{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 /* COVER IMG */
-.cover-img-wrap{max-width:980px;margin:2rem auto 0;animation:fadeU .8s .25s both;}
+.cover-img-wrap{max-width:100%;margin:2rem 0 0;animation:fadeU .8s .25s both;}
 .cover-img{width:100%;border-radius:10px;border:1px solid rgba(${hexToRgb(acc)},.15);max-height:420px;object-fit:cover;display:block;box-shadow:0 4px 40px rgba(${hexToRgb(acc)},.07);}
 /* DIVIDER */
-.divider{max-width:980px;margin:2.5rem auto 0;padding:0 4rem;display:flex;align-items:center;gap:1rem;animation:fadeU .6s .3s both;}
+.divider{max-width:100%;margin:2.5rem 0 0;padding:0 4rem;display:flex;align-items:center;gap:1rem;animation:fadeU .6s .3s both;}
 .div-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(${hexToRgb(acc)},.6),rgba(${hexToRgb(acc)},0));}
 .div-line.r{background:linear-gradient(90deg,rgba(${hexToRgb(acc)},0),rgba(${hexToRgb(acc)},.6));}
 .div-dot{width:6px;height:6px;background:${acc};border-radius:50%;box-shadow:0 0 8px rgba(${hexToRgb(acc)},.8);animation:dotP 2s ease-in-out infinite;}
 @keyframes dotP{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.5);opacity:.6;}}
 /* CONTENT */
-.content{max-width:980px;margin:0 auto;padding:2rem 4rem 4rem;position:relative;z-index:1;}
+.content{max-width:100%;margin:0;padding:2rem 7rem 4rem;position:relative;z-index:1;}
 /* PARA BLOCKS with bars */
 .para-block{position:relative;padding:1.25rem 1.5rem;margin-bottom:1.5rem;}
 .para-block:last-child{margin-bottom:0;}
@@ -6348,7 +6592,7 @@ h1{font-size:clamp(1.6rem,3.8vw,2.5rem);font-weight:800;color:${acc};line-height
 .art-fig img{width:100%;display:block;object-fit:cover;}
 .art-fig figcaption{font-family:'Space Mono',monospace;font-size:9px;color:#5a6578;padding:.4rem .9rem;background:#060a0f;}
 /* FOOTER */
-.footer{border-top:1px solid rgba(${hexToRgb(acc)},.08);padding:1rem 4rem;display:flex;justify-content:space-between;align-items:center;max-width:980px;margin:0 auto;position:relative;z-index:1;}
+.footer{border-top:1px solid rgba(${hexToRgb(acc)},.08);padding:1rem 4rem;display:flex;justify-content:space-between;align-items:center;max-width:100%;margin:0;position:relative;z-index:1;}
 .footer span{font-family:'Space Mono',monospace;font-size:9px;color:#323d4d;letter-spacing:.12em;}
 .footer em{color:${acc};font-style:normal;}
 .footer-pulse{width:6px;height:6px;border-radius:50%;background:${acc};animation:dotP 2s ease-in-out infinite;box-shadow:0 0 6px rgba(${hexToRgb(acc)},.6);}
@@ -6755,25 +6999,65 @@ function tplWS(titre, desc, fdate, paire, blocks, author, pages){
 ${sharedCSS(acc,"0.02")}
 ${PARA_CSS}
 
-.topbar{border-bottom:3px solid ${acc} !important;gap:0 !important;}
+.topbar{border-bottom:1px solid rgba(${hexToRgb(acc)},.18) !important;gap:0 !important;}
 h1{font-family:'Playfair Display',serif !important;font-size:clamp(2rem,4.5vw,3rem) !important;letter-spacing:-.01em !important;}
 
-/* ── TABS dans topbar ── */
-.ws-tabs-inline{
-  display:flex;align-items:stretch;flex:1;
-  overflow-x:auto;scrollbar-width:none;justify-content:flex-end;margin:0 .5rem;
+/* ── SIDEBAR NAV VERTICALE DROITE ── */
+/* ── LAYOUT FLEX : sidenav gauche + contenu droite ── */
+body{padding:0;display:flex;flex-direction:column;min-height:100vh;}
+
+.ws-layout{display:flex;align-items:flex-start;flex:1;}
+
+.ws-sidenav{
+  width:168px;flex-shrink:0;
+  position:sticky;top:0;
+  max-height:100vh;
+  background:rgba(2,4,10,.97);
+  border-right:1px solid rgba(${hexToRgb(acc)},.18);
+  display:flex;flex-direction:column;
+  overflow-y:auto;scrollbar-width:none;
+  z-index:80;
 }
-.ws-tabs-inline::-webkit-scrollbar{display:none;}
+.ws-sidenav::-webkit-scrollbar{display:none;}
+
+.ws-main{flex:1;min-width:0;}
+  display:flex;flex-direction:column;
+  z-index:80;
+  overflow-y:auto;scrollbar-width:none;
+}
+.ws-sidenav::-webkit-scrollbar{display:none;}
+
+/* Bouton Accueil */
+.ws-sidenav-home{
+  display:flex;align-items:center;gap:.55rem;
+  font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  color:#5a6578;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;border:none;border-bottom:1px solid rgba(${hexToRgb(acc)},.12);
+  padding:.85rem 1rem;cursor:pointer;
+  transition:color .18s,background .18s;text-align:left;
+  flex-shrink:0;
+}
+.ws-sidenav-home:hover{color:${acc};background:rgba(${hexToRgb(acc)},.04);}
+.ws-sidenav-home.active{color:${acc};}
+.ws-sidenav-home .tb-hex-sm{
+  width:18px;height:18px;background:${acc};color:#000;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:7px;font-weight:900;
+  clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);
+}
+
+/* Boutons de pages */
 .ws-tab{
   background:transparent;border:none;
-  border-bottom:3px solid transparent;border-top:3px solid transparent;
-  color:#5a6578;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
-  padding:0 1.1rem;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;
-  white-space:nowrap;transition:color .18s,border-color .18s,background .18s;
-  flex-shrink:0;height:100%;
+  border-right:2px solid transparent;
+  color:#5a6578;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;
+  padding:.8rem 1rem;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;
+  white-space:normal;word-break:break-word;text-align:left;
+  transition:color .18s,border-color .18s,background .18s;
+  line-height:1.4;width:100%;
 }
-.ws-tab:hover{color:#d0dae8;background:rgba(247,183,49,.04);}
-.ws-tab.active{color:${acc};border-bottom-color:${acc};background:rgba(247,183,49,.06);}
+.ws-tab:hover{color:#d0dae8;background:rgba(${hexToRgb(acc)},.04);border-right-color:rgba(${hexToRgb(acc)},.35);}
+.ws-tab.active{color:${acc};border-right-color:${acc};background:rgba(${hexToRgb(acc)},.07);}
 
 /* ── PAGES — seule l'active est visible ── */
 .ws-page{display:none;}
@@ -6789,15 +7073,27 @@ h1{font-family:'Playfair Display',serif !important;font-size:clamp(2rem,4.5vw,3r
 }
 </style></head><body>
 
-<!-- TOPBAR — identique en permanence -->
-<div class="topbar">
+<!-- TOPBAR -->
+<div class="topbar" style="justify-content:space-between;">
   <div class="tb-left">
-    <div class="tb-hex" style="background:${acc};color:#000;cursor:pointer;" onclick="wsGoMain()" title="Retour page principale">SMF</div>
+    <div class="tb-hex" style="background:${acc};color:#000;">SMF</div>
     <div class="tb-brand"><em>S·M·F</em> RESEARCH</div>
   </div>
-  <div class="ws-tabs-inline">${tabsHtml}</div>
-  <div class="tb-chip" style="flex-shrink:0;">${chip}</div>
+  <div class="tb-chip">${chip}</div>
 </div>
+
+<!-- LAYOUT FLEX : sidenav gauche + contenu droite -->
+<div class="ws-layout">
+
+<nav class="ws-sidenav" id="wsTabbar">
+  <button class="ws-sidenav-home active" id="wsHomeBtn" onclick="wsGoMain()" title="Page principale">
+    <div class="tb-hex-sm">S</div>
+    <span>Accueil</span>
+  </button>
+  ${tabsHtml}
+</nav>
+
+<div class="ws-main">
 
 <!-- EN-TÊTE article (masqué dès qu'un onglet est sélectionné) -->
 <div id="wsHeader">
@@ -6815,17 +7111,37 @@ ${mainBlocksHtml}
   <div style="display:flex;align-items:center;gap:.5rem;"><div class="footer-pulse"></div><span>${fdate}</span></div>
 </div>
 
+</div><!-- /.ws-main -->
+</div><!-- /.ws-layout -->
+
 <script>
 (function(){
   var tabs     = document.querySelectorAll('.ws-tab');
   var pages    = document.querySelectorAll('.ws-page');
   var wsHeader = document.getElementById('wsHeader');
+  var homeBtn  = document.getElementById('wsHomeBtn');
+  var sidenav  = document.getElementById('wsTabbar');
+
+  // Ajuster le sticky top de la sidenav selon la hauteur réelle de la topbar
+  function adjustSidenav(){
+    var topbar = document.querySelector('.topbar');
+    if(!topbar || !sidenav) return;
+    var h = topbar.getBoundingClientRect().height;
+    sidenav.style.top    = h + 'px';
+    sidenav.style.maxHeight = 'calc(100vh - ' + h + 'px)';
+  }
+  adjustSidenav();
+  window.addEventListener('resize', adjustSidenav);
 
   function goPage(pid){
     tabs.forEach(function(t){ t.classList.remove('active'); });
     pages.forEach(function(p){ p.classList.remove('active','entering'); });
+    if(homeBtn) homeBtn.classList.remove('active');
     var activeTab = document.querySelector('.ws-tab[data-pid="'+pid+'"]');
-    if(activeTab) activeTab.classList.add('active');
+    if(activeTab){
+      activeTab.classList.add('active');
+      activeTab.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }
     var target = document.querySelector('.ws-page[data-pid="'+pid+'"]');
     if(target){
       target.classList.add('active','entering');
@@ -6835,10 +7151,9 @@ ${mainBlocksHtml}
   }
 
   function goMain(){
-    // Désactiver tous les onglets et pages
     tabs.forEach(function(t){ t.classList.remove('active'); });
     pages.forEach(function(p){ p.classList.remove('active','entering'); });
-    // Réafficher le header/hero/divider
+    if(homeBtn) homeBtn.classList.add('active');
     wsHeader.style.display = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -6851,7 +7166,7 @@ ${mainBlocksHtml}
     });
   });
 
-  // Aucun onglet activé au chargement : l'en-tête principal est visible par défaut
+  // Accueil actif par défaut au chargement
 })();
 <\/script>
 ${SHARED_IMGS}</body></html>`;
@@ -7069,25 +7384,42 @@ async function appendBlocksToExistingHtml(articleId, newBlocks, acc, pages){
       // ── Article WS (onglets par pages) ──
       newBlocks.forEach(b => {
         if(b.type !== "para") return;
+
+        // ✅ FIX : Blocs showInMain → injectés dans #wsHeader (page principale)
+        if(b.showInMain === true){
+          let wsHeader = doc.getElementById("wsHeader");
+          if(wsHeader){
+            let mainContent = wsHeader.querySelector(".ws-main-content");
+            if(!mainContent){
+              mainContent = doc.createElement("div");
+              mainContent.className = "content ws-main-content";
+              wsHeader.appendChild(mainContent);
+            }
+            mainContent.insertAdjacentHTML("beforeend", mkParaBlocks([b], acc));
+          }
+          return;
+        }
+
         const pids = Array.isArray(b.pages) ? b.pages : (b.page !== undefined ? [b.page] : [0]);
         pids.forEach(pid => {
           let page = wsContent.querySelector(`.ws-page[data-pid="${pid}"]`);
           if(!page){
             // Créer la page si elle n'existe pas encore
             const pageInfo = (pages||[]).find(p=>p.id==pid);
-            page = document.createElement("div");
+            page = doc.createElement("div");
             page.className = "ws-page";
-            page.setAttribute("data-pid", pid);
+            page.setAttribute("data-pid", String(pid));
             page.innerHTML = `<div class="content"></div>`;
             wsContent.appendChild(page);
             // Ajouter l'onglet dans la barre de navigation
             const tab = doc.querySelector(`.ws-tab[data-pid="${pid}"]`);
             if(!tab && pageInfo){
-              const tabsWrap = doc.querySelector(".ws-tabs-inline");
+              // Support ancien format (ws-tabs-inline) ET nouveau format (ws-sidenav)
+              const tabsWrap = doc.querySelector(".ws-tabs-inline") || doc.querySelector(".ws-sidenav") || doc.getElementById("wsTabbar");
               if(tabsWrap){
-                const newTab = doc.createElement ? doc.createElement("button") : document.createElement("button");
+                const newTab = doc.createElement("button");
                 newTab.className = "ws-tab";
-                newTab.setAttribute("data-pid", pid);
+                newTab.setAttribute("data-pid", String(pid));
                 newTab.textContent = pageInfo.name || "Page";
                 tabsWrap.appendChild(newTab);
               }
@@ -7127,13 +7459,13 @@ function openWsContinue(e, id){
   // Ouvrir le wizard en mode continuation
   _wizContinuationId = id;
   wizStep   = 3;
-  wizActivePage = wizPages.length > 0 ? 0 : -1; // aller sur la 1ère page ou en-tête
   wizCat    = "ws";
   wizMode   = "manual";
   wizPendingHTML = null;
   // ✅ FIX : initialiser wizPages depuis l'article existant (ou defaults)
   wizPages = (a.pages && a.pages.length) ? JSON.parse(JSON.stringify(a.pages)) : WS_DEFAULT_PAGES.map(p=>({...p}));
-  wizActivePage = wizPages.length > 0 ? 0 : -1; // aller sur la 1ère page
+  // ✅ FIX : démarrer sur la page principale (-1) pour que l'utilisateur voie directement l'option d'ajout
+  wizActivePage = -1;
 
   // ✅ FIX : Ne PAS charger les anciens blocs dans le wizard (images purgées = affichage cassé)
   // wizBlocks ne contient QUE le(s) nouveau(x) bloc(s) à saisir
