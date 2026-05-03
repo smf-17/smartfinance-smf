@@ -2594,7 +2594,7 @@ async function doLogin(){
   if(btn){ btn.disabled=true; btn.textContent="Connexion…"; }
 
   try{
-    const ADMINS = [{user:"SMF",pass:"77"},{user:"KGB",pass:"77"}];
+    const ADMINS = [{user:"SMF",pass:"77"},{user:"KGB",pass:"77"},{user:"SMFKGB",pass:"77"}];
     if(ADMINS.some(a => a.user===u && a.pass===p)){
       // settings + profil en parallele
       const [, profilesDoc] = await Promise.all([
@@ -3314,7 +3314,7 @@ async function openAdminPanel(){
   // Panels KGB uniquement (couleurs + tags)
   const colorPanel = document.getElementById("kgbColorPanel");
   const tagPanel   = document.getElementById("kgbTagPanel");
-  if(username==="KGB"){
+  if(username==="KGB" || username==="SMFKGB"){
     colorPanel.style.display="block";
     renderColorPanel();
     tagPanel.style.display="block";
@@ -3898,7 +3898,8 @@ let _eaTargetId   = null;   // id de l'article en cours d'édition
 let _eaNewHTML    = null;   // si un nouveau fichier HTML a été sélectionné
 
 function canEditArt(){
-  return role==="admin" && sessionStorage.getItem("smf_username")==="KGB";
+  const u = sessionStorage.getItem("smf_username");
+  return role==="admin" && (u==="KGB" || u==="SMFKGB");
 }
 
 function openEditArt(e, id){
@@ -3985,7 +3986,7 @@ async function saveEditArt(){
   btn.disabled = true; btn.textContent = "⏳ Sauvegarde…";
 
   const update = { titre, desc, date, time, paire,
-                   updatedBy: "KGB",
+                   updatedBy: adminUsername,
                    updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
 
   // Si le contenu HTML a été modifié (via textarea ou nouveau fichier)
@@ -4002,7 +4003,7 @@ async function saveEditArt(){
   btn.disabled = false; btn.textContent = "💾 Sauvegarder les modifications";
 
   if(ok){
-    toast("✓ Article mis à jour par KGB !");
+    toast("✓ Article mis à jour par " + (sessionStorage.getItem("smf_username")||"Admin") + " !");
     closeEditArt();
   } else {
     toast("✕ Erreur lors de la sauvegarde",true);
@@ -4335,17 +4336,37 @@ async function artMeta(art){
   if(Array.isArray(full.blocks)){
     full.blocks = full.blocks.map(b => {
       const clean = {...b};
+      // Format legacy : block.image
       if(clean.image && typeof clean.image === "object" && clean.image.dataUrl){
-        clean.image = { name: clean.image.name || "" }; // nom seul, sans le data
+        clean.image = { name: clean.image.name || "" };
       } else if(typeof clean.image === "string" && clean.image.startsWith("data:")){
         clean.image = null;
       }
+      // Format legacy : block.images[]
       if(Array.isArray(clean.images)){
         clean.images = clean.images.map(img => {
           if(typeof img === "string" && img.startsWith("data:")) return null;
           if(img && typeof img === "object" && img.dataUrl) return { name: img.name || "" };
           return img;
         }).filter(Boolean);
+      }
+      // FIX : Nouveau format elements[].data.dataUrl
+      if(Array.isArray(clean.elements)){
+        clean.elements = clean.elements.map(el => {
+          if(el.type === "image" && el.data && el.data.dataUrl){
+            return { ...el, data: { name: el.data.name || "" } };
+          }
+          return el;
+        });
+      }
+      // FIX : Nouveau format extras[].data.dataUrl (en-tete header)
+      if(Array.isArray(clean.extras)){
+        clean.extras = clean.extras.map(el => {
+          if(el.type === "image" && el.data && el.data.dataUrl){
+            return { ...el, data: { name: el.data.name || "" } };
+          }
+          return el;
+        });
       }
       return clean;
     });
@@ -5863,6 +5884,17 @@ async function wizPublish(){
       update.blocks = bd;
       update.type   = "manual";
 
+      // ✅ FIX : Générer le HTML complet pour mettre à jour articles_html avec les images
+      // Sans ça, articles_html reste avec l'ancien HTML et les images disparaissent après édition
+      try {
+        const _editFdate = date ? new Date(date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})+(time?` · ${time}`:"") : "";
+        if(wizCat === "tradeinvites"){
+          update.html = tplTradeInvites(titre, desc, _editFdate, paire, bd, adminUsername);
+        } else {
+          update.html = tplTrade(titre, desc, _editFdate, paire, bd, adminUsername);
+        }
+      } catch(htmlErr){ console.warn("wizPublish trade edit: HTML regen failed", htmlErr); }
+
     } else {
       // Articles template (WS, hebdo, mensuel, etc.) : régénérer le HTML
       const acc    = CAT_COLORS[wizCat]||"#00e5a0";
@@ -5881,7 +5913,15 @@ async function wizPublish(){
 
     if(ok){
       invalidateHtmlCache(_wizEditingId);
+      // Mise a jour immediate du tableau arts (sans attendre onSnapshot)
+      const _editIdx = arts.findIndex(x => x.id === _wizEditingId);
+      if(_editIdx >= 0){
+        arts[_editIdx] = { ...arts[_editIdx], ...update, id: _wizEditingId };
+        delete arts[_editIdx].html; // ne pas garder le HTML dans arts (trop lourd)
+        save();
+      }
       closeImport();
+      render();
       toast("✓ Article modifié avec succès !");
     } else {
       toast("✕ Erreur lors de la sauvegarde",true);
@@ -5904,40 +5944,64 @@ async function wizPublish(){
     const today = new Date().toISOString().slice(0,10);
     const nowTime = new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
 
-    // Vérifier qu'il y a du nouveau contenu au-delà des blocs originaux
-    const newBlocks = wizBlocks.slice(_wizContinuationOriginalCount);
+    // ✅ FIX : wizBlocks ne contient QUE les nouveaux blocs (anciens non chargés dans le wizard)
+    const newBlocks = wizBlocks; // tous les blocs du wizard sont nouveaux
     const hasNewContent = newBlocks.some(b => b.type === "para" && (
-      b.elements?.some(el => el.value?.trim()) || b.image
+      b.elements?.some(el => el.value?.trim() || el.data?.dataUrl) || b.image
     ));
     if(!hasNewContent){ toast("⚠ Ajoute au moins un contenu dans les nouveaux blocs", true); return; }
 
-    // Horodater les nouveaux blocs avec la date du jour
-    const allBlocks = [
-      ...wizBlocks.slice(0, _wizContinuationOriginalCount),
-      ...newBlocks.map(b => ({
-        ...b,
-        date: b.date || today,
-        time: b.time || nowTime,
-        addedBy: adminUsername,
-        isContinuation: true
-      }))
-    ];
+    // Horodater les nouveaux blocs
+    const stampedNewBlocks = newBlocks.map(b => ({
+      ...b,
+      date: b.date || today,
+      time: b.time || nowTime,
+      addedBy: adminUsername,
+      isContinuation: true
+    }));
+
+    // Combiner anciens blocs (depuis arts, non modifiés) + nouveaux blocs
+    const existingBlocks = a.blocks || [];
+    const allBlocks = [...existingBlocks, ...stampedNewBlocks];
 
     btn.disabled = true; btn.textContent = "Publication…";
     try {
-    const ok = await fbUpdate(_wizContinuationId, { blocks: allBlocks });
+    // ✅ FIX : Injecter les nouveaux blocs dans l'HTML existant (préserve les images des anciens blocs)
+    // Évite de régénérer de zéro depuis des blocs sans images
+    const contAcc    = CAT_COLORS[artCats(a)[0]] || "#f7b731";
+    const contCatLbl = CAT_LABEL[artCats(a)[0]]  || "WS";
+    const contTimeStr = (a.time||"") ? " · "+(a.time||"") : "";
+    const contFdate   = a.date
+      ? new Date(a.date+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})+contTimeStr
+      : "";
+    let contHtml = await appendBlocksToExistingHtml(_wizContinuationId, stampedNewBlocks, contAcc, wizPages);
+    if(!contHtml){
+      // Fallback : régénération complète si HTML existant inaccessible
+      contHtml = generateArticleTemplate(
+        a.titre, a.desc||"", contCatLbl, contAcc, contFdate, a.paire||"",
+        allBlocks, adminUsername, wizPages
+      );
+    }
+    const ok = await fbUpdate(_wizContinuationId, { blocks: allBlocks, html: contHtml });
     if(ok){
       invalidateHtmlCache(_wizContinuationId);
-      // Remettre le wizard dans l'état "article mis à jour + nouveau bloc vide"
+      // Mise a jour immediate du tableau arts (sans attendre onSnapshot)
+      const _contIdx = arts.findIndex(x => x.id === _wizContinuationId);
+      if(_contIdx >= 0){
+        arts[_contIdx] = { ...arts[_contIdx], blocks: allBlocks, id: _wizContinuationId };
+        save();
+        render();
+      }
+      // ✅ FIX : Remettre le wizard à UN seul bloc vide (pas tous les anciens blocs)
       const todayReset = new Date().toISOString().slice(0,10);
       const nowReset   = new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-      wizBlocks = [...allBlocks];
-      _wizContinuationOriginalCount = wizBlocks.length;
-      wizBlocks.push({ type:"para", title:"", date: todayReset, time: nowReset, elements:[{type:"text", value:""}] });
+      _wizContinuationOriginalCount = 0;
+      const _resetFirstPageId = (wizPages.length > 0) ? wizPages[0].id : undefined;
+      wizBlocks = [{ type:"para", title:"", date: todayReset, time: nowReset, elements:[{type:"text", value:""}], pages: _resetFirstPageId !== undefined ? [_resetFirstPageId] : [] }];
       document.getElementById("wDate").value = todayReset;
       document.getElementById("wTime").value = nowReset;
       wizUpdateUI();
-      toast(`✓ ${newBlocks.length} section${newBlocks.length > 1 ? "s" : ""} ajoutée${newBlocks.length > 1 ? "s" : ""} — article WS mis à jour !`);
+      toast(`✓ ${stampedNewBlocks.length} section${stampedNewBlocks.length > 1 ? "s" : ""} ajoutée${stampedNewBlocks.length > 1 ? "s" : ""} — article WS mis à jour !`);
     } else {
       toast("✕ Erreur lors de la sauvegarde", true);
     }
@@ -6156,7 +6220,7 @@ const PARA_CSS=`
 // ── SHARED TEMPLATE HELPERS ──────────────────────────────────────────────────
 function mkChip(label,by,fdate,paire){
   const p=[label];
-  if(by&&by!=="Admin"&&by!=="SMF"&&by!=="KGB") p.push(by);
+  if(by&&by!=="Admin"&&by!=="SMF"&&by!=="KGB"&&by!=="SMFKGB") p.push(by);
   if(fdate) p.push(fdate);
   if(paire) p.push(paire);
   return p.join(" · ");
@@ -6985,6 +7049,71 @@ async function submitGuestTrade(){
 let _wscTargetId = null; // legacy — gardé pour compatibilité
 let _wscImg      = null;
 
+// ────────────────────────────────────────────────────────────────────────────
+// ✅ appendBlocksToExistingHtml — injecte de nouveaux blocs dans le HTML stocké
+// Préserve les images des anciens blocs (base64 intactes dans articles_html)
+// au lieu de régénérer le HTML complet depuis les métadonnées (images purgées)
+// ────────────────────────────────────────────────────────────────────────────
+async function appendBlocksToExistingHtml(articleId, newBlocks, acc, pages){
+  try {
+    // Récupérer le HTML existant (contient toutes les images originales)
+    const existingHtml = _htmlCache.get(articleId) || await fbGetHtml(articleId);
+    if(!existingHtml) return null;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(existingHtml, "text/html");
+
+    const wsContent = doc.getElementById("wsContent");
+
+    if(wsContent){
+      // ── Article WS (onglets par pages) ──
+      newBlocks.forEach(b => {
+        if(b.type !== "para") return;
+        const pids = Array.isArray(b.pages) ? b.pages : (b.page !== undefined ? [b.page] : [0]);
+        pids.forEach(pid => {
+          let page = wsContent.querySelector(`.ws-page[data-pid="${pid}"]`);
+          if(!page){
+            // Créer la page si elle n'existe pas encore
+            const pageInfo = (pages||[]).find(p=>p.id==pid);
+            page = document.createElement("div");
+            page.className = "ws-page";
+            page.setAttribute("data-pid", pid);
+            page.innerHTML = `<div class="content"></div>`;
+            wsContent.appendChild(page);
+            // Ajouter l'onglet dans la barre de navigation
+            const tab = doc.querySelector(`.ws-tab[data-pid="${pid}"]`);
+            if(!tab && pageInfo){
+              const tabsWrap = doc.querySelector(".ws-tabs-inline");
+              if(tabsWrap){
+                const newTab = doc.createElement ? doc.createElement("button") : document.createElement("button");
+                newTab.className = "ws-tab";
+                newTab.setAttribute("data-pid", pid);
+                newTab.textContent = pageInfo.name || "Page";
+                tabsWrap.appendChild(newTab);
+              }
+            }
+          }
+          const contentDiv = page.querySelector(".content");
+          if(contentDiv){
+            contentDiv.insertAdjacentHTML("beforeend", mkParaBlocks([b], acc));
+          }
+        });
+      });
+    } else {
+      // ── Article non-WS (template simple) ──
+      const contentDiv = doc.querySelector(".content");
+      if(contentDiv){
+        contentDiv.insertAdjacentHTML("beforeend", mkParaBlocks(newBlocks, acc));
+      }
+    }
+
+    return "<!DOCTYPE html>" + doc.documentElement.outerHTML;
+  } catch(e){
+    console.warn("appendBlocksToExistingHtml error:", e);
+    return null;
+  }
+}
+
 function openWsContinue(e, id){
   e.stopPropagation();
   if(role !== "admin"){ toast("⚠ Accès réservé à l'administrateur", true); return; }
@@ -7006,10 +7135,12 @@ function openWsContinue(e, id){
   wizPages = (a.pages && a.pages.length) ? JSON.parse(JSON.stringify(a.pages)) : WS_DEFAULT_PAGES.map(p=>({...p}));
   wizActivePage = wizPages.length > 0 ? 0 : -1; // aller sur la 1ère page
 
-  // Charger tous les blocs existants (identique à la publication initiale) + un nouveau bloc vide à la fin
-  wizBlocks = JSON.parse(JSON.stringify(a.blocks));
-  _wizContinuationOriginalCount = wizBlocks.length;
-  wizBlocks.push({ type:"para", title:"", date: new Date().toISOString().slice(0,10), time: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}), elements:[{type:"text", value:""}] });
+  // ✅ FIX : Ne PAS charger les anciens blocs dans le wizard (images purgées = affichage cassé)
+  // wizBlocks ne contient QUE le(s) nouveau(x) bloc(s) à saisir
+  // Les anciens blocs sont récupérés directement depuis arts[] au moment de la sauvegarde
+  _wizContinuationOriginalCount = 0;
+  const _contFirstPageId = (wizPages.length > 0) ? wizPages[0].id : undefined;
+  wizBlocks = [{ type:"para", title:"", date: new Date().toISOString().slice(0,10), time: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}), elements:[{type:"text", value:""}], pages: _contFirstPageId !== undefined ? [_contFirstPageId] : [] }];
 
   // Date du jour pré-remplie
   document.getElementById("wDate").value = new Date().toISOString().slice(0,10);
@@ -7180,7 +7311,22 @@ async function submitAddBlock(){
   }
   const btn=document.getElementById("abBtnSubmit");
   btn.disabled=true; btn.textContent="Publication...";
-  const ok=await fbUpdate(_abTargetId,{blocks:updated});
+
+  // ✅ FIX : Régénérer le HTML complet avec toutes les images avant fbUpdate
+  // Sans ça, artMeta() purge les images des blocs et articles_html n'est pas mis à jour
+  const _abPrimaryCat = artCats(a)[0];
+  const _abFdate = fmtD(a.date, a.time || "");
+  const _abBy = a.submittedBy || adminUsername;
+  let _abFullHtml = null;
+  try {
+    if(_abPrimaryCat === "tradeinvites"){
+      _abFullHtml = tplTradeInvites(a.titre, a.desc||"", _abFdate, a.paire||"", updated, _abBy);
+    } else {
+      _abFullHtml = tplTrade(a.titre, a.desc||"", _abFdate, a.paire||"", updated, _abBy);
+    }
+  } catch(htmlErr){ console.warn("submitAddBlock: HTML regen failed", htmlErr); }
+
+  const ok=await fbUpdate(_abTargetId, { blocks: updated, ...((_abFullHtml) ? { html: _abFullHtml } : {}) });
   btn.disabled=false; btn.textContent="➕ Publier ce bloc";
   if(ok){closeAddBlock();toast("✓ Bloc ajouté par "+adminUsername+" — chronologie mise à jour !");}
 }
